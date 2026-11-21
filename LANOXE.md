@@ -16,9 +16,4 @@ The conversation screen still draws the list Monocles already had. The next chan
 
 ## Upstream
 
-```bash
-git fetch upstream
-git merge upstream/master
-```
-
-`upstream` is `https://codeberg.org/monocles/monocles_chat.git`. This clone is the current master, not the full history. `deps/libsignal` is a submodule. Clone with `--recurse-submodules`.
+`upstream` is `https://codeberg.org/monocles/monocles_chat.git`. The first commit here is a snapshot of `63de111ebd70585763d9df63cfc01db5dd4c110e`, not a descendant of it, so a plain merge will not apply. `deps/libsignal` is a submodule. Clone with `--recurse-submodules`.
