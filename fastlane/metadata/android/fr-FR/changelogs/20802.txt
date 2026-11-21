@@ -1,0 +1,12 @@
+* Nouveau : connexion OAuth
+* Inscription et liste des fournisseurs améliorées
+* Aperçus de liens, pages web et DANE via Tor/I2P
+* PQ OMEMO2 : contrôles plus stricts, moins de métadonnées
+* Ratchet post-quantique à jour, OMEMO hérité renforcé
+* Aperçus et téléchargement auto désactivés
+* Verrouillage de l'app à la réouverture
+* Correction : suppression de médias, multi-fichiers
+* Nécessite Android 7+
+* Correctifs de sécurité et bibliothèques à jour
+* Traductions mises à jour
+* Corrections

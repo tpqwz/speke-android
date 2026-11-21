@@ -1,0 +1,27 @@
+monocles chat is a modern and secure XMPP chat client for Android. It is based on Conversations, includes features from blabber.im and Cheogram, and adds many changes and features of its own to improve usability and security.
+
+Connection security and the protection of personal data are very important to us. We enforce encrypted connections between the app and the server, which makes it almost impossible for strangers to intercept and read your messages. For this reason we removed outdated cipher suites. The remaining ones are tuned for the monocles chat server, but stay compatible with other XMPP servers that follow today’s standards.
+
+If that is not enough for you, you can use end-to-end message encryption such as OMEMO or OpenPGP. Messages are then encrypted on the sending device and can only be decrypted by the devices they are meant for.
+
+Features:
+* End-to-end encryption with <a href="https://en.wikipedia.org/wiki/Off-the-Record_Messaging">OTR</a>, <a href="https://conversations.im/omemo/">OMEMO</a> or <a href="https://www.openpgp.org/about/">OpenPGP</a>
+* Experimental post-quantum end-to-end encryption (PQ OMEMO2)
+* Encrypted connections only, TLS 1.3 required by default
+* DNSSEC-verified server lookup and DANE certificate checks (can be enforced)
+* Protection against login downgrade attacks (channel binding, SCRAM downgrade protection)
+* Encrypted local database with an optional startup password
+* Send and receive images and other files
+* Send and receive locations
+* Send and receive voice messages
+* Message styling: bold, italic, strikethrough and code
+* Profile pictures (avatars) of your contacts
+* Synchronize message history with other clients
+* Group chats and channels
+* Address book integration (your address book is never shared with the server)
+* Audio and video calls
+* Very low battery consumption
+* Status messages
+* Daily backup of the database to local storage
+
+Need help? Join our support group chat <a href="xmpp:support@conference.monocles.eu">support@conference.monocles.eu</a>.

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One file of a message that shares several files (XEP-0447). Every file of such a message,
+     the first one included, is a row of this kind inside one panel, so each reads as its own
+     item. The sheet on the left shows the file's preview once there is one, else its extension
+     on a colour for its kind; the slot on the right shows whether it still has to be fetched. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/attachment_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="56dp"
+    android:orientation="horizontal"
+    android:paddingVertical="6dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="6dp">
+
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="48dp"
+        android:importantForAccessibility="noHideDescendants">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/attachment_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:shapeAppearance="@style/ShapeAppearanceOverlay.FileSheet" />
+
+        <TextView
+            android:id="@+id/attachment_extension"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="3dp"
+            android:letterSpacing="-0.02"
+            android:maxLines="1"
+            android:textAppearance="?textAppearanceLabelMedium"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/attachment_icon"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="3dp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/attachment_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textAppearance="?textAppearanceBodyMedium" />
+
+        <TextView
+            android:id="@+id/attachment_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="?textAppearanceBodySmall" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="4dp"
+        android:importantForAccessibility="noHideDescendants">
+
+        <ImageView
+            android:id="@+id/attachment_action"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_download_24dp"
+            android:visibility="gone" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/attachment_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:indicatorSize="22dp"
+            app:trackThickness="2dp" />
+    </FrameLayout>
+</LinearLayout>

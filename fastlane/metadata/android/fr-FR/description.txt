@@ -1,0 +1,27 @@
+monocles chat est un client de discussion XMPP moderne et sécurisé pour Android. Il est basé sur Conversations, intègre des fonctionnalités de blabber.im et Cheogram et apporte de nombreux changements et fonctionnalités supplémentaires pour améliorer l’ergonomie et la sécurité.
+
+La sécurité des connexions et la protection des données personnelles sont primordiales pour nous. Nous imposons des connexions chiffrées entre l’application et le serveur, ce qui rend quasiment impossible l’interception et la lecture de vos messages par des inconnus. Nous avons donc supprimé les suites de chiffrement obsolètes. Celles qui restent sont optimisées pour le serveur monocles chat, tout en restant compatibles avec les autres serveurs XMPP qui respectent les standards actuels.
+
+Si cela ne vous suffit pas, vous pouvez utiliser un chiffrement de bout en bout comme OMEMO ou OpenPGP. Les messages sont alors chiffrés sur l’appareil émetteur et ne peuvent être déchiffrés que par les appareils auxquels ils sont destinés.
+
+Fonctionnalités :
+* Chiffrement de bout en bout avec <a href="https://fr.wikipedia.org/wiki/Off-the-Record_Messaging">OTR</a>, <a href="https://conversations.im/omemo/">OMEMO</a> ou <a href="https://www.openpgp.org/about/">OpenPGP</a>
+* Chiffrement de bout en bout post-quantique expérimental (PQ OMEMO2)
+* Connexions chiffrées uniquement, TLS 1.3 exigé par défaut
+* Résolution du serveur vérifiée par DNSSEC et contrôle des certificats par DANE (peut être imposé)
+* Protection contre les attaques par rétrogradation lors de la connexion (liaison de canal, protection SCRAM contre la rétrogradation)
+* Base de données locale chiffrée avec mot de passe de démarrage facultatif
+* Envoyer et recevoir des images et d’autres fichiers
+* Envoyer et recevoir des positions
+* Envoyer et recevoir des messages vocaux
+* Mise en forme des messages : gras, italique, barré et code
+* Photos de profil (avatars) de vos contacts
+* Synchronisation de l’historique des messages avec d’autres clients
+* Discussions de groupe et salons
+* Intégration du carnet d’adresses (votre carnet d’adresses n’est jamais partagé avec le serveur)
+* Appels audio et vidéo
+* Très faible consommation de batterie
+* Messages de statut
+* Sauvegarde quotidienne de la base de données sur le stockage local
+
+Besoin d’aide ? Rejoignez notre groupe de discussion d’assistance <a href="xmpp:support@conference.monocles.eu">support@conference.monocles.eu</a>.

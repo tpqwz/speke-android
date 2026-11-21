@@ -1,0 +1,12 @@
+* Yeni: OAuth ile giriş
+* Geliştirilmiş kayıt ve sağlayıcı listesi
+* Önizlemeler, web sayfaları ve DANE Tor/I2P ile
+* PQ OMEMO2: daha sıkı denetimler, daha az üst veri
+* Kuantum sonrası ratchet güncellendi, eski OMEMO güçlendirildi
+* Önizleme ve otomatik indirme varsayılan kapalı
+* Uygulama kilidi açılışta yine görünüyor
+* Medya silme ve çok dosyalı mesajlar düzeltildi
+* Android 7+ gerekiyor
+* Güvenlik düzeltmeleri ve kütüphane güncellemeleri
+* Güncellenmiş çeviriler
+* Hata düzeltmeleri

@@ -1,0 +1,932 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE xep SYSTEM 'xep.dtd' [
+  <!ENTITY % ents SYSTEM 'xep.ent'>
+%ents;
+]>
+<?xml-stylesheet type='text/xsl' href='xep.xsl'?>
+<xep>
+<header>
+  <title>Multiparty Jingle (Muji) — monocles profile</title>
+  <abstract>
+    This specification defines an XMPP protocol extension for initiating and
+    managing multiparty voice and video conferences within an XMPP MUC.
+    This revision is the monocles chat profile of XEP-0272: it keeps the wire
+    format of version 0.2.0 and adds the participant-authentication,
+    DTLS-fingerprint protection (OMEMO / post-quantum OMEMO2), mesh-maintenance,
+    presence-persistence, privacy and resource-limit rules implemented by
+    monocles chat (Android and desktop).
+  </abstract>
+  &LEGALNOTICE;
+  <number>0272</number>
+  <status>Experimental</status>
+  <type>Standards Track</type>
+  <sig>Standards</sig>
+  <approver>Council</approver>
+  <dependencies>
+    <spec>XMPP Core</spec>
+    <spec>XEP-0045</spec>
+    <spec>XEP-0166</spec>
+    <spec>XEP-0167</spec>
+    <spec>XEP-0176</spec>
+    <spec>XEP-0320</spec>
+  </dependencies>
+  <supersedes/>
+  <supersededby/>
+  <shortname>muji</shortname>
+  <author>
+    <firstname>Sjoerd</firstname>
+    <surname>Simons</surname>
+    <email>sjoerd.simons@collabora.co.uk</email>
+    <jid>sjoerd.simons@collabora.co.uk</jid>
+  </author>
+  <author>
+    <firstname>Dafydd</firstname>
+    <surname>Harries</surname>
+    <email>dafydd.harries@collabora.co.uk</email>
+    <jid>dafydd.harries@collabora.co.uk</jid>
+  </author>
+  &larma;
+  <author>
+    <firstname>Arne-Brün</firstname>
+    <surname>Vogelsang</surname>
+    <email>arne-bruen@monocles.de</email>
+    <jid>arne-bruen@monocles.de</jid>
+  </author>
+  <revision>
+    <version>0.2.0-monocles2</version>
+    <date>2026-10-22</date>
+    <initials>am</initials>
+    <remark><ul>
+      <li>Wire format unchanged.</li>
+      <li>Mesh maintenance: a call whose last other participant left ends, whichever of the
+          leg's session-terminate and the participant's presence arrives first; a call nobody
+          has connected to yet keeps waiting.</li>
+      <li>Leaving: hang-up from any place ends the whole conference; leaving a call others
+          continue suppresses that call's invite until it is over.</li>
+      <li>New section on concurrent calls (busy rules) and call history.</li>
+    </ul></remark>
+  </revision>
+  <revision>
+    <version>0.2.0-monocles1</version>
+    <date>2026-10-18</date>
+    <initials>am</initials>
+    <remark><ul>
+      <li>monocles chat profile; wire format unchanged from 0.2.0.</li>
+      <li>Add the optional 'device' attribute on &lt;muji/&gt; (OMEMO device id of the participant).</li>
+      <li>Participant authentication: non-anonymous rooms only, real full JIDs only, incoming
+          session-initiates bound to the MUC-vouched real JID of a READY participant.</li>
+      <li>Deterministic occupant-JID tie-break instead of "the joiner initiates".</li>
+      <li>DTLS fingerprint protection per leg (opportunistic and PQ OMEMO2-verified modes;
+          no legacy-OMEMO downgrade and trusted identities only in verified mode).</li>
+      <li>Presence persistence: every self-presence sent to the room carries &lt;muji/&gt;;
+          leaving/being removed from the room ends the call; nick changes keep legs.</li>
+      <li>Mesh maintenance (stuck-leg retirement, periodic re-mesh, leg identity on teardown,
+          crossed-initiate resolution).</li>
+      <li>Conference-wide audio→video upgrade (content-add / senders content-modify per leg,
+          automatic receive-only acceptance, retry back-off).</li>
+      <li>Privacy and resource limits: no group calls over Tor/I2P, blocked JIDs excluded,
+          participant cap, invites suppressed in muted rooms.</li>
+    </ul></remark>
+  </revision>
+  <revision>
+    <version>0.2.0</version>
+    <date>2024-08-21</date>
+    <initials>lmw</initials>
+    <remark><ul>
+      <li>Send Jingle IQs to real JID</li>
+      <li>Define how to use with XEP-0482</li>
+      <li>Adjust namespace</li>
+    </ul></remark>
+  </revision>
+  <revision>
+    <version>0.1.2</version>
+    <date>2022-08-06</date>
+    <initials>melvo</initials>
+    <remark>Fix typos / grammar / examples and use 'Muji' instead of 'muji' consistently</remark>
+  </revision>
+  <revision>
+    <version>0.1.1</version>
+    <date>2018-11-03</date>
+    <initials>pep</initials>
+    <remark>Fix a bunch of typos, batch-style.</remark>
+  </revision>
+  <revision>
+    <version>0.1</version>
+    <date>2009-09-11</date>
+    <initials>psa</initials>
+    <remark><p>Initial published version as accepted for publication by the XMPP Council.</p></remark>
+  </revision>
+  <revision>
+    <version>0.0.0.2</version>
+    <date>2009-06-09</date>
+    <initials>sjoerd</initials>
+    <remark><p>Second rough draft.</p></remark>
+  </revision>
+</header>
+
+<section1 topic='Introduction' anchor='intro'>
+  <p>
+    &xep0166; is used to negotiate peer to peer media sessions.
+    Muji (short for Multiparty Jingle) is a way to coordinate Jingle sessions
+    between a group of people.
+    Muji conferences are held in &xep0045; rooms.
+  </p>
+  <p>
+    Version 0.2.0 of this specification describes the coordination protocol but
+    leaves open how participants are authenticated, how the per-pair media
+    sessions are protected against an active attacker, and how a long-running
+    full-mesh call survives presence updates, nick changes, reconnects and
+    flaky legs. This document is the <em>monocles profile</em> of XEP-0272: it
+    does not change any element defined by 0.2.0 (implementations of 0.2.0
+    interoperate with it), and it adds the rules that monocles chat implements.
+    Sections and requirements introduced by the profile are marked
+    "(monocles)".
+  </p>
+  <p>
+    The keywords "MUST", "SHOULD", "MAY" etc. are to be interpreted as described
+    in &rfc2119;.
+  </p>
+</section1>
+
+<section1 topic="How it Works" anchor="howitworks">
+
+  <p>
+    A Muji conference has a number of contents, each of which has unique name,
+    content type, and an encoding.
+    Each participant may provide a stream for each content, and communicates
+    which contents they are willing to provide streams for, along with encoding
+    information, in their MUC presence.
+    This serves two purposes. Firstly, so that each participant knows which
+    contents every other participant provides.
+    Secondly, so that there is a global payload type (PT) mapping for the
+    various contents, so that clients only need to encode and payload each
+    content that they provide once.
+  </p>
+
+  <p>
+    Participants are not required to participate all the contents that are
+    available.
+    For example, a Muji client might choose to only request audio streams.
+  </p>
+
+  <p>
+    (monocles) Conferences are run as a <em>full mesh</em>: every pair of
+    participants holds exactly one ordinary &xep0167; session (a <em>leg</em>),
+    with ICE (&xep0176;) and DTLS-SRTP (&xep0320;). There is no server-side
+    mixer, so media is end-to-end encrypted between each pair of participants
+    and its integrity depends on the authenticity of the DTLS fingerprint
+    exchanged on that leg (see <link url='#fingerprint'>DTLS Fingerprint
+    Protection</link>).
+  </p>
+
+</section1>
+
+<section1 topic='Requirements on the Room' anchor='room'>
+  <p>(monocles)</p>
+  <p>
+    Jingle sessions are addressed to the participants' real JIDs, and every
+    leg is authenticated against the real JID of the participant (see
+    <link url='#auth'>Participant Authentication</link>). A client therefore
+    MUST NOT start or join a Muji conference in a room that does not reveal
+    real JIDs to it. monocles chat only offers group calls in rooms that are
+    both members-only and non-anonymous ("private group chats"), and refuses
+    to place one otherwise.
+  </p>
+  <p>
+    Advertisements from occupants whose real JID is not provided by the room,
+    or is not a full JID, MUST be ignored: the client neither initiates a leg
+    to nor accepts a leg from such an occupant. A client MUST NOT fall back to
+    addressing the occupant JID.
+  </p>
+</section1>
+
+<section1 topic='Joining a Conference' anchor='joining'>
+  <p>
+    Joining a conference is done in two stages. The first step is to
+    declare that preparations are being done to either join or start a Muji
+    session inside the MUC. This is indicated by the client sending a presence
+    stanza to the MUC with a preparing element in the Muji section.
+  </p>
+
+  <code><![CDATA[
+<presence from='wiccarocks@shakespeare.lit/laptop'
+  to='darkcave@chat.shakespeare.lit/oldhag'>
+  <c xmlns="http://jabber.org/protocol/caps"
+    node="https://monocles.eu"
+    ver="48QdBuXRCJFb8qIzgy1FOHSGO0U="
+    hash="sha-1" />
+  <muji xmlns='urn:xmpp:jingle:muji:0' device='1823562411'>
+    <preparing />
+  </muji>
+</presence>
+]]></code>
+
+  <p>
+    The client MUST then wait until the MUC rebroadcasts its presence message,
+    after which it MUST wait for all other participants that had a preparing
+    element in their presence to finish preparation. Afterwards it should finish
+    its own preparation by updating its presence with the contents it wants to
+    take part in.
+  </p>
+  <code><![CDATA[
+<presence from='wiccarocks@shakespeare.lit/laptop'
+  to='darkcave@chat.shakespeare.lit/oldhag'>
+  <muji xmlns='urn:xmpp:jingle:muji:0' device='1823562411'>
+    <content creator='initiator' name='voice'>
+      <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='audio'>
+        <payload-type id='111' name='opus' clockrate='48000' channels='2'/>
+      </description>
+    </content>
+    <content creator='initiator' name='webcam'>
+      <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='video'>
+        <payload-type id='96' name='VP8' clockrate='90000'/>
+      </description>
+    </content>
+  </muji>
+</presence>
+]]></code>
+
+  <p>
+    When a client adds a payload ID to a content description, it MUST have the
+    same codec name and receiving parameters as the corresponding entries in
+    other participants' payload maps for that content. For instance, if Alice
+    defines a payload type with ID 98, codec Speex and a clock rate of 8000
+    for a content called “voice0”, then Bob must define payload type 98
+    identically or not at all for that content.
+  </p>
+
+  <p>
+    Furthermore, each content description MUST include at least one payload type
+    that every other participant supports. In other words, the intersection of
+    payload type mappings in descriptions for a content must not be the empty
+    set. This avoids clients having to encode the same stream multiple times,
+    which can be very costly, and also allows sending the encoded data only once
+    where the transport makes this possible (e.g. IP multicast).
+  </p>
+
+  <p>
+    (monocles) A participant is <em>READY</em> when its &lt;muji/&gt; element
+    contains at least one &lt;content/&gt; and no &lt;preparing/&gt;; a
+    &lt;muji/&gt; with &lt;preparing/&gt;, or with neither child, is
+    <em>PREPARING</em>. Only READY participants are meshed with. monocles chat
+    uses a fixed codec set (Opus for 'voice', VP8 for 'webcam'), so it advertises
+    &lt;preparing/&gt; and its ready contents back-to-back; the advertised
+    payload types are advisory and every leg still runs a complete SDP
+    offer/answer.
+  </p>
+
+  <section2 topic="The 'device' attribute" anchor='device'>
+    <p>(monocles)</p>
+    <p>
+      The &lt;muji/&gt; element MAY carry a 'device' attribute holding the
+      participant's OMEMO device id (a decimal integer in the range
+      1..2<sup>31</sup>-1). It tells the other participants which of the
+      participant's devices is in the call, so that the DTLS fingerprint of a
+      leg can be encrypted to exactly that device. A value outside the range,
+      or one that does not parse, MUST be treated as absent. Clients that do
+      not implement this profile ignore the attribute.
+    </p>
+  </section2>
+
+  <section2 topic='Session Establishment' anchor='sessions'>
+    <p>
+      Once a client has constructed content descriptions and advertised them in
+      its MUC presence, it MUST initiate a Jingle session with every other
+      participant. The requirement that it is the joining participant that
+      initiates sessions avoids race conditions.
+    </p>
+
+    <p>
+      Jingle sessions are initiated between the real JIDs of participants, since IQ routing is not guaranteed to work in
+      &xep0045; and in &xep0369;. To indicate that a Jingle session-initiate belongs to a MUJI conference, a &lt;muji&gt;
+      element is placed in the &lt;jingle&gt; element. The receiver SHOULD only assume that a Jingle session-initiate
+      belongs to a Muji conference if the sender is actually part of the referenced MUC. Content names inside Muji-related
+      Jingle sessions always refer to the content with the same name inside the Muji conference.
+    </p>
+
+    <example caption="Jingle session-initiate referencing a Muji conference"><![CDATA[
+<iq to='wiccarocks@shakespeare.lit/laptop' type='set' id='id1'>
+  <jingle xmlns='urn:xmpp:jingle:1'
+          action='session-initiate'
+          initiator='hag66@shakespeare.lit/mobile'
+          sid='sid1'>
+    <muji room='darkcave@chat.shakespeare.lit' xmlns='urn:xmpp:jingle:muji:0' />
+    <content creator='initiator' name='this-is-a-stub'>
+      <description xmlns='urn:xmpp:jingle:apps:stub:0'/>
+      <transport xmlns='urn:xmpp:jingle:transports:stub:0'/>
+    </content>
+  </jingle>
+</iq>
+]]></example>
+
+    <p>
+      (monocles) Muji legs are not announced with &xep0353; (no ringing): the
+      user has already joined the call, so a valid incoming Muji
+      session-initiate is accepted automatically. This is exactly why the
+      authentication rules below are mandatory.
+    </p>
+    <p>
+      (monocles) Both clients follow the rule to wait until the MUC has
+      rebroadcast their own presence. They start their legs only after the room
+      has reflected their READY &lt;muji/&gt;. A session-initiate is sent
+      directly, while the presence travels through the room, so an earlier
+      initiate can reach a peer before the peer knows the sender is a
+      participant. The peer then refuses it, and the leg only comes up on a later
+      retry. If no reflection arrives within 5 seconds, the client starts its
+      legs anyway. Incoming legs are accepted in the meantime.
+    </p>
+  </section2>
+
+  <section2 topic='Initiator Tie-Break' anchor='tiebreak'>
+    <p>(monocles)</p>
+    <p>
+      "The joiner initiates" is not enough for a long-running mesh: a leg can
+      fail mid-call and must be re-established by <em>someone</em>, and two
+      participants joining at the same time are both "the joiner". monocles
+      chat therefore decides the initiator of every leg deterministically: of
+      the two participants' nicks (the resource parts of their occupant JIDs),
+      the one that is greater in lexicographic (UTF-16 code unit) order
+      initiates, and the other waits for the session-initiate. Only the nicks are
+      compared. The room is the same for both by definition, but clients may
+      spell it differently (bare JIDs are case-insensitive). Comparing the whole
+      occupant JID let two clients disagree, so that each waited for the other. Clients that follow the 0.2.0 rule
+      interoperate: their initiates are accepted regardless of the tie-break
+      (see <link url='#crossed'>Crossed Initiates</link>).
+    </p>
+    <p>
+      The tie-break uses the client's <em>current</em> occupant JID. After a nick
+      change the client MUST use its new occupant JID.
+    </p>
+  </section2>
+</section1>
+
+<section1 topic='Participant Authentication' anchor='auth'>
+  <p>(monocles)</p>
+  <p>
+    A Muji leg is auto-accepted, so the receiver MUST verify that the sender
+    really is a participant before accepting it. A client MUST terminate an
+    incoming session-initiate carrying &lt;muji room='R'/&gt; unless all of the
+    following hold:
+  </p>
+  <ol>
+    <li>The client is itself currently in the conference held in room R. R is
+        compared as a bare JID, case-insensitively: peers may spell the room
+        differently from the client's own copy. A raw string comparison declines
+        every leg such a peer starts, and the call then reconnects in a
+        loop.</li>
+    <li>The session-initiate's 'from' equals the real full JID that room R
+        reported (in the &lt;item jid=''/&gt; of &xep0045;) for an occupant
+        whose latest presence in R advertises &lt;muji/&gt; (preparing or
+        ready). The initiate is sent directly to us, while the READY presence
+        travels through the MUC, so the initiate can arrive first.
+        The 'room' attribute itself is attacker-controlled and only selects
+        which room's participant list is consulted. If no participant matches the
+        full JID, the client MAY accept the leg when exactly one participant has
+        the sender's <em>bare</em> JID. This happens when the room still reports an
+        older session of that account, for example after a client restart or with a
+        multi-session nick. That participant is then addressed at the calling full
+        JID. The account is still the one the MUC vouched for, and on a verified
+        call the fingerprint must still come from the advertised OMEMO device.</li>
+    <li>The sender is not on the client's block list (neither its bare JID
+        nor its domain).</li>
+    <li>Accepting it does not exceed the participant limit
+        (see <link url='#limits'>Limits</link>).</li>
+    <li>The client is allowed to run peer-to-peer media on the current
+        connection (see <link url='#privacy'>Privacy Considerations</link>).</li>
+  </ol>
+  <p>
+    The same filters apply in the other direction: a client MUST NOT initiate
+    a leg to an occupant that fails rules 2–5.
+  </p>
+  <p>
+    The real JID is vouched for by the MUC service. The participant list is
+    rebuilt whenever the client (re)joins the room — all participant state
+    from before the (re)join MUST be discarded, because the room replays the
+    presence of every current occupant on join and occupants that left in the
+    meantime would otherwise linger.
+  </p>
+</section1>
+
+<section1 topic='DTLS Fingerprint Protection' anchor='fingerprint'>
+  <p>(monocles)</p>
+  <p>
+    DTLS-SRTP only protects a leg if the fingerprint each side receives is the
+    fingerprint the other side sent. In 0.2.0 it travels in cleartext through
+    both parties' servers, which can substitute it and run a man-in-the-middle
+    on the media. monocles chat therefore encrypts the &lt;fingerprint/&gt; of
+    every leg with OMEMO, using the same element that monocles and Conversations
+    use for 1:1 calls: the &xep0320; fingerprint is replaced by a
+    &lt;fingerprint xmlns='http://gultsch.de/xmpp/drafts/omemo/dlts-srtp-verification'/&gt;
+    that keeps the cleartext 'setup' and 'hash' attributes and carries an
+    OMEMO-encrypted payload holding the real fingerprint.
+  </p>
+  <example caption="Encrypted DTLS fingerprint inside a Muji leg's transport (PQ OMEMO2)"><![CDATA[
+<transport xmlns='urn:xmpp:jingle:transports:ice-udp:1' ufrag='8hhy' pwd='asd88fgpdd777uzjYhagZg'>
+  <fingerprint xmlns='http://gultsch.de/xmpp/drafts/omemo/dlts-srtp-verification'
+               setup='actpass' hash='sha-256'>
+    <encrypted xmlns='urn:monocles:omemo-pq:1'>
+      <!-- OMEMO2 (PQXDH) header + SCE payload; the SCE <content> holds
+           <fingerprint xmlns='urn:xmpp:jingle:apps:dtls:0' setup='actpass' hash='sha-256'>
+             02:1A:CC:…:5F
+           </fingerprint> -->
+    </encrypted>
+  </fingerprint>
+</transport>
+]]></example>
+  <p>
+    The fingerprint is encrypted to the peer's real bare JID and the device id
+    taken from the peer's &lt;muji device=''/&gt;. The sender's OMEMO session is
+    looked up for the real JID of the leg, never for the occupant JID. On
+    receipt, the device id that decrypted the payload MUST equal the advertised
+    device id. A mismatch MUST terminate the leg, and this check MUST happen
+    before the fingerprint is recorded. Every later encrypted fingerprint on the
+    same leg (session-accept, content-add, transport-replace) MUST carry the same
+    fingerprint from the same device.
+  </p>
+
+  <section2 topic='Opportunistic and Verified Calls' anchor='modes'>
+    <p>
+      The protection level of a call is chosen by the participant who places
+      or joins it, from the encryption selected for the group chat at that
+      moment:
+    </p>
+    <ul>
+      <li>
+        <strong>Opportunistic</strong> (group chat unencrypted, or legacy OMEMO
+        selected): the client encrypts the fingerprint when it can (any OMEMO
+        stack, any trust state) and otherwise falls back to a cleartext
+        fingerprint. A cleartext fingerprint from the peer is accepted. The call
+        is protected against passive observers but not against an active
+        attacker on the signalling path.
+      </li>
+      <li>
+        <strong>Verified</strong> (post-quantum OMEMO2,
+        <tt>urn:monocles:omemo-pq:1</tt>, selected): on every leg the client
+        <ol>
+          <li>MUST NOT send a cleartext fingerprint. If it cannot encrypt, the leg
+              fails instead of being downgraded.</li>
+          <li>MUST encrypt with OMEMO2 only. It MUST NOT build, use or accept a
+              legacy (<tt>eu.siacs.conversations.axolotl</tt>) session for the
+              fingerprint, and MUST reject a legacy-wrapped fingerprint before
+              handing it to any ratchet (strict stack separation).</li>
+          <li>MUST encrypt to, and accept from, only an identity that the user
+              trusts and that is active. These are the same keys an OMEMO2
+              message to that contact would be encrypted to. An untrusted or
+              undecided identity fails the leg.</li>
+          <li>MUST reject a cleartext fingerprint from the peer.</li>
+        </ol>
+      </li>
+    </ul>
+    <p>
+      The mode is enforced <em>per participant and per leg</em>. If Alice placed
+      the call in verified mode and Bob runs it opportunistically, the Alice–Bob
+      leg only comes up if Bob's client can and does send an OMEMO2-encrypted
+      fingerprint. Otherwise only that leg is refused, not the whole call.
+      Nothing about the mode is signalled on the wire, so an attacker cannot
+      negotiate it down.
+    </p>
+  </section2>
+</section1>
+
+<section1 topic='Presence Persistence' anchor='presence'>
+  <p>(monocles)</p>
+  <p>
+    A presence of a participant without &lt;muji/&gt; means that the participant
+    left the call (<link url='#leaving'>Leaving a Conference</link>). Clients
+    refresh their MUC presence for many unrelated reasons, such as a status or
+    avatar change, the room gaining &xep0421; support, a nick change, or a
+    reconnect that requires a re-join. While a client is in a conference, it MUST
+    include its current READY &lt;muji/&gt; element in <em>every</em> presence it
+    sends to that room, including the join presence of a re-join. If the room
+    reflects a self-presence of the client without &lt;muji/&gt; while the client
+    is still in the call, the client SHOULD re-announce its &lt;muji/&gt;
+    immediately.
+  </p>
+  <p>
+    Directed presence updates for the call MUST be sent to the client's
+    <em>current</em> occupant JID. A presence to a stale nick is a rename
+    request in &xep0045; and would silently undo a nick change.
+  </p>
+  <p>
+    Nick changes (an unavailable presence with status code 303 followed by the
+    presence under the new nick) MUST NOT tear down the renamed participant's
+    leg: legs are keyed by real JID, and the participant has not left. If the
+    real JID behind an occupant JID changes, the leg to the previous real JID
+    MUST be ended.
+  </p>
+  <p>
+    If the client receives its own unavailable presence from the room without
+    status code 303 (it left, was kicked or banned, or the room was destroyed),
+    or leaves the room itself, it MUST end every leg of that room's conference
+    and forget the room's participant list. It MUST NOT send any further
+    presence to the room for the call, because a directed presence to the room
+    would re-join it.
+  </p>
+</section1>
+
+<section1 topic='Mesh Maintenance' anchor='mesh'>
+  <p>(monocles)</p>
+  <p>
+    A full mesh only keeps working if broken legs are repaired. monocles chat
+    reconciles the mesh periodically (every 8 seconds) while it is in a call:
+  </p>
+  <ol>
+    <li>A leg that ended, failed ICE, or has not reached the connected state
+        within 12 seconds of being (re)started is terminated and forgotten.</li>
+    <li>For every READY participant without a leg, the tie-break is applied
+        again, and the client initiates the leg if it is the initiator.</li>
+  </ol>
+  <p>
+    A participant leaving does not end the call for the others. A client stays
+    in the conference as long as it has a live leg or at least one other
+    participant advertises &lt;muji/&gt; (in any state). It leaves on its own
+    only when both are gone and at least one of its legs had connected during
+    the call; a call that nobody has joined yet keeps waiting. When it leaves,
+    it retracts its &lt;muji/&gt; first.
+  </p>
+  <p>
+    A participant that hangs up sends its presence without &lt;muji/&gt;
+    through the room and its session-terminate directly, so the two can arrive
+    in either order. A client MUST therefore check whether it is left alone both
+    when a leg ends and when a participant's &lt;muji/&gt; goes away. Checking
+    only when a leg ends leaves a client alone in an empty call if the leg ended
+    while the participant still appeared to be present.
+  </p>
+  <section2 topic='Leg Identity' anchor='legidentity'>
+    <p>
+      Legs are identified by the peer's real full JID, and at most one leg per
+      peer is live. When a leg is replaced, the replaced leg's teardown MUST NOT
+      remove the bookkeeping of the leg that replaced it. Implementations SHOULD
+      compare the leg object or session id, not only the peer JID.
+    </p>
+  </section2>
+  <section2 topic='Crossed Initiates' anchor='crossed'>
+    <p>
+      A participant can receive a session-initiate from a peer it already has a
+      leg with. This happens when the peer restarted a stuck leg, or when both
+      sides started a leg at once. The second case occurs when the two sides
+      disagree on the tie-break, for example because the server rewrote a nick
+      or a JID differs in case, or with a 0.2.0 client that always initiates on
+      join. The receiver keeps its existing leg and terminates the new initiate if
+      the existing leg is connected. Otherwise it keeps the leg whose Jingle
+      session id ('sid') is smaller in lexicographic order, and terminates the
+      other one. Both sides compare the same two session ids, so they always keep
+      the <em>same</em> leg. A rule based on the occupant-JID tie-break could make
+      each side terminate the other's leg on every retry, and the call would never
+      connect.
+    </p>
+  </section2>
+</section1>
+
+<section1 topic='Leaving a Conference' anchor='leaving'>
+  <p>
+    To leave a conference the Muji information MUST first be removed from the
+    participant's presence; subsequently it SHOULD terminate all Jingle sessions
+    related to that conference. Updating the presence first reduces the
+    likelihood of situations where new participants initiate sessions with
+    participants who are leaving the conference.
+  </p>
+  <p>
+    (monocles) The call UI is per call, not per leg: hanging up ends the whole
+    conference, wherever the user hangs up (the call window or an ongoing-call
+    notification). Ending a single leg, because its participant left or because
+    the client retired a stuck leg (<link url='#mesh'>Mesh Maintenance</link>),
+    never ends the conference. A client that leaves the call but stays in the
+    room keeps the room's participant list, so that re-joining the call meshes
+    with the participants who are still in it, even though they do not resend
+    their presence.
+  </p>
+  <p>
+    (monocles) After leaving a call that the others continue, the client treats
+    the call's invite as already shown (<link url='#limits'>Limits</link>).
+    Otherwise the next presence of any remaining participant, such as a status
+    or avatar change, would offer the user the call they just left.
+  </p>
+</section1>
+
+<section1 topic='Adding a Content Type' anchor='addcontent'>
+  <p>
+    Adding a stream follows a process similar to the joining of a conference. As a
+    first step, an updated presence stanza MUST be sent which contains a
+    preparing element as part of the Muji section.
+  </p>
+
+  <code><![CDATA[
+    <presence from='wiccarocks@shakespeare.lit/laptop'
+      to='darkcave@chat.shakespeare.lit/oldhag'>
+      <muji xmlns='urn:xmpp:jingle:muji:0'>
+        <content creator='initiator' name='voice'>
+          <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='audio'>
+            <payload-type id='111' name='opus' clockrate='48000' channels='2'/>
+          </description>
+        </content>
+        <preparing/>
+      </muji>
+    </presence>
+]]></code>
+
+  <p>
+    The client MUST then wait until the MUC rebroadcasts its presence message,
+    after which it MUST wait for all other participants that had a preparing
+    element in their presence to finish their changes.
+  </p>
+
+  <p>
+    Afterwards the client should add the new content to the Muji section of its
+    presence and add the content to all the Jingle sessions it had with
+    participants it shared the content with.
+  </p>
+
+  <p>
+    (monocles) A participant that joins an audio+video conference audio-only
+    sends only audio. It answers the video content of an offer with
+    'senders' restricted to the peer, so it still sees the other participants'
+    video without turning on its camera.
+  </p>
+  <p>
+    (monocles) Turning the camera on during a call (upgrading from audio to
+    video) is done for the whole conference, never only for one leg. The
+    participant re-announces its presence (&lt;preparing/&gt;, then the contents
+    including 'webcam'), sets up new legs with video from then on, and brings
+    its camera onto every existing leg as follows:
+  </p>
+  <ul>
+    <li>If the leg has no video content yet, the participant sends a
+        <tt>content-add</tt> with senders='both'.</li>
+    <li>If the leg already has a video content on which the participant only
+        receives, it sends a <tt>content-modify</tt> that changes 'senders' to
+        'both'. The peer applies it and acknowledges the IQ. Neither side sends
+        an SDP answer for this change: each side completes its WebRTC
+        offer/answer locally from the agreed 'senders'.</li>
+  </ul>
+  <p>
+    (monocles) A participant receiving a video <tt>content-add</tt> on a Muji
+    leg accepts it without asking the user, because the user has already joined
+    the call. If it is not sending video itself, it first narrows the
+    content's 'senders' to the adding party with a <tt>content-modify</tt> on
+    the pending content-add (&xep0166;) and then sends a receive-only
+    <tt>content-accept</tt>. If it is sending video, it accepts the content
+    with 'senders' left at 'both'.
+  </p>
+  <p>
+    (monocles) Crossed content-adds on the same leg are resolved like in
+    &xep0166;: the session initiator answers the responder's content-add with a
+    &lt;tie-break/&gt; error, and the responder accepts the initiator's. If the
+    peer rejects or refuses a camera, the client keeps receiving, stops offering
+    to send on that leg, and tries again after a back-off of 30 seconds instead
+    of in a loop. The periodic re-mesh also re-checks that every connected leg
+    carries the participant's camera. This covers a participant who joined
+    audio-only and initiated the leg to a video participant: the video
+    participant adds its camera to that leg once the leg is connected.
+  </p>
+</section1>
+
+<section1 topic='Removing a Content Type' anchor='removecontent'>
+  <p>
+    To remove a content type, the participant SHOULD first send an updated presence
+    without the content in its Muji section. Afterwards, it MUST remove the content from
+    all the Jingle sessions it has open.
+  </p>
+</section1>
+
+<section1 topic='Limits' anchor='limits'>
+  <p>(monocles)</p>
+  <p>
+    In a full mesh every participant runs one ICE agent and one
+    PeerConnection, and uploads one copy of its media, per other
+    participant. Any occupant can start advertising &lt;muji/&gt;, so without a
+    bound a large or hostile room could exhaust a device's CPU, memory or
+    uplink. A client MUST bound the number of legs it maintains. monocles chat
+    meshes with at most 8 other participants (a 9-person call), and refuses
+    or skips further legs. Calls of that size and larger need a relay or
+    mixer (<link url='#relaysmixer'>Relays and Mixers</link>).
+  </p>
+  <p>
+    Because any occupant can toggle &lt;muji/&gt;, the "join the group call"
+    notification is shown at most once per room until the call is over, and it
+    is not shown for rooms the user has muted. Leaving a call counts as having
+    shown its notification: it is offered again only for a new call, after
+    every participant of the previous one has gone.
+  </p>
+</section1>
+
+<section1 topic='Relays and Mixers' anchor='relaysmixer'>
+
+  <p>
+    When scaling to conferences with a big number of participants
+    it's no longer viable for all participants to have direct
+    connections.
+
+    On connections where upstream bandwidth is the limiting factor, an RTP
+    relay which is able to relay the stream to multiple participants on
+    the behalf of the clients and which forwards the streams of other
+    participants back to the client can be used.
+
+    If the limiting factor is either CPU or downstream bandwidth then a mixer
+    can be used, which receives the media streams from other participants and
+    mixes them on behalf of the client, so that the client only has to deal
+    with receiving and decoding a single stream for each media type. On the
+    sending side a mixer acts like a relay and relays the clients stream to all
+    other participants.
+
+    Both these services can either be provided by dedicated services or by
+    other clients.
+  </p>
+  <p>
+    (monocles) A relay or mixer terminates DTLS-SRTP and therefore sees the
+    media in cleartext, which defeats the end-to-end protection described
+    above. monocles chat does not use relays or mixers. TURN servers are only
+    used as ICE relays, and they carry SRTP that they cannot decrypt.
+  </p>
+</section1>
+
+<section1 topic='Call Invites' anchor='invites'>
+  <p>
+    To invite someone to a Muji conference, a &xep0482; &lt;invite&gt; is sent containing a &lt;muji&gt; element in the
+    urn:xmpp:jingle:muji:0 namespace with a 'room' attribute specifying the JID of the Muji MUC.
+  </p>
+  <example caption="Invite to a MUJI conference"><![CDATA[
+<message to='user@example.com' type='chat'>
+  <invite xmlns='urn:xmpp:call-invites:0'>
+    <muji xmlns='urn:xmpp:jingle:muji:0' room='room@conference.example.com' />
+  </invite>
+</message>]]></example>
+  <p>
+    (monocles) monocles chat for Android does not send &xep0482; invites yet. An
+    occupant of the room learns about a running call from the participants'
+    &lt;muji/&gt; presence, and is offered a "join" notification for it.
+  </p>
+</section1>
+
+<section1 topic='Concurrent Calls' anchor='concurrent'>
+  <p>(monocles)</p>
+  <p>
+    A client runs at most one call at a time, and a conference counts as a call
+    from the moment the client joins it, including while it waits alone with no
+    leg yet. While it is in a conference:
+  </p>
+  <ul>
+    <li>An incoming 1:1 call (a &xep0353; &lt;propose/&gt;) does not ring. The
+        client records it as a missed call. It MAY reject it as busy, but only if
+        no other device of the user's account could answer it; otherwise it
+        leaves the call to the other devices.</li>
+    <li>The client does not start a 1:1 call or join a second conference.</li>
+  </ul>
+  <p>
+    During a 1:1 call, the client does not start or join a conference.
+    Session-initiates of the conference's own legs (tagged with &lt;muji
+    room/&gt;) are never refused as busy; they are part of the call the client
+    is already in.
+  </p>
+  <p>
+    A client keeps one call-history entry per conference it took part in, not
+    one per leg. The entry is incoming if the client joined a call that was
+    already running and at least one leg connected, and outgoing otherwise. A
+    conference in which no leg connected is never shown as a missed call: legs
+    are retried and retired all the time (<link url='#mesh'>Mesh
+    Maintenance</link>), and one entry per leg would flood the history with
+    missed calls.
+  </p>
+</section1>
+
+<section1 topic='Security Considerations' anchor='security'>
+  <ul>
+    <li>
+      <strong>Unsolicited media.</strong> Muji legs are accepted without
+      ringing. Without the checks in
+      <link url='#auth'>Participant Authentication</link>, any entity that
+      learns a user is in a call could inject a media session by sending a
+      session-initiate with a forged 'room' attribute.
+    </li>
+    <li>
+      <strong>Trust in the MUC service.</strong> The binding between occupant and
+      real JID comes from the room. A malicious MUC service can claim any real JID
+      for an occupant. In opportunistic mode it can therefore insert itself into a
+      call. In verified mode it cannot, because the fingerprint has to be
+      encrypted with an OMEMO2 identity that the user trusts for that real JID.
+    </li>
+    <li>
+      <strong>Signalling-path man-in-the-middle.</strong> Cleartext DTLS
+      fingerprints can be swapped by either party's server. Verified mode
+      closes this per leg. Opportunistic mode does not, and clients SHOULD make
+      the difference visible to the user.
+    </li>
+    <li>
+      <strong>Downgrade.</strong> In verified mode, a failed OMEMO2 encryption, a
+      legacy-only peer, an untrusted identity or a cleartext fingerprint each
+      fail the leg. Nothing falls back silently. The mode is not signalled on the
+      wire, so it cannot be negotiated away.
+    </li>
+    <li>
+      <strong>Device binding.</strong> The decrypting device id is checked
+      against the device advertised in &lt;muji device=''/&gt;. Another device
+      of the same account cannot take over the leg.
+    </li>
+    <li>
+      <strong>Resource exhaustion.</strong> There is a participant cap, see
+      <link url='#limits'>Limits</link>. Because a camera content-add is accepted
+      without asking, a client MUST also limit the number of video contents per
+      leg. monocles uses a limit of 2: the peer's camera, plus a second m-line
+      when one side upgrades over a receive-only one. It refuses further
+      content-adds with <tt>content-reject</tt>.
+    </li>
+    <li>
+      <strong>Renegotiation keeps verification.</strong> If a leg's DTLS
+      fingerprint was OMEMO-authenticated at setup, every later fingerprint on
+      that leg (<tt>content-add</tt>, <tt>content-accept</tt>) MUST also be
+      encrypted and come from the same OMEMO identity and device. Otherwise the
+      leg is terminated with <tt>security-error</tt>. Without this rule a
+      renegotiation could quietly drop the verification of a running call. This
+      applies in opportunistic mode as well.
+    </li>
+    <li>
+      <strong>Camera privacy.</strong> When a client adds its camera to a leg,
+      or accepts a peer's camera with its own, it MUST keep the user's
+      camera-off choice for the conference. A leg that newly carries video sends
+      black frames while the camera is off, never the live camera.
+    </li>
+    <li>
+      <strong>Spoofed participants.</strong> Only presences from occupants of a
+      group chat the client has joined may change Muji state. A contact's
+      ordinary presence (<tt>user@host/resource</tt>) carrying a forged
+      &lt;muji/&gt; and <tt>muc#user</tt> item MUST be ignored. Otherwise it could
+      add fake participants and trigger "join group call" prompts.
+    </li>
+    <li>
+      <strong>Robustness.</strong> Muji presence and Jingle payloads come from
+      other occupants. Malformed values (such as a non-numeric or out-of-range
+      'device') MUST be ignored and MUST NOT abort stanza processing.
+    </li>
+  </ul>
+</section1>
+
+<section1 topic='Privacy Considerations' anchor='privacy'>
+  <ul>
+    <li>
+      ICE reveals the participant's IP addresses to every other participant
+      (host and server-reflexive candidates) and to the TURN server. A client
+      that connects through Tor or I2P, or whose account is an onion or I2P
+      account, MUST NOT place, join or accept a Muji call. This is the same
+      rule that monocles chat applies to 1:1 calls, and it is enforced both in
+      the UI and when an incoming leg is accepted.
+    </li>
+    <li>
+      Muji needs real JIDs, so every participant learns the real JID of every
+      other participant. This is why Muji is limited to non-anonymous rooms,
+      where real JIDs are visible anyway.
+    </li>
+    <li>
+      The 'device' attribute reveals the OMEMO device id of the device in the
+      call to all occupants of the room. The device id is already public in
+      the account's PEP device list.
+    </li>
+    <li>
+      Blocked users are excluded from the mesh in both directions.
+    </li>
+  </ul>
+</section1>
+
+<section1 topic='Interoperability' anchor='interop'>
+  <p>
+    This profile changes no element, so a 0.2.0 implementation can join a
+    call with monocles clients. In that case:
+  </p>
+  <ul>
+    <li>Its cleartext fingerprint is accepted only by participants that run
+        the call opportunistically.</li>
+    <li>Its initiates are always considered, whatever the tie-break says
+        (see <link url='#crossed'>Crossed Initiates</link>).</li>
+    <li>Its legs may be torn down if it sends room presence without
+        &lt;muji/&gt; while in the call.</li>
+  </ul>
+  <p>
+    monocles chat for Android and monocles chat desktop implement the same wire
+    format and the same rules: the 'device' attribute, the &lt;muji room/&gt;
+    marker, the tie-break, the encrypted fingerprint, the verified mode, presence
+    persistence and the call-wide audio→video upgrade. Two differences remain.
+    The desktop client has no Tor/I2P transport and no block list (XEP-0191),
+    so those two rules do not apply to it. It also never changes 'senders' on
+    an m-line it receives on: to start sending, it always adds a new video
+    content with <tt>content-add</tt>, which the other clients accept like any
+    other camera.
+  </p>
+  <p>
+    Every client MUST put honest 'senders' values on the contents of a Muji
+    leg. If a client advertises 'both' for an m-line it only receives on, its
+    peers wait for video that never comes (and show an empty tile). It also
+    breaks the summary check that matches a <tt>content-accept</tt> to its
+    <tt>content-add</tt>.
+  </p>
+</section1>
+
+<section1 topic='IANA Considerations' anchor='iana'>
+  <p>This document requires no interaction with the IANA.</p>
+</section1>
+
+<section1 topic='XMPP Registrar Considerations' anchor='registrar'>
+  <p>
+    No new namespaces. The profile reuses <tt>urn:xmpp:jingle:muji:0</tt> and adds the
+    optional 'device' attribute to its &lt;muji/&gt; element.
+  </p>
+</section1>
+</xep>

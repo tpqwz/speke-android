@@ -1,0 +1,27 @@
+monocles chat ist ein moderner und sicherer XMPP-Chat-Client für Android. Er basiert auf Conversations, enthält Funktionen von blabber.im und Cheogram und bringt viele eigene Änderungen und Funktionen mit, die Benutzerfreundlichkeit und Sicherheit verbessern.
+
+Verbindungssicherheit und der Schutz persönlicher Daten sind uns sehr wichtig. Deshalb erzwingen wir verschlüsselte Verbindungen zwischen App und Server, was es für Fremde nahezu unmöglich macht, deine Nachrichten abzufangen und zu lesen. Dazu haben wir veraltete Verschlüsselungsverfahren entfernt. Die verbleibenden sind optimal auf den monocles-Chat-Server abgestimmt, aber auch mit anderen XMPP-Servern kompatibel, die heutigen Standards folgen.
+
+Wem das nicht genügt, kann Ende-zu-Ende-Verschlüsselung wie OMEMO oder OpenPGP nutzen. Nachrichten werden dann auf dem sendenden Gerät verschlüsselt und können nur von den Geräten entschlüsselt werden, für die sie bestimmt sind.
+
+Funktionen:
+* Ende-zu-Ende-Verschlüsselung mit <a href="https://de.wikipedia.org/wiki/Off-the-Record_Messaging">OTR</a>, <a href="https://conversations.im/omemo/">OMEMO</a> oder <a href="https://www.openpgp.org/about/">OpenPGP</a>
+* Experimentelle Post-Quanten-Ende-zu-Ende-Verschlüsselung (PQ OMEMO2)
+* Nur verschlüsselte Verbindungen, standardmäßig ausschließlich TLS 1.3
+* DNSSEC-geprüfte Serverauflösung und DANE-Zertifikatsprüfung (kann erzwungen werden)
+* Schutz vor Downgrade-Angriffen beim Login (Channel Binding, SCRAM-Downgrade-Schutz)
+* Verschlüsselte lokale Datenbank mit optionalem Startpasswort
+* Bilder und andere Dateien senden und empfangen
+* Standorte senden und empfangen
+* Sprachnachrichten senden und empfangen
+* Textformatierung: fett, kursiv, durchgestrichen und Code
+* Profilbilder (Avatare) deiner Kontakte
+* Synchronisation des Nachrichtenverlaufs mit anderen Clients
+* Gruppenchats und Kanäle
+* Adressbuchintegration (dein Adressbuch wird nie mit dem Server geteilt)
+* Audio- und Videoanrufe
+* Sehr geringer Akkuverbrauch
+* Statusnachrichten
+* Tägliche Sicherung der Datenbank im lokalen Speicher
+
+Brauchst du Hilfe? Tritt unserem Support-Gruppenchat <a href="xmpp:support@conference.monocles.eu">support@conference.monocles.eu</a> bei.

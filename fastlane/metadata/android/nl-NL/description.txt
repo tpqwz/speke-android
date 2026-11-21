@@ -1,0 +1,27 @@
+monocles chat is een moderne en veilige XMPP-chatclient voor Android. Hij is gebaseerd op Conversations, bevat functies van blabber.im en Cheogram en voegt veel eigen aanpassingen en functies toe die de bruikbaarheid en veiligheid verbeteren.
+
+Een veilige verbinding en de bescherming van persoonlijke gegevens zijn erg belangrijk voor ons. We dwingen versleutelde verbindingen tussen de app en de server af, waardoor het voor vreemden bijna onmogelijk is om je berichten te onderscheppen en te lezen. Daarom hebben we verouderde versleutelingsmethoden verwijderd. De overgebleven methoden zijn afgestemd op de monocles chat-server, maar blijven compatibel met andere XMPP-servers die de huidige standaarden volgen.
+
+Is dat niet genoeg, dan kun je end-to-end-versleuteling zoals OMEMO of OpenPGP gebruiken. Berichten worden dan versleuteld op het verzendende apparaat en kunnen alleen worden ontsleuteld door de apparaten waarvoor ze bedoeld zijn.
+
+Functies:
+* End-to-end-versleuteling met <a href="https://conversations.im/omemo/">OMEMO</a>, <a href="https://nl.wikipedia.org/wiki/Off-the-Record_Messaging">OTR</a> of <a href="https://www.openpgp.org/about/">OpenPGP</a>
+* Experimentele post-kwantum end-to-end-versleuteling (PQ OMEMO2)
+* Alleen versleutelde verbindingen, standaard uitsluitend TLS 1.3
+* Met DNSSEC gecontroleerde serveropzoeking en DANE-certificaatcontrole (kan worden afgedwongen)
+* Bescherming tegen downgrade-aanvallen bij het inloggen (channel binding, SCRAM-downgradebescherming)
+* Versleutelde lokale database met optioneel opstartwachtwoord
+* Afbeeldingen en andere bestanden verzenden en ontvangen
+* Locaties verzenden en ontvangen
+* Spraakberichten verzenden en ontvangen
+* Berichtopmaak: vet, cursief, doorgehaald en code
+* Profielfoto’s (avatars) van je contacten
+* Berichtgeschiedenis synchroniseren met andere clients
+* Groepschats en kanalen
+* Adresboekintegratie (je adresboek wordt nooit met de server gedeeld)
+* Audio- en videogesprekken
+* Zeer laag batterijverbruik
+* Statusberichten
+* Dagelijkse back-up van de database naar lokale opslag
+
+Hulp nodig? Word lid van onze ondersteuningsgroepschat <a href="xmpp:support@conference.monocles.eu">support@conference.monocles.eu</a>.

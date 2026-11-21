@@ -1,0 +1,1 @@
+es un cliente de chat XMPP completo

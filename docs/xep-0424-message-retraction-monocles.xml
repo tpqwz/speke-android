@@ -1,0 +1,759 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE xep SYSTEM 'xep.dtd' [
+  <!ENTITY % ents SYSTEM 'xep.ent'>
+%ents;
+]>
+<?xml-stylesheet type='text/xsl' href='xep.xsl'?>
+<xep>
+<header>
+  <title>Message Retraction — monocles profile</title>
+  <abstract>
+    This specification defines a method for indicating that a message should be
+    retracted. This revision is the monocles chat profile of XEP-0424: it keeps
+    the wire format of version 0.5.0 and adds the rules implemented by monocles
+    chat (Android and desktop): end-to-end encrypted retractions (OMEMO and
+    post-quantum OMEMO2), retractions from the sender's other devices, reliable
+    attribution of one's own group chat messages, retractions that arrive before
+    the message they remove, and stricter target-id handling.
+  </abstract>
+  &LEGALNOTICE;
+  <number>0424</number>
+  <status>Experimental</status>
+  <type>Standards Track</type>
+  <sig>Standards</sig>
+  <approver>Council</approver>
+  <dependencies>
+    <spec>XMPP Core</spec>
+    <spec>XMPP IM</spec>
+    <spec>XEP-0128</spec>
+    <spec>XEP-0245</spec>
+    <spec>XEP-0280</spec>
+    <spec>XEP-0308</spec>
+    <spec>XEP-0313</spec>
+    <spec>XEP-0359</spec>
+    <spec>XEP-0384</spec>
+    <spec>XEP-0420</spec>
+    <spec>XEP-0421</spec>
+    <spec>XEP-0425</spec>
+    <spec>XEP-0428</spec>
+  </dependencies>
+  <supersedes/>
+  <supersededby/>
+  <shortname>message-retract</shortname>
+  &lance;
+  &jcbrand;
+  <author>
+    <firstname>Arne-Brün</firstname>
+    <surname>Vogelsang</surname>
+    <email>arne-bruen@monocles.de</email>
+    <jid>arne-bruen@monocles.de</jid>
+  </author>
+  <revision>
+    <version>0.5.0-monocles1</version>
+    <date>2026-10-21</date>
+    <initials>am</initials>
+    <remark><ul>
+      <li>monocles chat profile; wire format and namespace unchanged from 0.5.0.</li>
+      <li>Target ids per message type (groupchat, one-on-one, MUC private message); receivers
+          also match the sender's stanza 'id', but never use it for duplicate suppression;
+          retracting a correction retracts the corrected message.</li>
+      <li>Encrypted retractions: inside the SCE envelope for PQ OMEMO2, authenticated by the
+          encrypted fallback for OMEMO; an encrypted message is only retracted under the same
+          fingerprint, so a server cannot forge a cleartext retraction.</li>
+      <li>Retractions from the sender's other devices: accepted under another fingerprint of the
+          sender's own account only if that device is trusted, active and listed.</li>
+      <li>Own group chat messages: attributed by occupant id, archive real JID or live nick, never
+          by an archived nick alone; own messages from other devices are treated as outgoing.</li>
+      <li>Retractions that arrive before their message (archive paging) are kept, bound to their
+          sender, bounded per conversation, and applied when the message arrives.</li>
+      <li>One-on-one: only the author's side may retract or correct a message.</li>
+      <li>Forged moderations are discarded; local cleanup rules; no time limit.</li>
+    </ul></remark>
+  </revision>
+  <revision>
+    <version>0.5.0</version>
+    <date>2026-07-03</date>
+    <initials>jcb</initials>
+    <remark>
+      <ul>
+        <li>Clarify that messages whose user-visible content lies outside the &lt;body/&gt; element (e.g. XEP-0447 Stateless File Sharing, where the body is only a fallback) have a messaging payload and may be retracted.</li>
+        <li>Fix leftover reference to "origin ID" in the Use Case section (now: message ID).</li>
+        <li>State that a retraction message's fallback body SHOULD carry a XEP-0428 fallback indication, and that supporting clients MUST NOT render the body of a retraction message, including when no message matching the retraction 'id' is found.</li>
+        <li>Add security considerations regarding sender-controlled fallback bodies.</li>
+        <li>Add the ability to advertise a retraction time limit via a XEP-0128 'max-age' field.</li>
+        <li>Upgrade the XEP-0334 &lt;store/&gt; hint from MAY to SHOULD, to ensure retractions are archived also by services that are unaware of this specification.</li>
+      </ul>
+    </remark>
+  </revision>
+  <revision>
+    <version>0.4.2</version>
+    <date>2025-01-18</date>
+    <initials>jcb</initials>
+    <remark>
+        <ul>
+          <li>Use a XEP-0425 /me command in the fallback body</li>
+          <li>State that a tombstone's &lt;retracted/&gt; element's 'id' attribute should match the retraction message's 'id'.</li>
+          <li>Specify XEP-0359 as a dependency and require that the stanza 'id' be used instead of the origin-id.</li>
+          <li>Update the "Security Considerations" to mention the risk of non-unique message IDs.</li>
+        </ul>
+    </remark>
+  </revision>
+  <revision>
+    <version>0.4.1</version>
+    <date>2024-02-24</date>
+    <initials>nc</initials>
+    <remark>
+        <ul>
+          <li>Fix schema.</li>
+          <li>Add missing for attribute in fallback element (Example 4).</li>
+        </ul>
+    </remark>
+  </revision>
+  <revision>
+    <version>0.4.0</version>
+    <date>2023-02-19</date>
+    <initials>jcb</initials>
+    <remark>
+        <ul>
+          <li>Remove the dependency on XEP-0422 Message Fastening.</li>
+          <li>Use 'id' attribute on 'retracted' element instead of a child element.</li>
+          <li>Clarify business rlies regarding which 'id' to use to refer to the retracted message.</li>
+        </ul>
+    </remark>
+  </revision>
+  <revision>
+    <version>0.3.0</version>
+    <date>2020-05-17</date>
+    <initials>jcb</initials>
+    <remark>
+        <ul>
+            <li>Clarify when a service must advertise support via disco.</li>
+            <li>Add another service discovery URN for tombstones.</li>
+        </ul>
+    </remark>
+  </revision>
+  <revision>
+    <version>0.2.1</version>
+    <date>2020-03-25</date>
+    <initials>jcb</initials>
+    <remark>Recommend XEP-0428 fallback body and XEP-0334 store hint</remark>
+  </revision>
+  <revision>
+    <version>0.2.0</version>
+    <date>2019-11-11</date>
+    <initials>jcb</initials>
+    <remark>Replace the message contents with a tombstone (instead of the message itself) and require an origin-id in tombstone</remark>
+  </revision>
+  <revision>
+    <version>0.1.0</version>
+    <date>2019-11-01</date>
+    <initials>XEP Editor (jcb)</initials>
+    <remark>Accepted by vote of Council on 2019-10-23.</remark>
+  </revision>
+  <revision>
+    <version>0.0.4</version>
+    <date>2019-09-25</date>
+    <initials>jcb</initials>
+    <remark><p>Remove MUC moderation use-case which will go into a separate XEP</p></remark>
+  </revision>
+  <revision>
+    <version>0.0.3</version>
+    <date>2016-10-19</date>
+    <initials>ljts</initials>
+    <remark><p>Fix the XEP title to be Message Retraction.</p></remark>
+  </revision>
+  <revision>
+    <version>0.0.2</version>
+    <date>2016-10-12</date>
+    <initials>ljts</initials>
+    <remark><p>Use the term 'retraction' instead of 'deletion'. Added tombstone marker.</p></remark>
+  </revision>
+  <revision>
+    <version>0.0.1</version>
+    <date>2015-07-07</date>
+    <initials>ljts</initials>
+    <remark><p>First draft.</p></remark>
+  </revision>
+</header>
+
+<section1 topic='Introduction' anchor='intro'>
+  <p>A chat participant might want to retract a message which they've already sent out, for example if they've mistakenly sent it to the wrong recipient or groupchat.</p>
+  <p>Due to the federated and extensible nature of XMPP it's not possible to remove a message with full certainty and a retraction can only be considered an <strong>unenforceable request</strong> for such removal. Clients which don't support message retraction are not obligated to enforce the request and people could have seen or copied the message contents already.</p>
+  <p>
+    (monocles) This document is the <em>monocles profile</em> of XEP-0424. It
+    keeps the wire format and the namespace of version 0.5.0 unchanged, so any
+    0.5.0 implementation interoperates with it, and it adds the rules that
+    monocles chat implements. They matter most where XEP-0424 meets end-to-end
+    encryption, multi-device use and message archives: a retraction that is
+    accepted too easily lets someone delete other people's messages, and one
+    that is rejected too easily leaves a message visible that its author wanted
+    gone. Text added by this profile is marked "(monocles)".
+  </p>
+  <p>
+    (monocles) In this document, a user's <em>own side</em> is everything the
+    user's account sent, from any of its devices: messages sent by this client,
+    &xep0280; sent carbons and archived copies of messages sent by another
+    device of the same account, and the user's own messages reflected by a
+    &xep0045; room.
+  </p>
+</section1>
+
+<section1 topic='Discovering support' anchor='disco'>
+  <p>If a client implements message retractions, it MUST specify the 'urn:xmpp:message-retract:1' feature in its service discovery information features as specified in &xep0030; and the Entity Capabilities profile specified in &xep0115;.</p>
+  <p>Similarly, a server that is aware of message retractions and will therefore ensure that they're archived for later retrieval (e.g.via &xep0313;), MUST also advertise the 'urn:xmpp:message-retract:1' feature.</p>
+    <example caption='Client requests information about a chat partner&apos;s client'><![CDATA[
+<iq type='get'
+    from='romeo@montague.example/orchard'
+    to='juliet@capulet.example/balcony'
+    id='info1'>
+  <query xmlns='http://jabber.org/protocol/disco#info'/>
+</iq>]]></example>
+    <example caption='Partner&apos;s client advertises support for retraction'><![CDATA[
+<iq type='result'
+    to='romeo@montague.example/orchard'
+    from='juliet@capulet.example/balcony'
+    id='info1'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+...
+    <feature var='urn:xmpp:message-retract:1'/>
+...
+  </query>
+</iq>]]></example>
+
+  <p>A client, server or other service (for example a &xep0045; service) MAY enforce a time limit on message retractions, meaning that it will only honour a retraction request that it receives within a certain amount of time after the original message was sent. An entity which enforces such a limit SHOULD advertise it in its service discovery information response, by including a &xep0128; data form with a FORM_TYPE of 'urn:xmpp:message-retract:1' and a 'max-age' field, the value of which MUST be the limit in seconds.</p>
+    <example caption='A groupchat service advertises a retraction time limit of 30 minutes'><![CDATA[
+<iq type='result'
+    to='romeo@montague.example/orchard'
+    from='muc.capulet.example'
+    id='info2'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+...
+    <feature var='urn:xmpp:message-retract:1'/>
+...
+    <x xmlns='jabber:x:data' type='result'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>urn:xmpp:message-retract:1</value>
+      </field>
+      <field var='max-age'>
+        <value>1800</value>
+      </field>
+    </x>
+  </query>
+</iq>]]></example>
+  <p>
+    (monocles) monocles clients enforce no time limit and therefore advertise no
+    'max-age' field. They honour retractions of messages of any age, as the
+    <link url='#business-limits'>Time limits</link> rules ask of an entity
+    without a limit.
+  </p>
+</section1>
+
+<section1 topic='Use Case' anchor='usecase'>
+  <p>Consider a situation where a user sends a message to the wrong recipient: </p>
+  <example caption="The user's client sends a message to the wrong recipient"><![CDATA[
+<message type='chat' to='lord@capulet.example' id='wrong-recipient-1'>
+  <body>Have not saints lips, and holy palmers too?</body>
+</message>]]></example>
+
+  <p>The author notices that the message was sent to the wrong recipient and indicates to their client that it should be retracted.</p>
+  <p>The client sends out a retraction message and uses the 'id' attribute of the &lt;message&gt; element in the original message to indicate that it should be removed.</p>
+  <p>In the case of a group chat message, for example &xep0045;, instead of the message ID, the XEP-0359 stanza ID that was assigned by the group chat SHOULD be used.</p>
+
+  <example caption="The client sends out a retraction"><![CDATA[
+<message type='chat' to='lord@capulet.example' id='retract-message-1'>
+  <retract id="wrong-recipient-1" xmlns='urn:xmpp:message-retract:1'/>
+  <fallback xmlns="urn:xmpp:fallback:0" for='urn:xmpp:message-retract:1'/>
+  <body>/me retracted a previous message, but it's unsupported by your client.</body>
+  <store xmlns="urn:xmpp:hints"/>
+</message>]]></example>
+
+<p>It's RECOMMENDED that you include fallback text in the &lt;body/&gt;, so that servers will archive the retraction and non-supporting clients can still indicate that there was an intent to retract. When a &lt;body/&gt; is included, it SHOULD be marked with a &xep0428; &lt;fallback/&gt; element with a 'for' attribute set to 'urn:xmpp:message-retract:1', to indicate that it merely serves as a fallback. The fallback text is intentionally generic and SHOULD NOT identify or repeat the contents of the retracted message, since doing so would undermine the purpose of the retraction. Additionally, you SHOULD include a &xep0334; &lt;store/&gt; hint, to ensure that the retraction is archived even by services that are unaware of this specification.</p>
+  <p>
+    (monocles) monocles clients always send the &lt;fallback/&gt; element, a
+    generic fallback body and the &lt;store/&gt; hint. They send only the
+    'urn:xmpp:message-retract:1' form: neither the &xep0422; fastening form nor
+    'urn:xmpp:message-retract:0' is sent. When the conversation is end-to-end
+    encrypted, the retraction is encrypted too, see
+    <link url='#encrypted'>Encrypted Retractions</link>.
+  </p>
+</section1>
+
+<section1 topic='Tombstones' anchor='tombstones'>
+  <p>It might be desirable to remove the retracted message from a &xep0313; service, while still recording the fact that it once existed, in order to aid clients in synchronizing their archives. To do this, the archiving service MAY replace the retracted message contents with a 'tombstone'.</p>
+
+  <p>A service which supports tombstones MUST advertise the 'urn:xmpp:message-retract:1#tombstone' feature in its Service Discovery responses.</p>
+
+    <example caption='Client requests service discovery information from the server'><![CDATA[
+<iq type='get'
+    from='romeo@montague.example/orchard'
+    to='romeo@montague.example'
+    id='info1'>
+  <query xmlns='http://jabber.org/protocol/disco#info'/>
+</iq>]]></example>
+    <example caption='The server advertises support for tombstone retraction'><![CDATA[
+<iq type='result'
+    to='romeo@montague.example/orchard'
+    from='romeo@montague.example'
+    id='info1'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+...
+    <feature var='urn:xmpp:message-retract:1#tombstone'/>
+...
+  </query>
+</iq>]]></example>
+
+  <p>
+      When replacing the original message with a tombstone, the original contents
+      (i.e. the &lt;body/&gt; and any related elements which might leak information about the original message)
+      get replaced with a &lt;retracted/&gt; element which MUST include an 'id' attribute that's set to the value of the retraction's &lt;message/&gt; element's 'id' attribute,
+      so that clients can match the tombstone to the retraction (which MUST also be stored in the archive).
+  </p>
+  <p>The &lt;retracted/&gt; element SHOULD also include a 'stamp' attribute indicating the time at which the retraction took place.</p>
+  <p>As with other XEP-0313 archived messages, the &xep0203; &lt;delay/&gt; element is used to indicate when the original message was received.</p>
+
+  <example caption='Retracted message tombstone in a MAM result'><![CDATA[
+<message id='aeb213' to='lord@capulet.example/chamber'>
+  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='stanza-id-1'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2019-09-20T23:08:25Z'/>
+      <message type='groupchat' from='romeo@montague.example' to='lord@capulet.example' id='wrong-recipient-1'>
+        <retracted stamp='2019-09-20T23:09:32Z' xmlns='urn:xmpp:message-retract:1' id='retract-message-1'/>
+      </message>
+  </forwarded>
+</result>
+</message>]]></example>
+</section1>
+
+<section1 topic='Business Rules' anchor='rules'>
+  <p>A receiving client can choose to remove the retracted message from whatever display is used for messages, from any stored history, or choose to display the fact that a message has been retracted in another way.</p>
+  <p>A MUC or other service that supports message retraction SHOULD prevent further distribution of the message by the service (e.g., by not replaying the message to new occupants joining the room, omitting the message from history archive requests where possible, or replacing the original message with a 'tombstone').</p>
+  <p>Some clients may have been offline while the retraction was issued. The archiving service therefore MUST store the retraction message, regardless of whether the original message is deleted or replaced with a tombstone. These clients will then become aware of the retraction as soon as they catch up with the archive.</p>
+  <p>A client MAY inform the user that a no-longer displayed message did previously exist and has been removed.</p>
+  <p>Supporting clients MUST set a unique 'id' on the &lt;message&gt; element in outgoing stanzas (as per &xep0359;), to make them suitable for retraction.</p>
+  <p>The Sender MUST NOT send a retraction request for a message with non-messaging payloads, in other words, for a message that serves as a transport for protocol signalling and is not displayed as a message to the user. For example, a sender MUST NOT send a retraction for a roster item exchange request (&xep0144;) or a file transfer part. Conversely, a message that conveys user-visible content is considered to have a messaging payload even when that content is not contained in the &lt;body/&gt; element itself. For example, a &xep0447; message, in which the &lt;body/&gt; merely serves as a fallback, MAY be retracted.</p>
+  <p>A retraction message's &lt;body/&gt; serves only as a fallback for clients that don't support this specification, and its contents are entirely under the sender's control. A sender which includes a &lt;body/&gt; SHOULD mark it with a &xep0428; &lt;fallback/&gt; element with a 'for' attribute set to 'urn:xmpp:message-retract:1' (see the <link url='#usecase'>Use Case</link> section).</p>
+  <p>A client that supports this specification MUST NOT display the &lt;body/&gt; of a message containing a &lt;retract/&gt; element, whether or not the &lt;body/&gt; is marked with a XEP-0428 fallback indication. This also applies when no message matching the 'id' of the &lt;retract/&gt; element can be found: instead of rendering the sender-supplied fallback text, the client MAY indicate that the sender attempted to retract an unknown message.</p>
+  <p>A retraction (that's not part of a &xep0425; operation) MUST only be processed when both the original message and the retraction request are received from the same bare-JID (in a one-on-one conversation) or full-JID (in a non-anonymous MUC from &xep0045;).</p>
+  <p>When used in a semi-anonymous MUC, the recipient client MUST check that a message retraction was sent by the author of the retracted message by checking the occupant id from &xep0421;.</p>
+  <p>
+    (monocles) A retraction never becomes a message of its own: it is not
+    stored, shown, counted as unread or notified, whether or not it was applied.
+    In a one-on-one conversation a retraction (and a correction) MUST come from
+    the same side as the message: the peer knows the id of every message the
+    user sent, but MUST NOT be able to retract or correct one of them, even an
+    unencrypted one. The user's own side covers all of the user's devices.
+    The rules in the following sections refine the sender checks above. A
+    retraction MUST pass all of them before it is applied.
+  </p>
+
+  <section2 topic='Time limits' anchor='business-limits'>
+    <p>Before sending a retraction request, a client SHOULD determine whether any involved entity (for example the group chat service in a group chat, or the chat partner's client in a one-on-one chat) advertises a retraction time limit, as described in <link url='#disco'>Discovering support</link>, and SHOULD NOT offer retraction of a message older than the smallest advertised limit.</p>
+    <p>An entity which receives a retraction request for a message older than its advertised limit MAY ignore the request. An entity which doesn't enforce and advertise such a limit SHOULD honour retraction requests regardless of the age of the retracted message, in order to provide behaviour that's consistent across implementations.</p>
+  </section2>
+
+  <section2 topic='Using the correct ID' anchor='business-id'>
+    <p>
+      For messages of type 'groupchat', the ID assigned to
+      the stanza by the group chat itself must be used. This is discovered in a
+      &lt;stanza-id&gt; element with a 'by' attribute that matches the bare JID
+      of the group chat, as defined in &xep0359;.
+    </p>
+    <p>
+      If a group chat does not support &xep0359;, a client can still opt to include an &lt;origin-id&gt; element in the message stanza,
+      which can be used to refer to the message in a retraction.
+    </p>
+    <p>
+      For other message types the sender should use the value of the 'id' attribute on the &lt;message&gt; element. See however the <link url='#security'>Security Considerations</link> below.
+    </p>
+    <p>(monocles) In detail, a sender uses:</p>
+    <ul>
+      <li>for a groupchat message: the room's &lt;stanza-id by='room@service'/&gt;, or its
+          &lt;origin-id/&gt; when the room assigned none;</li>
+      <li>for a one-on-one message: the message 'id'. monocles clients set it equal to the
+          &lt;origin-id/&gt; on their own messages;</li>
+      <li>for a MUC private message: the message 'id'. Some clients (including monocles chat for
+          Android) send no &lt;origin-id/&gt; on private messages.</li>
+    </ul>
+    <p>
+      (monocles) A receiver looks the target up among the messages of the same
+      conversation by the &lt;origin-id/&gt;, by the archive- or room-assigned
+      &lt;stanza-id/&gt;, and (outside groupchats) by the sender's message 'id'
+      when it differs from the &lt;origin-id/&gt;. The message 'id' MUST only be
+      used to find a retraction or correction target, never to detect duplicate
+      messages. Message ids need not be unique (see
+      <link url='#message-id-uniqueness'>Uniqueness of message IDs</link>), and
+      treating them as unique would drop unrelated messages. A match is still
+      only a candidate: the sender checks in the following sections decide.
+    </p>
+    <p>
+      (monocles) A retraction whose 'id' is that of a &xep0308; correction
+      retracts the corrected message, including the original and all its
+      corrections. A correction is never left as a visible remainder of a
+      retracted message.
+    </p>
+  </section2>
+</section1>
+
+<section1 topic='Encrypted Retractions' anchor='encrypted'>
+  <p>
+    (monocles) In an end-to-end encrypted conversation the retraction itself is
+    encrypted with the conversation's encryption.
+  </p>
+  <p>
+    (monocles) With post-quantum OMEMO2 (the monocles OMEMO-PQXDH profile of
+    &xep0384;, namespace 'urn:monocles:omemo-pq:1'), the &lt;retract/&gt;
+    element, its &lt;fallback/&gt; and the fallback &lt;body/&gt; are placed
+    inside the &xep0420; envelope's &lt;content/&gt;. The outer stanza carries
+    only the encrypted element, the OMEMO fallback body, the &lt;store/&gt;
+    hint and the EME hint. A receiver MUST NOT act on a cleartext
+    &lt;retract/&gt; next to an OMEMO2 &lt;encrypted/&gt; element.
+  </p>
+  <example caption="A PQ OMEMO2 retraction: the decrypted SCE envelope"><![CDATA[
+<envelope xmlns='urn:xmpp:sce:1'>
+  <content>
+    <retract xmlns='urn:xmpp:message-retract:1' id='wrong-recipient-1'/>
+    <fallback xmlns='urn:xmpp:fallback:0' for='urn:xmpp:message-retract:1'/>
+    <body xmlns='jabber:client'>This message has been retracted by the sender.</body>
+  </content>
+  <rpad>…</rpad>
+  <time stamp='2026-10-21T10:15:00Z'/>
+  <from jid='juliet@capulet.example'/>
+  <to jid='romeo@montague.example'/>
+</envelope>]]></example>
+  <p>
+    (monocles) With legacy OMEMO (&xep0384; 0.3), which encrypts only the body,
+    the &lt;retract/&gt; element stays in cleartext and the encrypted fallback
+    body authenticates the retraction. The retraction's fingerprint is the
+    fingerprint that decrypted that body.
+  </p>
+  <p>
+    (monocles) A receiver MUST apply the following fingerprint rule, in
+    addition to the sender checks of the <link url='#rules'>Business Rules</link>:
+  </p>
+  <ul>
+    <li>A message that was received unencrypted may be retracted by a retraction from its sender,
+        encrypted or not.</li>
+    <li>A message that was received encrypted MUST only be retracted by an encrypted retraction
+        whose fingerprint equals the message's fingerprint. A cleartext retraction (which the
+        sender's or the receiver's server could forge) MUST NOT remove an encrypted message.</li>
+    <li>There are two exceptions. The sender's other devices may retract it under the conditions
+        in <link url='#owndevices'>Retractions from the Sender's Other Devices</link>. A
+        moderation by the room may retract it under the conditions in
+        <link url='#moderation'>Moderation</link>.</li>
+  </ul>
+  <p>
+    (monocles) The same rule applies to &xep0308; corrections. A correction
+    that fails it is not applied, and a retraction that fails it is ignored.
+  </p>
+</section1>
+
+<section1 topic="Retractions from the Sender's Other Devices" anchor='owndevices'>
+  <p>
+    (monocles) A user who sends a message from the phone and retracts it on the
+    desktop sends a retraction under a different OMEMO fingerprint than the
+    message carries. Both devices belong to the same account, so the retraction
+    is legitimate, but the strict fingerprint rule would reject it. It is
+    accepted under these conditions:
+  </p>
+  <ol>
+    <li>Both the retracted message and the retraction are on the receiver's own side (see
+        <link url='#intro'>Introduction</link>). In a group chat that requires the proof of
+        <link url='#ownmuc'>Own Messages in Group Chats</link> for both.</li>
+    <li>The retraction is encrypted. A cleartext own-side retraction still needs a matching
+        fingerprint, so a server cannot forge one.</li>
+    <li>Its fingerprint belongs to an OMEMO identity of the user's own bare JID that the receiver
+        trusts: blindly trusted (BTBV) or verified, but not undecided or untrusted.</li>
+    <li>That identity is active. If the receiver knows the account's current device list, the
+        device is also listed in it.</li>
+  </ol>
+  <p>
+    (monocles) Successful decryption alone is no proof of any of this, because
+    implementations decrypt messages from undecided and replaced identities too.
+    The same conditions apply to corrections.
+  </p>
+  <p>
+    (monocles) The user's own messages sent from another device arrive as
+    &xep0280; sent carbons, as &xep0313; results or as room reflections. A
+    receiver SHOULD store them as outgoing messages already sent, so the user
+    can also correct and retract them from this device. Such a message keeps
+    the fingerprint of the device that sent it.
+  </p>
+</section1>
+
+<section1 topic='Own Messages in Group Chats' anchor='ownmuc'>
+  <p>
+    (monocles) In a group chat, every client of the user receives the user's
+    messages reflected by the room under the user's nick. A receiver has to
+    decide whether such a message is really the user's, because that decision
+    lets it retract (and correct) the user's own messages. A message from the
+    user's nick is the user's own only if one of these holds:
+  </p>
+  <ul>
+    <li>its &xep0421; occupant id equals the user's own occupant id, as reported by the room in
+        the user's own presence;</li>
+    <li>it is a result from the room's own archive whose &lt;item jid/&gt; names the user's bare
+        JID (a real JID claimed on a live message is not trusted, because the sending occupant
+        may have written it);</li>
+    <li>it arrived live and the room assigns no occupant id that contradicts it. While the user
+        is joined, the room keeps nicks unique among the occupants present.</li>
+  </ul>
+  <p>
+    (monocles) A nick alone MUST NOT make an archived message the user's. While
+    the user was away, someone else may have joined under the same nick. In a
+    room without &xep0421; their messages would otherwise appear as the user's
+    and could retract the user's messages. When the occupant id is known it
+    decides, even against a matching nick. A client MUST NOT learn its own
+    occupant id from a message that is not proven its own by one of the rules
+    above. The user's own presence remains the authority.
+  </p>
+  <p>
+    (monocles) A proven own message sent from another device is stored as an
+    outgoing message (see <link url='#owndevices'>Retractions from the Sender's
+    Other Devices</link>). With OMEMO2, a client never encrypts a message to the
+    device that sends it. A client therefore decrypts an encrypted reflection
+    only if it was sent by another device of the user's account and wraps a key
+    for this device. Its own reflections keep the locally stored plaintext, and
+    they only fill in the room's stanza-id.
+  </p>
+</section1>
+
+<section1 topic='Retractions Before Their Message' anchor='pending'>
+  <p>
+    (monocles) Archives are usually paged backwards, from the newest result to
+    older ones. A retraction then often arrives before the message it removes,
+    and the message is shown when it arrives a page later. The same happens
+    when a client misses the live room reflection of its own message: its copy
+    lacks the room's stanza-id that the retraction addresses.
+  </p>
+  <p>
+    (monocles) A receiver MAY therefore keep a retraction whose target it cannot
+    find, together with its sender binding: the direction (own side or not),
+    the occupant id, the fingerprint, and whether it qualified as an own-device
+    retraction. When a message with a matching id arrives later, the receiver
+    applies the retraction only if the message passes the same checks as a live
+    retraction would. That includes a message that turns out to be a duplicate
+    of a copy the receiver already has, in which case the existing copy is
+    retracted.
+  </p>
+  <p>
+    (monocles) A receiver MUST keep retractions of the same id from different
+    senders apart. If it kept only one per id, someone else's retraction of that
+    id, which fails the sender check later, could displace the author's, and the
+    message would stay visible.
+  </p>
+  <p>
+    (monocles) The receiver SHOULD store such a message as a tombstone rather
+    than drop it. Paging the same archive range again then recognises it as a
+    duplicate and does not bring it back. It is never notified or counted as
+    unread.
+  </p>
+  <p>
+    (monocles) Pending retractions cost the sender nothing, so a receiver MUST
+    bound them. monocles clients keep at most 500 per conversation and drop the
+    oldest. monocles chat desktop stores them with the conversation; monocles
+    chat for Android keeps them in memory while it runs, which covers paging
+    through an archive.
+  </p>
+</section1>
+
+<section1 topic='Moderation' anchor='moderation'>
+  <p>
+    (monocles) A &xep0425; moderation is announced by the room itself, from its
+    bare JID, as a &lt;retract/&gt; carrying a &lt;moderated/&gt; element. A
+    &lt;retract/&gt; that carries &lt;moderated/&gt; but does not come from the
+    room's bare JID is forged and MUST be discarded. It MUST NOT be treated as
+    the sender's own retraction instead.
+  </p>
+  <p>
+    (monocles) A genuine moderation may remove an encrypted message regardless
+    of its fingerprint, because the room cannot know it. It addresses the
+    message by the room's stanza-id. A moderation that arrives before its
+    message (archive paging) MAY be remembered by that stanza-id, so the message
+    is never stored.
+  </p>
+</section1>
+
+<section1 topic='Local Effects' anchor='local'>
+  <p>
+    (monocles) A client that applies a retraction, whether received or its own,
+    keeps a hidden or "retracted" tombstone of the message, or removes it
+    entirely, and in either case removes its content:
+  </p>
+  <ul>
+    <li>the body, the attachment and any corrections, the reply reference and the fingerprint
+        are cleared;</li>
+    <li>a notification still shown for the message is removed;</li>
+    <li>a locally stored file or thumbnail of the message is deleted, and a live location
+        shared in it ends.</li>
+  </ul>
+  <p>
+    (monocles) Files the message pointed to on an &xep0363; upload service are
+    not deleted, because the protocol offers no way to do so. See
+    <link url='#privacy'>Privacy Considerations</link>.
+  </p>
+</section1>
+
+<section1 topic='Security Considerations' anchor='security'>
+  <p>There can never be a guarantee that a retracted message was never seen or otherwise distributed, and it is encouraged for clients and services when possible to inform users that no such guarantee exists.</p>
+  <p>
+   If message retraction results in the complete removal of any record of the original message's body, for example to be replaced by a tombstone, then this could be used to hide messages that moderators might want to be notified of.
+  </p>
+  <p>To prevent message spoofing, it's very important that the sender's JID or XEP-0421 occupant id of message retractions are checked (as explained in the <link url='#rules'>Business Rules</link> section).</p>
+  <section2 topic='Sender-controlled fallback content' anchor='security-fallback'>
+  <p>
+  The fallback &lt;body/&gt; of a retraction message is entirely under the sender's control, and a sender could deliberately place content in it that's unrelated to the retraction. Clients that support this specification won't display it, while non-supporting clients will display it verbatim, meaning that different recipients may see very different content for the same message. While this divergence is inherent to &xep0428; fallbacks in general, message retraction makes it easy to trigger deliberately: combined with a &lt;retract/&gt; element that refers to a nonexistent message, it could be used to send content which is only visible to some recipients, or which disappears without a trace on others.
+  </p>
+  <p>
+  For this reason, clients that support this specification MUST NOT render the &lt;body/&gt; of a retraction message, also when the referenced message can't be found (see the <link url='#rules'>Business Rules</link> section), and senders MUST set fallback text that describes the retraction, as shown in the <link url='#usecase'>Use Case</link> section.
+  </p>
+  </section2>
+  <section2 topic='Uniqueness of message IDs' anchor='message-id-uniqueness'>
+  <p>
+  Clients that don't support &xep0359; (and therefore don't support &xep0424;), are not guaranteed to have a unique 'id' attribute on their &lt;message&gt; elements.
+  This means that when someone is using a supporting client, and attempts to retract a message from a different, non-supporting client,
+  it might not be possible to uniquely indentify the message being retracted, as more than one message could have the same 'id' attribute.
+  </p>
+  <p>
+  To mitigate this, clients can do a &xep0030; request to check if the other client supports XEP-0359, and if not,
+  they can choose to not support retraction for messages from that client, or otherwise warn the client about this limitation.
+  However, the other client might not be online to respond to a disco request, so this is not a foolproof method.
+  </p>
+  <p>
+    (monocles) For the same reason, a receiver never uses the message 'id' to
+    suppress duplicates (see <link url='#business-id'>Using the correct ID</link>).
+    Even when two messages share an id, the sender checks keep a retraction
+    from reaching anyone else's message.
+  </p>
+  </section2>
+  <section2 topic='Encrypted messages' anchor='security-e2ee'>
+    <p>
+      (monocles) Without the fingerprint rule of
+      <link url='#encrypted'>Encrypted Retractions</link>, a server could delete
+      any end-to-end encrypted message by injecting a cleartext retraction under
+      the sender's JID. The own-device exemption is limited to encrypted
+      retractions from trusted, active, listed devices of the user's own
+      account. A compromised or merely announced device whose identity the user
+      has not trusted therefore gains nothing. It also never applies to other
+      people's messages.
+    </p>
+  </section2>
+  <section2 topic='Impersonation in group chats' anchor='security-muc'>
+    <p>
+      (monocles) Nicks are only unique among the occupants present at a time.
+      The rules in <link url='#ownmuc'>Own Messages in Group Chats</link> keep
+      someone who used the user's nick from being treated as the user, whether
+      to retract the user's messages, to have their own messages shown as the
+      user's, or to plant a wrong own occupant id.
+    </p>
+  </section2>
+  <section2 topic='Pending retractions' anchor='security-pending'>
+    <p>
+      (monocles) A remembered retraction carries the same sender binding as a
+      live one, so it cannot be used to remove someone else's message that
+      arrives later under the same id. It cannot remove the user's own copy
+      either when the later message merely reuses the user's id. Because
+      retractions are kept per sender, a third party cannot cancel the author's
+      retraction by retracting the same id first. Keeping
+      pending retractions bounded protects storage from floods of retractions
+      for ids that never arrive.
+    </p>
+  </section2>
+</section1>
+
+<section1 topic='Privacy Considerations' anchor='privacy'>
+  <p>
+    (monocles) A retraction removes the message from supporting clients and,
+    with tombstones, from archives. It does not remove files uploaded with
+    &xep0363;. Whoever received the link, or obtained it from a copy of the
+    message, can keep downloading such a file until the upload service expires
+    it. With OMEMO, the file itself is encrypted and its key travelled only in
+    the encrypted message.
+  </p>
+</section1>
+
+<section1 topic='Interoperability' anchor='interop'>
+  <p>
+    (monocles) This profile changes no element, so it interoperates with any
+    0.5.0 implementation. Their cleartext retractions of cleartext messages work
+    unchanged. Their retractions of encrypted messages are applied if they are
+    encrypted under the message's fingerprint. A 0.5.0 implementation without
+    the own-device rule may reject a retraction made on another device of the
+    sender.
+  </p>
+  <p>
+    (monocles) monocles chat for Android and monocles chat desktop implement
+    the same rules: encrypted retractions with the fingerprint rule and the
+    own-device exemption, the target ids (a MUC private message is retracted
+    with a private message, by its message id), the side check, pending
+    retractions and the 'urn:xmpp:message-retract:1' feature. Android also
+    advertises 'urn:xmpp:message-retract:0' and still understands the
+    fastening-based form of older clients. Two differences remain. The desktop
+    client attributes its own group chat messages by the rules in
+    <link url='#ownmuc'>Own Messages in Group Chats</link>. Android also
+    accepts the room's per-occupant user record for live messages. And as noted
+    under <link url='#pending'>Retractions Before Their Message</link>, Android
+    keeps pending retractions in memory only.
+  </p>
+</section1>
+
+<section1 topic='IANA Considerations' anchor='iana'>
+  <p>None.</p>
+</section1>
+
+<section1 topic='XMPP Registrar Considerations' anchor='registrar'>
+  <section2 topic='Protocol Namespaces' anchor='ns'>
+    <p>The &REGISTRAR; includes 'urn:xmpp:message-retract:1' in its registry of protocol namespaces (see &NAMESPACES;).</p>
+    <ul>
+      <li>urn:xmpp:message-retract:1</li>
+    </ul>
+    <p>(monocles) This profile defines no new namespace.</p>
+  </section2>
+  <section2 topic='Field Standardization' anchor='registrar-formtypes'>
+    <p>&xep0068; defines a process for standardizing the fields used within Data Forms qualified by a particular namespace. The following field is registered for use within Service Discovery extension elements:</p>
+    <code><![CDATA[
+<form_type>
+  <name>urn:xmpp:message-retract:1</name>
+  <doc>XEP-0424</doc>
+  <desc>Service discovery extension fields for advertising message retraction limits</desc>
+  <field var='max-age'
+         type='text-single'
+         label='Maximum age in seconds of a message for which a retraction request will be honoured'/>
+</form_type>]]></code>
+  </section2>
+  <section2 topic='Protocol Versioning' anchor='registrar-versioning'>
+    &NSVER;
+  </section2>
+</section1>
+
+<section1 topic='XML Schema' anchor='schema'>
+  <code><![CDATA[
+<?xml version='1.0' encoding='UTF-8'?>
+
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='urn:xmpp:message-retract:1'
+    xmlns='urn:xmpp:message-retract:1'
+    elementFormDefault='qualified'>
+
+  <xs:element name='retract'>
+    <xs:complexType>
+      <xs:attribute name='id' type='xs:string' use='required'/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name='retracted'>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base='xs:string'>
+          <xs:attribute name='by' type='xs:string' use='optional'/>
+          <xs:attribute name='id' type='xs:string' use='required'/>
+          <xs:attribute name='stamp' type='xs:dateTime' use='optional'/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
+    ]]></code>
+</section1>
+</xep>

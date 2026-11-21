@@ -1,0 +1,12 @@
+* Nuevo: inicio de sesión con OAuth
+* Registro y lista de proveedores mejorados
+* Vistas previas, páginas web y DANE por Tor/I2P
+* PQ OMEMO2: controles más estrictos, menos metadatos
+* Ratchet poscuántico actualizado, OMEMO antiguo reforzado
+* Vistas previas y autodescarga desactivadas
+* Bloqueo de la app de nuevo al reabrirla
+* Fix: borrar medios y mensajes con varios archivos
+* Requiere Android 7 o superior
+* Fixes de seguridad y bibliotecas al día
+* Traducciones actualizadas
+* Correcciones

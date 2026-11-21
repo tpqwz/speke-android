@@ -1,0 +1,13 @@
+* PQ OMEMO2 isteğe bağlı, eski OMEMO varsayılan kalıyor
+* QR kodları iki OMEMO anahtarını da içeriyor
+* Beta: Grup aramaları
+* Yeni genel arama
+* Çok dosyalı mesajlar ve dosya açıklamaları
+* Yeni kayan, kenardan kenara tasarım
+* Sesli mesajlar: arka planda oynatma, iki dokunuşla gönderme
+* Geliştirilmiş hikâyeler ve bloglar
+* TLS üzerinden DNS ayarı ve DANE düzeltmeleri
+* 2.1.x'ten güncellemede kaybolan ekler düzeltildi
+* Güvenlik iyileştirmeleri
+* Güncellenmiş çeviriler
+* Hata düzeltmeleri

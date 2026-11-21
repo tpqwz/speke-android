@@ -1,0 +1,13 @@
+* PQ OMEMO2 (optioneel), legacy-OMEMO blijft standaard
+* QR-codes bevatten beide OMEMO-sleutels
+* Bèta: groepsgesprekken
+* Nieuwe algemene zoekfunctie
+* Meerdere bestanden per bericht, bijschriften
+* Nieuw zwevend edge-to-edge-ontwerp
+* Spraakberichten op achtergrond, versturen in twee tikken
+* Verbeterde verhalen en blogs
+* DNS-over-TLS-instelling en DANE-oplossingen
+* Verloren bijlagen na update vanaf 2.1.x opgelost
+* Veel beveiligingsverbeteringen
+* Bijgewerkte vertalingen
+* Foutoplossingen

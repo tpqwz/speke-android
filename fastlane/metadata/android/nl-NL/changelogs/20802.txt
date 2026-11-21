@@ -1,0 +1,12 @@
+* Nieuw: inloggen met OAuth
+* Verbeterde registratie en providerlijst
+* Linkvoorbeelden, webpagina's en DANE via Tor/I2P
+* PQ OMEMO2: strengere controles, minder metadata
+* Post-kwantum-ratchet bijgewerkt, legacy-OMEMO versterkt
+* Linkvoorbeelden en auto-download standaard uit
+* App-vergrendeling verschijnt weer bij heropenen
+* Verwijderen van media en meerdere bestanden opgelost
+* Vereist Android 7+
+* Beveiligingsfixes en bibliotheekupdates
+* Bijgewerkte vertalingen
+* Foutoplossingen

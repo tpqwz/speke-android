@@ -1,0 +1,13 @@
+* PQ OMEMO2 (optional), Legacy-OMEMO bleibt Standard
+* QR-Codes enthalten beide OMEMO-Schlüssel
+* Beta: Gruppenanrufe
+* Neue globale Suche
+* Mehrere Dateien pro Nachricht, Dateibeschriftungen
+* Neues schwebendes Edge-to-Edge-Design
+* Sprachnachrichten im Hintergrund, mit 2 Tippern senden
+* Verbesserte Stories und Blogs
+* DNS-over-TLS-Einstellung und DANE-Korrekturen
+* Fix: verlorene Anhänge nach Update von 2.1.x
+* Viele Sicherheitsverbesserungen
+* Aktualisierte Übersetzungen
+* Fehlerbehebungen

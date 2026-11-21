@@ -1,0 +1,13 @@
+* PQ OMEMO2 (opcional); OMEMO antiguo sigue por defecto
+* Los QR incluyen ambas claves OMEMO
+* Beta: llamadas grupales
+* Nueva búsqueda global
+* Mensajes con varios archivos y pies de archivo
+* Nuevo diseño flotante de borde a borde
+* Mensajes de voz en segundo plano y en dos toques
+* Historias y blogs mejorados
+* Ajuste de DNS sobre TLS y correcciones de DANE
+* Fix: adjuntos perdidos al actualizar desde 2.1.x
+* Muchas mejoras de seguridad
+* Traducciones actualizadas
+* Correcciones

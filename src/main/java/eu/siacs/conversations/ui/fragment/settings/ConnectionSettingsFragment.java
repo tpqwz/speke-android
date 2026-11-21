@@ -1,0 +1,186 @@
+package eu.siacs.conversations.ui.fragment.settings;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.EditTextPreference;
+import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
+import eu.siacs.conversations.AppSettings;
+import eu.siacs.conversations.Config;
+import eu.siacs.conversations.R;
+import eu.siacs.conversations.entities.Account;
+import eu.siacs.conversations.services.QuickConversationsService;
+import eu.siacs.conversations.ui.activity.SettingsActivity;
+import eu.siacs.conversations.utils.DnsOverTls;
+import eu.siacs.conversations.utils.Resolver;
+import java.util.Arrays;
+import org.minidns.util.InetAddressUtil;
+
+public class ConnectionSettingsFragment extends XmppPreferenceFragment {
+
+    private static final String GROUPS_AND_CONFERENCES = "groups_and_conferences";
+
+    public static boolean hideChannelDiscovery() {
+        return QuickConversationsService.isQuicksy()
+                || QuickConversationsService.isPlayStoreFlavor()
+                || Strings.isNullOrEmpty(Config.CHANNEL_DISCOVERY);
+    }
+
+    @Override
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+        setPreferencesFromResource(R.xml.preferences_connection, rootKey);
+        final var connectionOptions = findPreference(AppSettings.SHOW_CONNECTION_OPTIONS);
+        final var channelDiscovery = findPreference(AppSettings.CHANNEL_DISCOVERY_METHOD);
+        final var groupsAndConferences = findPreference(GROUPS_AND_CONFERENCES);
+        if (connectionOptions == null || channelDiscovery == null || groupsAndConferences == null) {
+            throw new IllegalStateException();
+        }
+        if (QuickConversationsService.isQuicksy()) {
+            connectionOptions.setVisible(false);
+        }
+        if (hideChannelDiscovery()) {
+            groupsAndConferences.setVisible(false);
+            channelDiscovery.setVisible(false);
+        }
+
+        final var resourceNamePreference =
+                (EditTextPreference) findPreference(AppSettings.CUSTOM_RESOURCE_NAME);
+        if (resourceNamePreference != null) {
+            resourceNamePreference.setOnBindEditTextListener(editText ->
+                    editText.setHint(
+                            getString(
+                                    R.string.pref_custom_resource_name_hint,
+                                    AppSettings.CUSTOM_RESOURCE_NAME_MAX_LENGTH)));
+        }
+
+        validateDnsServer(DnsOverTls.PREFERENCE, v -> DnsOverTls.normalize(v) != null);
+        validateDnsServer("dns_server_ipv4", InetAddressUtil::isIpV4Address);
+        validateDnsServer("dns_server_ipv6", InetAddressUtil::isIpV6Address);
+
+        final var resetDNSServerPreference = findPreference("reset_dns_server");
+        if (resetDNSServerPreference != null) {
+            resetDNSServerPreference.setOnPreferenceClickListener(preference -> {
+                final var dotServer = (EditTextPreference) findPreference(DnsOverTls.PREFERENCE);
+                if (dotServer != null) {
+                    dotServer.setText(null);
+                }
+
+                final var dnsv4Server = (EditTextPreference) findPreference("dns_server_ipv4");
+                if (dnsv4Server != null) {
+                    dnsv4Server.setText(null);
+                }
+
+                final var dnsv6Server = (EditTextPreference) findPreference("dns_server_ipv6");
+                if (dnsv6Server != null) {
+                    dnsv6Server.setText(null);
+                }
+                Resolver.clearCache();
+                reconnectAccounts();
+                Toast.makeText(
+                                requireSettingsActivity(),
+                                R.string.dns_server_reset,
+                                Toast.LENGTH_LONG)
+                        .show();
+                return true;
+            });
+        }
+    }
+
+    // Empty means "not set"; anything else has to be valid, otherwise it isn't saved.
+    private void validateDnsServer(final String key, final Predicate<String> isValid) {
+        final var preference = findPreference(key);
+        if (preference == null) {
+            return;
+        }
+        preference.setOnPreferenceChangeListener((p, newValue) -> {
+            final String value = newValue == null ? "" : newValue.toString().trim();
+            if (value.isEmpty() || isValid.apply(value)) {
+                return true;
+            }
+            Toast.makeText(requireContext(), R.string.invalid_dns_server, Toast.LENGTH_LONG).show();
+            return false;
+        });
+    }
+
+    @Override
+    protected void onSharedPreferenceChanged(@NonNull String key) {
+        super.onSharedPreferenceChanged(key);
+        switch (key) {
+            case AppSettings.USE_TOR -> {
+                final var appSettings = new AppSettings(requireContext());
+                if (appSettings.isUseTor()) {
+                    runOnUiThread(() ->
+                            Toast.makeText(
+                                            requireActivity(),
+                                            R.string.audio_video_disabled_tor,
+                                            Toast.LENGTH_LONG)
+                                    .show());
+                }
+                reconnectAccounts();
+                requireService().reinitializeMuclumbusService();
+            }
+            case AppSettings.USE_I2P -> {
+                final var appSettings = new AppSettings(requireContext());
+                if (appSettings.isUseI2P()) {
+                    runOnUiThread(() ->
+                            Toast.makeText(
+                                            requireActivity(),
+                                            R.string.audio_video_disabled_i2p,
+                                            Toast.LENGTH_LONG)
+                                    .show());
+                }
+                reconnectAccounts();
+                requireService().reinitializeMuclumbusService();
+            }
+            case DnsOverTls.PREFERENCE, "dns_server_ipv4", "dns_server_ipv6" -> {
+                // Answers cached from the previous server must not be reused.
+                Resolver.clearCache();
+                reconnectAccounts();
+            }
+            case AppSettings.SHOW_CONNECTION_OPTIONS,
+                    AppSettings.PREFER_IPV6,
+                    AppSettings.CUSTOM_RESOURCE_NAME -> {
+                reconnectAccounts();
+            }
+        }
+        if (Arrays.asList(AppSettings.USE_TOR, AppSettings.SHOW_CONNECTION_OPTIONS).contains(key)) {
+            final var appSettings = new AppSettings(requireContext());
+            if (appSettings.isUseTor() || appSettings.isExtendedConnectionOptions()) {
+                return;
+            }
+            resetUserDefinedHostname();
+        }
+    }
+
+    private void resetUserDefinedHostname() {
+        final var service = requireService();
+        for (final Account account : service.getAccounts()) {
+            Log.d(
+                    Config.LOGTAG,
+                    account.getJid().asBareJid() + ": resetting hostname and port to defaults");
+            account.setHostname(null);
+            account.setPort(Resolver.XMPP_PORT_STARTTLS);
+            service.databaseBackend.updateAccount(account);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        requireActivity().setTitle(R.string.pref_connection_options);
+    }
+
+    public SettingsActivity requireSettingsActivity() {
+        final var activity = requireActivity();
+        if (activity instanceof SettingsActivity settingsActivity) {
+            return settingsActivity;
+        }
+        throw new IllegalStateException(
+                String.format(
+                        "%s is not %s",
+                        activity.getClass().getName(), SettingsActivity.class.getName()));
+    }
+}

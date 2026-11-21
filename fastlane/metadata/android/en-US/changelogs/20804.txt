@@ -1,0 +1,12 @@
+* New: OAuth login
+* Improved sign-up and provider list
+* Link previews, web pages and DANE work over Tor/I2P
+* PQ OMEMO2: stricter checks, less metadata, WebXDC fixes
+* Updated post-quantum ratchet, hardened legacy OMEMO
+* Link previews and auto-download off by default
+* App lock shows again when reopening the app
+* Fixed deleting media and multi-file messages
+* Requires Android 7 or newer
+* Many security fixes and library updates
+* Updated translations
+* Fixes

@@ -1,0 +1,411 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE xep SYSTEM 'xep.dtd' [
+  <!ENTITY % ents SYSTEM 'xep.ent'>
+  <!ENTITY EPHEMERAL '&lt;ephemeral/&gt;'>
+  <!ENTITY WANTOUT '&lt;i-want-out/&gt;'>
+  <!ENTITY eph0 'urn:xmpp:ephemeral:0'>
+%ents;
+]>
+<?xml-stylesheet type='text/xsl' href='xep.xsl'?>
+<xep>
+<header>
+  <title>Ephemeral Messages — monocles profile</title>
+  <abstract>
+    This specification defines a way to make messages disappear from the devices of all
+    parties after a timer runs out, and to keep a common timer setting for a conversation.
+    This revision is the monocles chat profile of XEP-0466: it keeps the wire format and
+    namespace of version 0.1.0 and settles the points that version leaves open, as
+    implemented by monocles chat (Android and desktop): opting out, when the countdown
+    starts, which timer a message has as opposed to the conversation's setting, end-to-end
+    encrypted timer changes, several devices of one user, group chats, and what a client
+    removes when a message expires.
+  </abstract>
+  &LEGALNOTICE;
+  <number>0466</number>
+  <status>Experimental</status>
+  <type>Standards Track</type>
+  <sig>Standards</sig>
+  <approver>Council</approver>
+  <dependencies>
+    <spec>XMPP Core</spec>
+    <spec>XMPP IM</spec>
+    <spec>XEP-0030</spec>
+    <spec>XEP-0045</spec>
+    <spec>XEP-0280</spec>
+    <spec>XEP-0308</spec>
+    <spec>XEP-0313</spec>
+    <spec>XEP-0334</spec>
+    <spec>XEP-0359</spec>
+    <spec>XEP-0384</spec>
+    <spec>XEP-0420</spec>
+    <spec>XEP-0424</spec>
+    <spec>XEP-0447</spec>
+  </dependencies>
+  <supersedes/>
+  <supersededby/>
+  <shortname>ephemeral</shortname>
+  &pep.;
+  <author>
+    <firstname>Arne-Brün</firstname>
+    <surname>Vogelsang</surname>
+    <email>arne-bruen@monocles.de</email>
+    <jid>arne-bruen@monocles.de</jid>
+  </author>
+  <revision>
+    <version>0.1.0-monocles1</version>
+    <date>2026-11-19</date>
+    <initials>am</initials>
+    <remark><ul>
+      <li>monocles chat profile; wire format and namespace unchanged from 0.1.0.</li>
+      <li>Define &WANTOUT; in the &eph0; namespace as a single stored opt-out message;
+          it is not repeated.</li>
+      <li>Separate the timer a message carries (its own, fixed once sent) from the
+          conversation's setting, which only a timer change message (or, in unencrypted
+          chats, a stamped message) changes; an explicit choice is always announced.</li>
+      <li>Timer values: 0 to 31536000 seconds (one year); anything else is ignored.</li>
+      <li>End-to-end encryption: timer and opt-out go inside the encrypted envelope; in an
+          encrypted conversation only an encrypted timer change counts.</li>
+      <li>Ordering: changes from history paging and changes older than the last applied one
+          are ignored; a remote clock is never taken as later than the local one.</li>
+      <li>Several devices and Note to self; group chats: only private, non-anonymous rooms.</li>
+      <li>Countdown: own messages from sending, received messages from reading.</li>
+      <li>Expiry: what a client removes (files, extra files of a multi-file message, previews
+          and caches, search index, pins, backups), tombstones, unsent queued messages.</li>
+      <li>User interface, accessibility and an XML schema.</li>
+    </ul></remark>
+  </revision>
+  <revision>
+    <version>0.1.0</version>
+    <date>2022-05-17</date>
+    <initials>XEP Editor (jsc)</initials>
+    <remark>Accepted by vote of Council on 2022-05-03.</remark>
+  </revision>
+  <revision>
+    <version>0.0.2</version>
+    <date>2022-04-16</date>
+    <initials>pep</initials>
+    <remark><p>Resubmit with some changes.</p></remark>
+  </revision>
+  <revision>
+    <version>0.0.1</version>
+    <date>2018-04-10</date>
+    <initials>ak</initials>
+    <remark><p>First draft.</p></remark>
+  </revision>
+</header>
+
+<section1 anchor="intro" topic="Introduction">
+
+<p>Existing protocols deployed in XMPP networks offer forward secrecy both on the transport (TLS) and message (&xep0384;) levels. Forward secrecy prevents recorded communications from being decrypted even if long term encryption keys are compromised by generating ephemeral keys and securely deleting them when they are no longer needed.</p>
+
+<p>However, even though keys are deleted, message content is retained in client archives. While servers generally impose time limits on archives (messages, stored files, etc.), due to privacy laws (e.g., GDPR) and/or disk-space concerns, most XMPP clients still retain message content almost indefinitely even though it may not benefit a majority of their userbase. A device with an installed XMPP client that can be lost or stolen becomes the weakest link.</p>
+
+<p>Unlike ephemeral keys, which have specified lifetimes, message content cannot be removed immediately after being read. Users have to decide for how long they want to retain conversation content. Verbally agreeing on the time interval and manually removing messages from all devices is cumbersome and error-prone.</p>
+
+<p>This XEP defines a way to attach a timer value to messages in order to specify for how long XMPP clients should store message content. Besides that, it defines a way to keep a common timer setting across all users and devices of a conversation.</p>
+
+<p>The specification does not depend on any encryption scheme and does not require encryption at all. Plaintext messages will still be readable by servers in between and will depend on the trust placed in these servers to apply their privacy policy or to respect a &xep0334; hint.</p>
+
+<p>This profile keeps the wire format of version 0.1.0. It turns that version's open questions into rules, so that independent implementations agree on the setting of a conversation and on what disappears when: the opt-out (<link url='#opt-out'>Opting out</link>), the difference between a message's timer and the conversation's setting (<link url='#setting'>The conversation setting</link>), encrypted conversations (<link url='#e2ee'>End-to-end encryption</link>), when the countdown starts (<link url='#countdown'>Countdown</link>) and what expiry removes (<link url='#expiry'>Expiry</link>).</p>
+
+</section1>
+
+<section1 anchor="reqs" topic="Requirements">
+
+<p>What this specification tries to do:</p>
+<ul>
+  <li>Provide a way to specify a timer value after which message content must be deleted from user devices.</li>
+  <li>Clearly define the semantics of the timer value for XMPP clients.</li>
+  <li>Provide a way for the users of a conversation to choose a common timer value and keep it in line across all their devices.</li>
+  <li>Allow users to vacate to other activities while still being able to keep track of chats, as before.</li>
+  <li>Make sure that a timer cannot be set, changed or switched off by anybody but the parties of the conversation.</li>
+</ul>
+
+<p>What this XEP doesn't try to be:</p>
+<ul><li>A way to securely ensure that logs won't be kept by parties included in chats.</li></ul>
+
+</section1>
+
+<section1 anchor="elements" topic="Elements">
+
+<section2 anchor="element-ephemeral" topic="The ephemeral element">
+<p>The <tt>&EPHEMERAL;</tt> element in the <tt>&eph0;</tt> namespace has one REQUIRED attribute, <tt>timer</tt> (xs:unsignedInt): the number of seconds after which the message MUST be discarded (see <link url='#countdown'>Countdown</link>). A value of 0 means that the timer is off.</p>
+
+<p>Receivers MUST ignore a <tt>timer</tt> that is not a number, or that is larger than 31536000 (one year). Such a value is neither stored nor shown, and it changes nothing: shown as some other duration, it could be saved back as that.</p>
+
+<example caption='A message with a timer of one day'><![CDATA[<message from='juliet@capulet.example/balcony' to='romeo@montague.example' type='chat' id='3f8e8a2c'>
+  <body>Meet me at the orchard at nine.</body>
+  <ephemeral xmlns=']]>&eph0;<![CDATA[' timer='86400'/>
+  <no-permanent-store xmlns='urn:xmpp:hints'/>
+  <origin-id xmlns='urn:xmpp:sid:0' id='3f8e8a2c'/>
+</message>]]></example>
+</section2>
+
+<section2 anchor="element-want-out" topic="The i-want-out element">
+<p>The empty <tt>&WANTOUT;</tt> element in the same <tt>&eph0;</tt> namespace says that the sender switched the timer of the conversation off.</p>
+</section2>
+
+</section1>
+
+<section1 anchor="usecases" topic="Use Cases">
+
+<section2 anchor="disco" topic="Advertising support">
+<p>A client implementing this specification MUST advertise the <tt>&eph0;</tt> feature (as per &xep0030;). When advertising the feature, a client will honor requests to discard messages after the agreed upon delay.</p>
+</section2>
+
+<section2 anchor="sending" topic="Sending an ephemeral message">
+<p>While the timer of a conversation is on, every message the client sends in it MUST carry <tt>&EPHEMERAL;</tt> with the timer in force. This includes messages without a body that are stored as messages (for example files or application updates), but not chat states, receipts or markers.</p>
+
+<p>Ephemeral messages SHOULD be sent as usual to the bare JID of the contact, or as is specified for group chats. If this includes sending to non-supporting clients, and they can be detected, sending clients SHOULD warn the user. Clients MAY warn users anyway if non-supporting clients cannot be detected; monocles chat warns once when a timer is switched on that a message is not guaranteed to disappear on other devices.</p>
+
+<p>A message with a timer SHOULD carry a <tt>&lt;no-permanent-store/&gt;</tt> &xep0334; hint. Note that this asks servers not to keep it in their archives (&xep0313;) beyond delivery; a device that is offline for long may then miss it.</p>
+
+<p>The timer a message carries belongs to that message. It cannot be changed once the message has been sent, and it is not changed by a later change of the conversation's setting.</p>
+</section2>
+
+<section2 anchor="setting" topic="The conversation setting">
+<p>Each conversation has one timer setting (0 = off), which is the timer of the messages the client sends next. It is changed by:</p>
+<ul>
+  <li>the user of the client;</li>
+  <li>a timer change message (see <link url='#change'>Changing the setting</link>) from a party who may change it (see <link url='#groupchat'>Group chats</link>);</li>
+  <li>in a conversation that is not end-to-end encrypted only: a message carrying <tt>&EPHEMERAL;</tt> (the negotiation of version 0.1.0).</li>
+</ul>
+
+<p>A client MUST NOT change the setting because a message carries no <tt>&EPHEMERAL;</tt>: a client that does not implement this specification sends none, and the absence of an element cannot be told apart from an element a server removed.</p>
+</section2>
+
+<section2 anchor="change" topic="Changing the setting">
+<p>A timer change is a message that carries <tt>&EPHEMERAL;</tt> (with the new timer) or <tt>&WANTOUT;</tt> and nothing else of content: no body, or an empty one. It MUST carry a &xep0334; <tt>&lt;store/&gt;</tt> hint, so that offline devices and the server archive receive it.</p>
+
+<example caption='Juliet sets the timer to five days'><![CDATA[<message from='juliet@capulet.example/balcony' to='romeo@montague.example' type='chat' id='c1d2e3f4'>
+  <ephemeral xmlns=']]>&eph0;<![CDATA[' timer='432000'/>
+  <store xmlns='urn:xmpp:hints'/>
+  <no-permanent-store xmlns='urn:xmpp:hints'/>
+</message>]]></example>
+
+<p>When the user chooses a setting, the client MUST send a timer change, even if its own setting already has that value. Another device of the user or the contact may hold a different value (a change it missed), and an explicit choice is what brings everyone back in line. In an encrypted conversation the repetition reveals nothing (see <link url='#e2ee'>End-to-end encryption</link>).</p>
+
+<p>A client receiving a timer change from a party who may change the setting MUST apply it, subject to the ordering rules below. It MUST NOT reply with a timer change of its own: the receivers adopt the new value, which is how the setting stays common.</p>
+
+<section3 anchor="ordering" topic="Ordering">
+<ul>
+  <li>A timer change found while paging back through the archive (&xep0313;) MUST be ignored; it is older than the setting in force. A change from the catch-up after reconnecting, and a live one, applies.</li>
+  <li>A client that knows when each change was made SHOULD ignore a change older than the last one it applied.</li>
+  <li>The time of a change is taken from the sender's or the server's clock (&xep0203;) and MUST NOT be taken as later than the receiver's own clock. A stamp in the future would otherwise rank above every later change, the user's own included, and a party able to forge a &lt;delay/&gt; could freeze the setting.</li>
+</ul>
+</section3>
+</section2>
+
+<section2 anchor="opt-out" topic="Opting out">
+<p>To switch the timer off, the client sends a timer change with <tt>&WANTOUT;</tt>. It is a single stored message, like any other timer change; it is not repeated with every following message. Receivers who may have their setting changed by the sender switch the setting off.</p>
+
+<example caption='Romeo switches the timer off'><![CDATA[<message from='romeo@montague.example/garden' to='juliet@capulet.example' type='chat' id='9a8b7c6d'>
+  <i-want-out xmlns=']]>&eph0;<![CDATA['/>
+  <store xmlns='urn:xmpp:hints'/>
+</message>]]></example>
+
+<p>This resolves the problem described in version 0.1.0 (an opt-out that has to be sent forever): devices that missed the opt-out and still send messages with a timer do not switch the others on again in an encrypted conversation, because there only timer changes count (see <link url='#e2ee'>End-to-end encryption</link>), and the next explicit choice by any party brings all devices back in line.</p>
+</section2>
+
+<section2 anchor="devices" topic="Several devices of one user">
+<p>A timer change sent from another device of the user (received as a &xep0280; carbon, or from the archive during catch-up) changes the setting like one from the contact. The same applies to a conversation with one's own account ("Note to self"), where all parties are the user's own devices.</p>
+
+<p>Clients SHOULD offer the setting in the conversation itself, not only in a contact's details: a conversation with one's own account often has no such details, and its setting can then be changed nowhere else.</p>
+</section2>
+
+<section2 anchor="groupchat" topic="Group chats">
+<p>In a &xep0045; room, an occupant MAY change the setting of the room (set it or switch it off) only if the room is private (members-only) and non-anonymous. In any other room, timer changes from occupants MUST be ignored: a stranger must not be able to set the timer of others' messages, nor switch it off and leave their messages in place. A message's own timer still applies to that message.</p>
+
+<p>monocles chat for the desktop currently offers the setting in direct chats only.</p>
+</section2>
+
+</section1>
+
+<section1 anchor="e2ee" topic="End-to-end encryption">
+<p>When a message is encrypted with a scheme that has an encrypted envelope, such as &xep0420; (used by PQ OMEMO2 in monocles chat), <tt>&EPHEMERAL;</tt> and <tt>&WANTOUT;</tt> MUST be placed inside the envelope, together with the rest of the content. The &xep0334; hints stay outside: they are addressed to the server, which cannot read the envelope.</p>
+
+<p>In an end-to-end encrypted conversation:</p>
+<ul>
+  <li>only a timer change inside the encrypted envelope changes the setting;</li>
+  <li><tt>&EPHEMERAL;</tt> or <tt>&WANTOUT;</tt> outside the envelope MUST be ignored, so that a server can neither forge a change nor switch the timer off;</li>
+  <li><tt>&EPHEMERAL;</tt> on a message with content is that message's timer only. A client that only stamps its messages therefore cannot move the setting, and nothing has to be guessed from a stamp being present or missing.</li>
+</ul>
+
+<example caption='An encrypted timer change: the decrypted envelope'><![CDATA[<envelope xmlns='urn:xmpp:sce:1'>
+  <content>
+    <ephemeral xmlns=']]>&eph0;<![CDATA[' timer='3600'/>
+  </content>
+  <rpad>...</rpad>
+  <time stamp='2026-11-19T12:00:00Z'/>
+  <from jid='juliet@capulet.example'/>
+  <to jid='romeo@montague.example'/>
+</envelope>]]></example>
+
+<p>Older monocles chat versions (before this profile) sent timer changes in the clear also in encrypted conversations; those are no longer honoured there.</p>
+</section1>
+
+<section1 anchor="countdown" topic="Countdown">
+<ul>
+  <li>A message the user sent, from this device or another one of theirs, expires its timer after it was sent (the time it was sent, for one received as a carbon or from the archive).</li>
+  <li>A received message expires its timer after it was read on this device, i.e. shown to the user in the open conversation. A user who was away does not lose messages they have not seen.</li>
+</ul>
+<p>Clocks differ, and "read" happens at different times on different devices, so expiry is not simultaneous everywhere. The timer is a lower bound for how long a message is kept on a device that has shown it, not an exact time.</p>
+</section1>
+
+<section1 anchor="expiry" topic="Expiry">
+<p>When the timer of a message has run out, the client MUST remove from the device:</p>
+<ul>
+  <li>the content of the message (body, subject, files' URLs and keys, payloads, reactions);</li>
+  <li>its files, unless another message still uses the same file (clients that store files by content keep it for that message), and never a sticker of the user's own collection;</li>
+  <li>every file of a message that shares several files (&xep0447;), not only the first;</li>
+  <li>previews, thumbnails and decoded images in memory and disk caches; a client SHOULD NOT write decoded copies of such media to a disk cache at all;</li>
+  <li>its entries in a search index; if the index keeps deleted text until it is rewritten, the client SHOULD rewrite it soon after;</li>
+  <li>a pin of the message: a pinned message disappears on schedule, and the pin with it;</li>
+  <li>its content from backups the client makes afterwards (at most a content-free placeholder).</li>
+</ul>
+
+<p>A client MAY keep a content-free record of the message (its ids, the fact that it existed and expired), so that another copy of it, for example from the archive, is not stored again. Discarded messages SHOULD be noted as such in the conversation rather than vanish without explanation; monocles chat removes them from view.</p>
+
+<p>Downloads of the message's files that are still running at expiry SHOULD be stopped, and their partial files deleted. A file whose download finishes after the message expired SHOULD NOT be kept.</p>
+
+<p>A message of the user that could not be sent before its timer ran out MUST NOT be sent afterwards.</p>
+
+<p>Storage SHOULD overwrite deleted content instead of only marking it free (for SQLite: <tt>PRAGMA secure_delete</tt> on every connection).</p>
+</section1>
+
+<section1 anchor="other" topic="Interaction with other features">
+<ul>
+  <li>&xep0308;: a correction keeps the timer of the original message; it does not start the countdown again.</li>
+  <li>&xep0424;: a retraction removes a message at once, timer or not, with the same cleanup as expiry.</li>
+  <li>Pinned messages (a local feature of monocles chat) may be pinned while they exist; see <link url='#expiry'>Expiry</link>.</li>
+  <li>Notifications: since a received message only starts its countdown when it is read, it has no notification left when it expires; a client that starts the countdown differently MUST withdraw the notification of an expired message.</li>
+</ul>
+</section1>
+
+<section1 anchor="examples" topic="Example scenarios">
+<section2 anchor="example-chat" topic="Initiating chat">
+
+<p>Rosa sends a regular chat message to Peter:</p>
+
+<example><![CDATA[<message from='rosa@example.com/mobile' to='peter@example.com' type='chat'>
+    <body>I have read the book you sent me, it was very insightful.</body>
+</message>]]></example>
+
+<p>Peter had his client previously configured to send ephemeral messages. The conversation is not encrypted. He replies:</p>
+
+<example><![CDATA[<message from='peter@example.com/desktop' to='rosa@example.com' type='chat'>
+    <body>Something</body>
+    <ephemeral xmlns=']]>&eph0;<![CDATA[' timer='604800'/>
+    <no-permanent-store xmlns='urn:xmpp:hints'/>
+</message>]]></example>
+
+<p>Rosa's client tells her that from now on, messages will disappear after a week. Before replying she decides a week is too long and sets 5 days. Her client immediately sends a timer change. The message she just received from Peter will still disappear a week after she read it.</p>
+
+<example><![CDATA[<message from='rosa@example.com/mobile' to='peter@example.com' type='chat'>
+    <ephemeral xmlns=']]>&eph0;<![CDATA[' timer='432000'/>
+    <store xmlns='urn:xmpp:hints'/>
+    <no-permanent-store xmlns='urn:xmpp:hints'/>
+</message>]]></example>
+
+<p>Peter's client tells him messages will disappear after 5 days, and stamps his next messages with that timer.</p>
+
+<example><![CDATA[<message from='peter@example.com/desktop' to='rosa@example.com' type='chat'>
+    <body>I see you changed the settings slightly. It's just as good to me!</body>
+    <ephemeral xmlns=']]>&eph0;<![CDATA[' timer='432000'/>
+    <no-permanent-store xmlns='urn:xmpp:hints'/>
+</message>]]></example>
+
+<p>Later Peter switches the timer off; Rosa's client switches it off too, and both send messages without a timer again.</p>
+
+<example><![CDATA[<message from='peter@example.com/desktop' to='rosa@example.com' type='chat'>
+    <i-want-out xmlns=']]>&eph0;<![CDATA['/>
+    <store xmlns='urn:xmpp:hints'/>
+</message>]]></example>
+
+</section2>
+</section1>
+
+<section1 anchor="ui" topic="User Interface">
+<ul>
+  <li>Clients SHOULD show clearly that the timer of a conversation is on, where the user writes and reads: for example a banner at the top of the conversation with the duration and a way to change it, and a mark on the message input.</li>
+  <li>Clients MUST show a timer set by another client as what it is ("90 seconds", not "2 minutes"), and offer it as the current choice, even if it is none of the durations they offer.</li>
+  <li>When the user switches a timer on, clients SHOULD tell them once that disappearing is not guaranteed on the devices of others.</li>
+</ul>
+</section1>
+
+<section1 anchor="access" topic="Accessibility Considerations">
+<p>The indication that a timer is on SHOULD be text that assistive technology can read, not only colour or an icon, and the way to change the setting SHOULD be reachable by keyboard.</p>
+</section1>
+
+<section1 anchor="i18n" topic="Internationalization Considerations">
+<p>Durations and the text shown for a discarded message should follow the locale of the user, including plural forms.</p>
+</section1>
+
+<section1 anchor="security" topic="Security Considerations">
+
+<p>Ephemeral messages are not to be considered "secure" in any way. A party, or a client that does not implement this specification, can keep everything; a screenshot keeps anything.</p>
+
+<p>Even within well-meaning entities, requiring that messages be discarded and made impossible to retrieve requires a lot more scrutiny in the specification and in implementations, and even then, is a technically challenging task. Deletion is best effort: backups made before expiry, operating system file indexes, and storage that keeps deleted blocks may still hold content. The rules in <link url='#expiry'>Expiry</link> reduce what a client itself leaves behind.</p>
+
+<p>In an adversarial context, requiring that sent messages be deleted from every device receiving them (thus including an attacker's) requires a lot more control over the infrastructure and is not in scope for this specification. This specification is not DRM.</p>
+
+<p>This specification doesn't prevent an attacker from reading messages sent to you after they get control of your device (e.g., stolen, confiscated). The situation is improved nonetheless, as fewer messages stay on a given device.</p>
+
+<p>Timer changes are security relevant, as they decide how long messages are kept. In an encrypted conversation a cleartext change could be forged or removed by a server, hence the rules in <link url='#e2ee'>End-to-end encryption</link>. A forged timestamp could freeze the setting, hence the clock rule in <link url='#ordering'>Ordering</link>. In public or semi-anonymous rooms any occupant could change everybody's setting, hence <link url='#groupchat'>Group chats</link>. Timer values are bounded so that a value cannot be shown as something it is not.</p>
+
+<p>A message with a <tt>&lt;no-permanent-store/&gt;</tt> hint that is not end-to-end encrypted is still readable by the servers that route it.</p>
+
+</section1>
+
+<section1 anchor="iana" topic="IANA Considerations">
+<p>This document requires no interaction with the &IANA;.</p>
+</section1>
+
+<section1 anchor="registrar" topic="XMPP Registrar Considerations">
+  <section2 topic='Protocol Namespaces' anchor='registrar-ns'>
+    <p>The &REGISTRAR; includes <tt>&eph0;</tt> in its registry of protocol namespaces (see &NAMESPACES;).</p>
+  </section2>
+</section1>
+
+<section1 anchor="design" topic="Design Considerations">
+
+<p>From the previous ephemeral-messages protoXEP, the requirement that made it incompatible with non-implementing clients has been removed, as well as the one that made clients using end-to-end encryption send only to supporting clients. The goal of this specification is to change privacy defaults in the ecosystem, not to prevent users from getting their messages.</p>
+
+<p>Another use case was sending time-sensitive messages that should disappear at the same moment everywhere. This specification doesn't answer it: that would need a timestamp rather than a timer, and a receiver who comes back later would lose messages they never saw.</p>
+
+<p>A minimal timer value was originally negotiable, but was removed as it complicates the protocol substantially, and can directly be solved between users.</p>
+
+<p>Version 0.1.0 considered a per-contact setting in PEP or an IQ negotiation. This profile keeps the setting per conversation and changes it with ordinary stored messages: they reach offline devices through the archive, work in group chats and with one's own other devices, can be end-to-end encrypted, and need no access model.</p>
+
+</section1>
+
+<section1 anchor="schema" topic="XML Schema">
+<code><![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='urn:xmpp:ephemeral:0'
+    xmlns='urn:xmpp:ephemeral:0'
+    elementFormDefault='qualified'>
+
+  <xs:element name='ephemeral'>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base='empty'>
+          <xs:attribute name='timer' type='xs:unsignedInt' use='required'/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name='i-want-out' type='empty'/>
+
+  <xs:simpleType name='empty'>
+    <xs:restriction base='xs:string'>
+      <xs:enumeration value=''/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>]]></code>
+</section1>
+</xep>

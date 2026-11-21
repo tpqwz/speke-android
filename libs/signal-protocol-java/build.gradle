@@ -1,0 +1,35 @@
+// Vendored libsignal-protocol-java 2.6.2 (legacy OMEMO, eu.siacs.conversations.axolotl).
+// See README.md for provenance and the single deviation from upstream (regenerated protobuf code).
+apply plugin: "java-library"
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+dependencies {
+    api 'org.whispersystems:curve25519-java:0.4.1'
+    // Runtime for the protoc 25.9 generated *Protos.java. Gencode version must not be newer
+    // than the runtime; bump both together (regenerate-protos.sh pins protoc 25.9).
+    // Stay on 3.25.x: 4.x requires gencode from protoc 26+, regenerate before moving.
+    api 'com.google.protobuf:protobuf-java:3.25.9'
+
+    testImplementation 'junit:junit:4.13.2'
+}
+
+test {
+    // Old (pre-21.7) gencode would make the runtime throw instead of only logging a warning.
+    systemProperty 'com.google.protobuf.error_on_unsafe_pre22_gencode', 'true'
+    // Needs VRF signatures, which only the native curve25519 provider implements (the pure-Java
+    // provider used on the JVM throws "NYI"). Upstream ran it on Android; OMEMO never uses it.
+    exclude '**/devices/DeviceConsistencyTest.class'
+    testLogging {
+        events 'failed'
+        exceptionFormat 'full'
+    }
+}

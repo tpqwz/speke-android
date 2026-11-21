@@ -1,0 +1,27 @@
+monocles chat es un cliente de chat XMPP moderno y seguro para Android. Está basado en Conversations, incluye funciones de blabber.im y Cheogram y añade muchos cambios y funciones propias para mejorar la usabilidad y la seguridad.
+
+La seguridad de la conexión y la protección de los datos personales son muy importantes para nosotros. Imponemos conexiones cifradas entre la aplicación y el servidor, lo que hace casi imposible que extraños intercepten y lean tus mensajes. Por ello eliminamos los conjuntos de cifrado obsoletos. Los restantes están optimizados para el servidor de monocles chat, pero siguen siendo compatibles con otros servidores XMPP que siguen los estándares actuales.
+
+Si eso no es suficiente para ti, puedes usar cifrado de extremo a extremo como OMEMO u OpenPGP. Los mensajes se cifran entonces en el dispositivo emisor y solo pueden descifrarlos los dispositivos a los que van destinados.
+
+Funciones:
+* Cifrado de extremo a extremo con <a href="https://es.wikipedia.org/wiki/Off-the-Record_Messaging">OTR</a>, <a href="https://conversations.im/omemo/">OMEMO</a> u <a href="https://www.openpgp.org/about/">OpenPGP</a>
+* Cifrado de extremo a extremo poscuántico experimental (PQ OMEMO2)
+* Solo conexiones cifradas, TLS 1.3 obligatorio por defecto
+* Resolución del servidor verificada con DNSSEC y comprobación de certificados con DANE (se puede imponer)
+* Protección contra ataques de degradación al iniciar sesión (vinculación de canal, protección SCRAM contra degradación)
+* Base de datos local cifrada con contraseña de inicio opcional
+* Enviar y recibir imágenes y otros archivos
+* Enviar y recibir ubicaciones
+* Enviar y recibir mensajes de voz
+* Formato de mensajes: negrita, cursiva, tachado y código
+* Fotos de perfil (avatares) de tus contactos
+* Sincronizar el historial de mensajes con otros clientes
+* Chats de grupo y canales
+* Integración con la agenda (tu agenda nunca se comparte con el servidor)
+* Llamadas de audio y vídeo
+* Consumo de batería muy bajo
+* Mensajes de estado
+* Copia de seguridad diaria de la base de datos en el almacenamiento local
+
+¿Necesitas ayuda? Únete a nuestro chat de soporte <a href="xmpp:support@conference.monocles.eu">support@conference.monocles.eu</a>.

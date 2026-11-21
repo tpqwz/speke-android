@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/audio_miniplayer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_floating_bar"
+    android:elevation="@dimen/floating_toolbar_elevation"
+    android:clickable="true"
+    android:focusable="true"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="52dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/miniplayer_play_pause"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/play_audio"
+            app:icon="@drawable/rounded_play_arrow_36"
+            app:iconSize="28dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="4dp"
+            android:paddingEnd="8dp">
+
+            <TextView
+                android:id="@+id/miniplayer_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="@string/voice_message"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <TextView
+                android:id="@+id/miniplayer_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/miniplayer_speed"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:minHeight="48dp"
+            android:insetTop="10dp"
+            android:insetBottom="10dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:contentDescription="@string/playback_speed"
+            android:textAppearance="?attr/textAppearanceLabelSmall" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/miniplayer_close"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/stop_playback"
+            app:icon="@drawable/rounded_close_24"
+            app:iconSize="24dp" />
+
+    </LinearLayout>
+
+    <!-- Held inside the rounded corners of the floating bar rather than clipped by them,
+         which needs no API 31 outline clipping. -->
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/miniplayer_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="6dp"
+        app:trackThickness="2dp"
+        app:trackCornerRadius="1dp"
+        android:max="100"
+        android:progress="0" />
+
+</LinearLayout>

@@ -1,0 +1,316 @@
+package eu.siacs.conversations.crypto.axolotl;
+
+import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import eu.siacs.conversations.Config;
+import eu.siacs.conversations.entities.Account;
+import eu.siacs.conversations.utils.CryptoHelper;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import org.signal.libsignal.protocol.DuplicateMessageException;
+import org.signal.libsignal.protocol.IdentityKey;
+import org.signal.libsignal.protocol.InvalidKeyException;
+import org.signal.libsignal.protocol.InvalidKeyIdException;
+import org.signal.libsignal.protocol.InvalidMessageException;
+import org.signal.libsignal.protocol.InvalidVersionException;
+import org.signal.libsignal.protocol.LegacyMessageException;
+import org.signal.libsignal.protocol.NoSessionException;
+import org.signal.libsignal.protocol.SessionCipher;
+import org.signal.libsignal.protocol.SignalProtocolAddress;
+import org.signal.libsignal.protocol.UntrustedIdentityException;
+import org.signal.libsignal.protocol.message.CiphertextMessage;
+import org.signal.libsignal.protocol.message.PreKeySignalMessage;
+import org.signal.libsignal.protocol.message.SignalMessage;
+
+public class XmppAxolotlSession implements Comparable<XmppAxolotlSession> {
+    private final SessionCipher cipher;
+    private final SQLiteAxolotlStore sqLiteAxolotlStore;
+    private final SignalProtocolAddress remoteAddress;
+    private final Account account;
+    private IdentityKey identityKey;
+    private Integer preKeyId = null;
+    private boolean fresh = true;
+    private int lastWhisperCounter = -1;
+    private byte[] lastWhisperRatchetKey = null;
+
+    public XmppAxolotlSession(
+            Account account,
+            SQLiteAxolotlStore store,
+            SignalProtocolAddress localAddress,
+            SignalProtocolAddress remoteAddress,
+            IdentityKey identityKey) {
+        this(account, store, localAddress, remoteAddress);
+        this.identityKey = identityKey;
+    }
+
+    public XmppAxolotlSession(
+            Account account,
+            SQLiteAxolotlStore store,
+            SignalProtocolAddress localAddress,
+            SignalProtocolAddress remoteAddress) {
+        this.cipher = new SessionCipher(store, localAddress, remoteAddress);
+        this.remoteAddress = remoteAddress;
+        this.sqLiteAxolotlStore = store;
+        this.account = account;
+    }
+
+    /** See {@link SQLiteAxolotlStore#getSessionLock()}: every cipher call holds it. */
+    private Object sessionLock() {
+        return sqLiteAxolotlStore.getSessionLock();
+    }
+
+    public Integer getPreKeyIdAndReset() {
+        final Integer preKeyId = this.preKeyId;
+        this.preKeyId = null;
+        return preKeyId;
+    }
+
+    /**
+     * The Double Ratchet message counter + sender ratchet key of the last whisper (non-PreKey)
+     * message decrypted on this session, consumed once. A PreKey message starts a fresh chain so it
+     * records nothing and this returns {@code null}. Used by {@link AxolotlService} to apply
+     * XEP-0384's heartbeat rule (first message for a given ratchet key with counter ≥ 53 → send a
+     * heartbeat).
+     */
+    public WhisperRatchet getLastWhisperRatchetAndReset() {
+        if (this.lastWhisperRatchetKey == null) {
+            return null;
+        }
+        final WhisperRatchet ratchet =
+                new WhisperRatchet(this.lastWhisperCounter, this.lastWhisperRatchetKey);
+        this.lastWhisperCounter = -1;
+        this.lastWhisperRatchetKey = null;
+        return ratchet;
+    }
+
+    public static class WhisperRatchet {
+        public final int counter;
+        public final byte[] ratchetKey;
+
+        WhisperRatchet(final int counter, final byte[] ratchetKey) {
+            this.counter = counter;
+            this.ratchetKey = ratchetKey;
+        }
+    }
+
+    public String getFingerprint() {
+        return identityKey == null
+                ? null
+                : CryptoHelper.bytesToHex(identityKey.getPublicKey().serialize());
+    }
+
+    public IdentityKey getIdentityKey() {
+        return identityKey;
+    }
+
+    public SignalProtocolAddress getRemoteAddress() {
+        return remoteAddress;
+    }
+
+    public boolean isFresh() {
+        return fresh;
+    }
+
+    public void setNotFresh() {
+        this.fresh = false;
+    }
+
+    protected void setTrust(FingerprintStatus status) {
+        sqLiteAxolotlStore.setFingerprintStatus(remoteAddress.getName(), getFingerprint(), status);
+    }
+
+    /**
+     * Trust is looked up per (peer JID, fingerprint) — the identities table is shared by both
+     * stacks and by every contact, so the JID is not optional context.
+     */
+    public FingerprintStatus getTrust() {
+        FingerprintStatus status =
+                sqLiteAxolotlStore.getFingerprintStatus(remoteAddress.getName(), getFingerprint());
+        return (status == null) ? FingerprintStatus.createActiveUndecided() : status;
+    }
+
+    /**
+     * Most wrapped keys we will try to unwrap out of one message header.
+     *
+     * <p>A header legitimately carries one {@code <key rid='us'>}; two is the known benign case — a
+     * sender that rebuilt the session mid-send and attached both the old and the new wrap. Nothing
+     * in the format forbids more, and {@link #processReceiving} spends a full trial ratchet
+     * decryption on every one of them, so an unbounded list turns a single stanza into as much CPU
+     * as the sender cares to ask for. Eight leaves generous room above every legitimate case while
+     * bounding the work per stanza.
+     *
+     * <p>The cap is on <em>attempts</em>, not on trust: wraps past it are ignored, exactly as if
+     * the sender had never sent them. Applies to both stacks, since both reach the trial loop
+     * through here.
+     */
+    public static final int MAX_KEY_CANDIDATES = 8;
+
+    /**
+     * The first {@link #MAX_KEY_CANDIDATES} of {@code possibleKeys}, or the list itself when it is
+     * already within the bound.
+     *
+     * <p>Returns a view rather than truncating: the list belongs to the caller, and mutating it
+     * would surprise them. Pulled out of {@link #processReceiving} so the bound can be tested
+     * without standing up a {@code SessionCipher} and a {@code SQLiteAxolotlStore}.
+     */
+    @VisibleForTesting
+    static List<AxolotlKey> capCandidates(final List<AxolotlKey> possibleKeys) {
+        if (possibleKeys.size() <= MAX_KEY_CANDIDATES) {
+            return possibleKeys;
+        }
+        return possibleKeys.subList(0, MAX_KEY_CANDIDATES);
+    }
+
+    @Nullable
+    byte[] processReceiving(List<AxolotlKey> possibleKeys) throws CryptoFailedException {
+        byte[] plaintext = null;
+        FingerprintStatus status = getTrust();
+        if (!status.isCompromised()) {
+            // Bound the trial decryptions one stanza can cost us.
+            final int offered = possibleKeys.size();
+            possibleKeys = capCandidates(possibleKeys);
+            if (possibleKeys.size() < offered) {
+                Log.w(
+                        Config.LOGTAG,
+                        account.getJid().asBareJid()
+                                + ": "
+                                + remoteAddress
+                                + " sent "
+                                + offered
+                                + " wrapped keys for this device —"
+                                + " only trying the first "
+                                + possibleKeys.size());
+            }
+            Iterator<AxolotlKey> iterator = possibleKeys.iterator();
+            while (iterator.hasNext()) {
+                AxolotlKey encryptedKey = iterator.next();
+                try {
+                    if (encryptedKey.prekey) {
+                        PreKeySignalMessage preKeySignalMessage =
+                                new PreKeySignalMessage(encryptedKey.key);
+                        Optional<Integer> optionalPreKeyId = preKeySignalMessage.getPreKeyId();
+                        IdentityKey identityKey = preKeySignalMessage.getIdentityKey();
+                        if (!optionalPreKeyId.isPresent()) {
+                            if (iterator.hasNext()) {
+                                continue;
+                            }
+                            throw new CryptoFailedException(
+                                    "PreKeyWhisperMessage did not contain a PreKeyId");
+                        }
+                        preKeyId = optionalPreKeyId.get();
+                        if (this.identityKey != null && !this.identityKey.equals(identityKey)) {
+                            if (iterator.hasNext()) {
+                                continue;
+                            }
+                            throw new CryptoFailedException(
+                                    "Received PreKeyWhisperMessage but preexisting identity key"
+                                            + " changed.");
+                        }
+                        this.identityKey = identityKey;
+                        synchronized (sessionLock()) {
+                            plaintext = cipher.decrypt(preKeySignalMessage);
+                        }
+                    } else {
+                        SignalMessage signalMessage = new SignalMessage(encryptedKey.key);
+                        try {
+                            synchronized (sessionLock()) {
+                                plaintext = cipher.decrypt(signalMessage);
+                            }
+                            // Record the ratchet position for the XEP-0384 heartbeat rule.
+                            this.lastWhisperCounter = signalMessage.getCounter();
+                            this.lastWhisperRatchetKey =
+                                    signalMessage.getSenderRatchetKey().serialize();
+                        } catch (InvalidMessageException | NoSessionException e) {
+                            if (iterator.hasNext()) {
+                                Log.w(
+                                        Config.LOGTAG,
+                                        account.getJid().asBareJid()
+                                                + ": ignoring crypto exception because possible"
+                                                + " keys left to try",
+                                        e);
+                                continue;
+                            }
+                            throw new BrokenSessionException(this.remoteAddress, e);
+                        }
+                        preKeyId = null;
+                    }
+                } catch (InvalidVersionException
+                        | InvalidKeyException
+                        | LegacyMessageException
+                        | InvalidMessageException
+                        | DuplicateMessageException
+                        | InvalidKeyIdException
+                        | UntrustedIdentityException e) {
+                    if (iterator.hasNext()) {
+                        Log.w(
+                                Config.LOGTAG,
+                                account.getJid().asBareJid()
+                                        + ": ignoring crypto exception because possible keys left"
+                                        + " to try",
+                                e);
+                        continue;
+                    }
+                    throw new CryptoFailedException("Error decrypting SignalMessage", e);
+                }
+                if (iterator.hasNext()) {
+                    break;
+                }
+            }
+            if (!status.isActive()) {
+                setTrust(status.toActive());
+            }
+        } else {
+            throw new CryptoFailedException(
+                    "not encrypting omemo message from fingerprint "
+                            + getFingerprint()
+                            + " because it was marked as compromised");
+        }
+        return plaintext;
+    }
+
+    @Nullable
+    public AxolotlKey processSending(@NonNull byte[] outgoingMessage, boolean ignoreSessionTrust) {
+        FingerprintStatus status = getTrust();
+        if (ignoreSessionTrust || status.isTrustedAndActive()) {
+            try {
+                final CiphertextMessage ciphertextMessage;
+                synchronized (sessionLock()) {
+                    ciphertextMessage = cipher.encrypt(outgoingMessage);
+                }
+                return new AxolotlKey(
+                        getRemoteAddress().getDeviceId(),
+                        ciphertextMessage.serialize(),
+                        ciphertextMessage.getType() == CiphertextMessage.PREKEY_TYPE);
+            } catch (UntrustedIdentityException | NoSessionException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    @Override
+    public int compareTo(XmppAxolotlSession o) {
+        return getTrust().compareTo(o.getTrust());
+    }
+
+    public static class AxolotlKey {
+
+        public final byte[] key;
+        public final boolean prekey;
+        public final int deviceId;
+
+        public AxolotlKey(int deviceId, byte[] key, boolean prekey) {
+            this.deviceId = deviceId;
+            this.key = key;
+            this.prekey = prekey;
+        }
+    }
+}

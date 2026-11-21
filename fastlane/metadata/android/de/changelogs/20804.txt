@@ -1,0 +1,12 @@
+* Neu: OAuth-Anmeldung
+* Verbesserte Registrierung und Anbieterliste
+* Linkvorschauen, Webseiten und DANE über Tor/I2P
+* PQ OMEMO2: strengere Prüfungen, weniger Metadaten
+* Post-Quanten-Ratchet aktualisiert, Legacy-OMEMO gehärtet
+* Linkvorschau und Auto-Download standardmäßig aus
+* App-Sperre wieder beim Zurückkehren
+* Fix: Medien löschen, mehrere Dateien pro Nachricht
+* Benötigt Android 7 oder neuer
+* Sicherheitsfixes und Bibliotheksupdates
+* Aktualisierte Übersetzungen
+* Fehlerbehebungen

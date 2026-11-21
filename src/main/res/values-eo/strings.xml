@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_dns_server_dot_title">DNS-over-TLS-servilo</string>
+    <string name="pref_dns_server_dot_summary">Gastiga nomo kiel dns.quad9.net. Ĉifras ĉiujn DNS-serĉojn kaj havas prioritaton super la subaj DNS-serviloj. Se la servilo ne estas atingebla, kontoj ne konektiĝos. Lasu malplena por uzi la privatan DNS de Android (se agordita al gastiga nomo)</string>
+    <string name="invalid_dns_server">Nevalida DNS-servilo</string>
+    <string name="pref_accept_invites_from_strangers">Invitoj de nekonatoj</string>
+    <string name="pref_accept_invites_from_strangers_summary">Akcepti invitojn al grupaj babilejoj de nekonatoj</string>
+    <string name="qr_code_web_link">Retligilo en QR-kodo</string>
+    <string name="qr_code_web_link_lookup">Ĉi tiu QR-kodo montras al retejo:\n\n%s\n\nĈu kontakti ĝin por serĉi XMPP-adreson?</string>
+</resources>
