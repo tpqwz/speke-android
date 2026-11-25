@@ -1,24 +1,30 @@
 package de.monocles.chat.desk;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * One room, read three ways, and the same messages as a directory.
  *
- * <p>A post is a thread once it has a reply. Your own new post stays on the thread list before
- * anyone replies. A lone message from someone else is not a thread. Threads, Board, and Stream are
- * the same notes. Changing the shelf leaves an open thread. A thread's directory contains the
- * files on that post and on its replies.
+ * <p>A thread is a post that has a reply. A post with none stays off that list, including your own,
+ * and the board still shows it. The first two levels of a thread are open. Deeper replies stay
+ * folded until that line is opened. Opening the thread itself shows the whole tree. Search keeps a
+ * hit together with the posts above and below it. Changing the shelf leaves an open thread. A
+ * thread's directory contains the files on that post and on its replies.
  *
- * <p>The conversation screen still draws its own list. This is the reading that list should use.
+ * <p>The conversation screen reads the open room through {@link Session}. Chat on that shelf is the
+ * transcript the list already drew.
  */
 public final class Desk {
 
@@ -35,6 +41,38 @@ public final class Desk {
         SENDER,
         EXTENSION,
         THREAD
+    }
+
+    public enum Sort {
+        NAME,
+        DATE,
+        SIZE,
+        KIND,
+        SENDER
+    }
+
+    /** Order of the thread list and the board. The stream stays in time order. */
+    public enum ShelfSort {
+        ACTIVITY,
+        REPLIES,
+        NEWEST,
+        OLDEST
+    }
+
+    /** What the shelf says when the list has no rows. */
+    public enum Empty {
+        NONE,
+        SEARCH,
+        SHELF,
+        THREADS
+    }
+
+    /** The line under the shelf switch. */
+    public enum Cue {
+        HIDDEN,
+        STREAM,
+        THREAD,
+        SHELF
     }
 
     /** One message, plus the files that were sent with it. */
@@ -112,6 +150,96 @@ public final class Desk {
         }
     }
 
+    /** One row of the reading that is on screen. A folder row opens the next level. */
+    public static final class Row {
+        public enum Kind {
+            THREAD,
+            POST,
+            STREAM,
+            DAY,
+            FILE,
+            FOLDER
+        }
+
+        public final Kind kind;
+        public final String id;
+        public final int depth;
+        public final String text;
+        public final String author;
+        public final String when;
+        public final String quote;
+        /** Replies under this post, including replies to those replies. */
+        public final int replies;
+        public final int fileCount;
+        public final boolean collapsed;
+        public final boolean focused;
+        public final boolean outgoing;
+        public final boolean folder;
+        public final String chip;
+        public final String chipKind;
+        public final String chipDetail;
+
+        public Row(
+                Kind kind,
+                String id,
+                int depth,
+                String text,
+                String author,
+                String when,
+                String quote,
+                int replies,
+                int fileCount,
+                boolean collapsed,
+                boolean focused,
+                boolean outgoing,
+                boolean folder,
+                String chip,
+                String chipKind,
+                String chipDetail) {
+            this.kind = kind;
+            this.id = id;
+            this.depth = depth;
+            this.text = text;
+            this.author = author == null ? "" : author;
+            this.when = when == null ? "" : when;
+            this.quote = quote;
+            this.replies = replies;
+            this.fileCount = fileCount;
+            this.collapsed = collapsed;
+            this.focused = focused;
+            this.outgoing = outgoing;
+            this.folder = folder;
+            this.chip = chip;
+            this.chipKind = chipKind;
+            this.chipDetail = chipDetail;
+        }
+
+        static Row file(String id, String text, boolean folder) {
+            return new Row(
+                    folder ? Kind.FOLDER : Kind.FILE,
+                    id,
+                    0,
+                    text,
+                    "",
+                    "",
+                    null,
+                    0,
+                    0,
+                    false,
+                    false,
+                    false,
+                    folder,
+                    null,
+                    null,
+                    null);
+        }
+
+        static Row day(String id, String label) {
+            return new Row(
+                    Kind.DAY, id, 0, label, "", "", null, 0, 0, false, false, false, false, null, null, null);
+        }
+    }
+
     private Desk() {}
 
     /** Desk, the sample room. Ada, Jules, and you. */
@@ -174,8 +302,8 @@ public final class Desk {
     public static List<Line> board(List<Note> notes, String focusId) {
         Index index = new Index(notes);
         List<Line> lines = new ArrayList<>();
-        for (int card : index.cards()) {
-            walk(index, card, 0, focusId, lines);
+        for (int root : index.rootsSorted(ShelfSort.ACTIVITY)) {
+            walk(index, root, 0, focusId, false, Map.of(), lines);
         }
         return lines;
     }
@@ -187,7 +315,7 @@ public final class Desk {
             throw new IllegalArgumentException("That message is not a thread yet.");
         }
         List<Line> lines = new ArrayList<>();
-        walk(index, root, 0, focusId, lines);
+        walk(index, root, 0, focusId, true, Map.of(), lines);
         return lines;
     }
 
@@ -222,6 +350,11 @@ public final class Desk {
      */
     public static List<String> files(
             List<Note> notes, String threadId, Group group, String folder) {
+        return files(notes, threadId, group, folder, Sort.NAME);
+    }
+
+    public static List<String> files(
+            List<Note> notes, String threadId, Group group, String folder, Sort sort) {
         Index index = new Index(notes);
         List<FileRef> refs = index.filesIn(threadId);
         if (group == Group.FLAT || folder != null) {
@@ -231,7 +364,7 @@ public final class Desk {
                     throw new IllegalArgumentException("That folder is not in this arrangement.");
                 }
             }
-            refs.sort(Comparator.comparing((FileRef ref) -> ref.file.name, Desk::compareNatural));
+            refs.sort((a, b) -> compareFiles(a, b, sort));
             List<String> names = new ArrayList<>();
             for (FileRef ref : refs) {
                 names.add(ref.file.name);
@@ -253,6 +386,52 @@ public final class Desk {
         return DateTimeFormatter.ofPattern("yyyy-MM")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.ofEpochSecond(at));
+    }
+
+    static String formatWhen(long at) {
+        return DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm", Locale.UK)
+                .withZone(ZoneOffset.UTC)
+                .format(Instant.ofEpochSecond(at));
+    }
+
+    /** {@code today}, {@code yesterday}, or a UTC date such as {@code 02 Apr 2026}. */
+    static String dayLabel(long at, long now) {
+        LocalDate day = Instant.ofEpochSecond(at).atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate today = Instant.ofEpochSecond(now).atZone(ZoneOffset.UTC).toLocalDate();
+        if (day.equals(today)) {
+            return "today";
+        }
+        if (day.equals(today.minusDays(1))) {
+            return "yesterday";
+        }
+        return DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.UK)
+                .withZone(ZoneOffset.UTC)
+                .format(Instant.ofEpochSecond(at));
+    }
+
+    static String formatBytes(long bytes) {
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
+        if (bytes < 1024L * 1024L) {
+            return String.format(Locale.UK, "%.1f KB", bytes / 1024.0);
+        }
+        return String.format(Locale.UK, "%.1f MB", bytes / (1024.0 * 1024.0));
+    }
+
+    private static int compareFiles(FileRef a, FileRef b, Sort sort) {
+        int primary =
+                switch (sort) {
+                    case NAME -> 0;
+                    case DATE -> Long.compare(a.file.at, b.file.at);
+                    case SIZE -> Long.compare(a.file.bytes, b.file.bytes);
+                    case KIND -> a.file.kind.compareTo(b.file.kind);
+                    case SENDER -> a.file.sender.compareTo(b.file.sender);
+                };
+        if (primary != 0) {
+            return primary;
+        }
+        return compareNatural(a.file.name, b.file.name);
     }
 
     public static int compareNatural(String a, String b) {
@@ -285,14 +464,45 @@ public final class Desk {
 
     /** The open room. Shelf changes close a thread. Back walks the places you left. */
     public static final class Session {
-        private final List<Note> notes;
+        private List<Note> notes;
         private View view = View.THREADS;
         private String threadId;
         private String focusId;
+        private boolean files;
+        private String folder;
+        private Group group = Group.FLAT;
+        private Sort sort = Sort.NAME;
+        private ShelfSort shelfSort = ShelfSort.ACTIVITY;
+        private String query = "";
+        private final HashMap<String, Boolean> opened = new HashMap<>();
         private final ArrayDeque<Mark> back = new ArrayDeque<>();
 
         public Session(List<Note> notes) {
             this.notes = notes;
+        }
+
+        /** Keep the place. Drop a thread or a focus the new notes no longer contain. */
+        public void replace(List<Note> next) {
+            notes = next == null ? List.of() : next;
+            Index index = new Index(notes);
+            if (threadId != null && !stillThread(index, threadId)) {
+                threadId = null;
+            }
+            if (focusId != null && !index.byId.containsKey(focusId)) {
+                focusId = null;
+            }
+            if (folder != null) {
+                boolean found = false;
+                for (FileRef ref : index.filesIn(threadId)) {
+                    if (index.groupKey(ref, group).equals(folder)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    folder = null;
+                }
+            }
         }
 
         public static Session sample() {
@@ -311,6 +521,30 @@ public final class Desk {
             return focusId;
         }
 
+        public boolean filesOpen() {
+            return files;
+        }
+
+        public Group group() {
+            return group;
+        }
+
+        public Sort sort() {
+            return sort;
+        }
+
+        public ShelfSort shelfSort() {
+            return shelfSort;
+        }
+
+        public String query() {
+            return query;
+        }
+
+        public boolean hasBack() {
+            return !back.isEmpty();
+        }
+
         public void setView(View next) {
             go(next, null);
         }
@@ -324,6 +558,187 @@ public final class Desk {
             go(view, id);
         }
 
+        /** Jump to this message in one of the three readings. */
+        public void showIn(String id, View next) {
+            Index index = new Index(notes);
+            int i = index.require(id);
+            int root = index.rootOf(i);
+            if (next == View.STREAM) {
+                go(View.STREAM, null);
+                focusId = notes.get(i).id;
+                return;
+            }
+            if (next == View.BOARD) {
+                revealAncestors(index, i);
+                go(View.BOARD, null);
+                focusId = notes.get(i).id;
+                return;
+            }
+            if (!index.isCard(root)) {
+                throw new IllegalArgumentException("That message is not a thread yet.");
+            }
+            go(View.THREADS, notes.get(root).id);
+            focusId = notes.get(i).id;
+        }
+
+        /**
+         * The stream's double-tap. The board opens on this message, and each post above it is
+         * unfolded.
+         */
+        public void openOnBoard(String id) {
+            showIn(id, View.BOARD);
+        }
+
+        public void openFiles() {
+            folder = null;
+            if (files) {
+                return;
+            }
+            back.add(new Mark(view, threadId, false));
+            files = true;
+            focusId = null;
+        }
+
+        public void openFolder(String name) {
+            if (group == Group.FLAT) {
+                throw new IllegalArgumentException("That folder is not in this arrangement.");
+            }
+            List<String> labels = Desk.files(notes, threadId, group, null);
+            if (!labels.contains(name)) {
+                throw new IllegalArgumentException("That folder is not in this arrangement.");
+            }
+            folder = name;
+        }
+
+        public void setGroup(Group next) {
+            group = next;
+            folder = null;
+        }
+
+        public void setSort(Sort next) {
+            sort = next;
+        }
+
+        public void setShelfSort(ShelfSort next) {
+            if (next != null) {
+                shelfSort = next;
+            }
+        }
+
+        /** Narrow the shelf. An open thread closes, because the search takes its place. */
+        public void setQuery(String next) {
+            String cleaned = next == null ? "" : next;
+            if (cleaned.equals(query)) {
+                return;
+            }
+            query = cleaned;
+            threadId = null;
+            focusId = null;
+        }
+
+        public void search(String next) {
+            setQuery(next);
+        }
+
+        public void focus(String id) {
+            new Index(notes).require(id);
+            focusId = id;
+        }
+
+        /**
+         * Open the thread this row names. A search opens it on the latest matching line. A post
+         * with no replies opens in the stream.
+         */
+        public void openListed(String id) {
+            Index index = new Index(notes);
+            int i = index.require(id);
+            int root = index.rootOf(i);
+            int target = root;
+            if (!query.trim().isEmpty()) {
+                target = bestMatch(index, root, query.trim().toLowerCase(Locale.ROOT).split("\\s+"));
+            }
+            if (index.isCard(root)) {
+                View stay = view == View.STREAM ? View.BOARD : view;
+                go(stay, notes.get(root).id);
+            } else {
+                go(View.STREAM, null);
+            }
+            focusId = notes.get(target).id;
+        }
+
+        /** Record the fold the other way. Open means the map value is true. */
+        public void toggleFold(String id, boolean collapsedNow) {
+            opened.put(id, collapsedNow);
+        }
+
+        /** The directory that holds this message's file. A thread's files include its replies. */
+        public void showFile(String id) {
+            Index index = new Index(notes);
+            int root = index.rootOf(index.require(id));
+            String nextThread = index.isCard(root) ? notes.get(root).id : null;
+            if (!files) {
+                back.add(new Mark(view, threadId, false));
+            }
+            threadId = nextThread;
+            files = true;
+            folder = null;
+            focusId = null;
+        }
+
+        public Empty emptyKind() {
+            if (files) {
+                return fileRows().isEmpty() ? Empty.SHELF : Empty.NONE;
+            }
+            if (threadId != null) {
+                return Empty.NONE;
+            }
+            List<Note> shown = visible();
+            if (shown.isEmpty()) {
+                return query.trim().isEmpty() ? Empty.SHELF : Empty.SEARCH;
+            }
+            if (view == View.THREADS && query.trim().isEmpty()) {
+                Index index = new Index(shown);
+                for (int root : index.roots) {
+                    if (index.isCard(root)) {
+                        return Empty.NONE;
+                    }
+                }
+                return Empty.THREADS;
+            }
+            return Empty.NONE;
+        }
+
+        public Cue cue() {
+            if (files) {
+                return Cue.HIDDEN;
+            }
+            if (threadId != null) {
+                return Cue.THREAD;
+            }
+            if (view == View.STREAM) {
+                return Cue.STREAM;
+            }
+            return Cue.SHELF;
+        }
+
+        public List<Row> rows() {
+            if (files) {
+                return fileRows();
+            }
+            Index index = new Index(visible());
+            if (threadId != null) {
+                int root = index.require(threadId);
+                List<Row> rows = new ArrayList<>();
+                walkPosts(index, root, 0, true, rows);
+                return rows;
+            }
+            return switch (view) {
+                case THREADS -> threadRows(index);
+                case BOARD -> postRows(index, false);
+                case STREAM -> streamRows(index);
+            };
+        }
+
         public boolean back() {
             Mark previous = back.pollLast();
             if (previous == null) {
@@ -331,35 +746,249 @@ public final class Desk {
             }
             view = previous.view;
             threadId = previous.threadId;
+            files = previous.files;
+            folder = null;
             focusId = null;
             return true;
         }
 
-        /** Earliest hit. A reply opens its thread. A lone message opens the stream. */
-        public void search(String query) {
-            Index index = new Index(notes);
-            int hit = index.firstHit(query);
-            if (hit < 0) {
-                throw new IllegalArgumentException("No message with that id.");
-            }
-            int root = index.rootOf(hit);
-            focusId = null;
-            if (index.isCard(root)) {
-                go(view, notes.get(root).id);
-            } else {
-                go(View.STREAM, null);
-            }
-            focusId = notes.get(hit).id;
-        }
-
         private void go(View nextView, String nextThread) {
-            if (nextView == view && same(nextThread, threadId)) {
+            if (!files && nextView == view && same(nextThread, threadId)) {
                 return;
             }
-            back.add(new Mark(view, threadId));
+            back.add(new Mark(view, threadId, files));
             view = nextView;
             threadId = nextThread;
+            files = false;
+            folder = null;
             focusId = null;
+        }
+
+        private boolean stillThread(Index index, String id) {
+            Integer i = index.byId.get(id);
+            return i != null && index.rootOf(i) == i && index.isCard(i);
+        }
+
+        private List<Note> visible() {
+            if (threadId != null || query.trim().isEmpty()) {
+                return notes;
+            }
+            return matching(notes, query);
+        }
+
+        private void revealAncestors(Index index, int i) {
+            int cursor = i;
+            int guard = 0;
+            while (index.parent[cursor] >= 0 && guard <= index.parent.length) {
+                opened.put(notes.get(index.parent[cursor]).id, true);
+                cursor = index.parent[cursor];
+                guard++;
+            }
+        }
+
+        private int bestMatch(Index index, int root, String[] words) {
+            int found = bestIn(index, root, words);
+            return found < 0 ? root : found;
+        }
+
+        private int bestIn(Index index, int i, String[] words) {
+            int best = hits(index.notes.get(i), words) ? i : -1;
+            for (int child : index.kids.get(i)) {
+                int found = bestIn(index, child, words);
+                if (found < 0) {
+                    continue;
+                }
+                if (best < 0 || index.notes.get(found).at >= index.notes.get(best).at) {
+                    best = found;
+                }
+            }
+            return best;
+        }
+
+        private List<Row> threadRows(Index index) {
+            List<Row> rows = new ArrayList<>();
+            boolean searching = !query.trim().isEmpty();
+            for (int root : index.rootsSorted(shelfSort)) {
+                int replies = index.descendants(root);
+                if (replies == 0 && !searching) {
+                    continue;
+                }
+                Note note = index.notes.get(root);
+                rows.add(
+                        postRow(
+                                Row.Kind.THREAD,
+                                index,
+                                root,
+                                0,
+                                index.title(root),
+                                formatWhen(index.activity(root)),
+                                null,
+                                replies,
+                                index.filesUnder(root),
+                                false,
+                                note.id.equals(focusId)));
+            }
+            return rows;
+        }
+
+        private List<Row> postRows(Index index, boolean force) {
+            List<Row> rows = new ArrayList<>();
+            for (int root : index.rootsSorted(shelfSort)) {
+                walkPosts(index, root, 0, force, rows);
+            }
+            return rows;
+        }
+
+        private void walkPosts(Index index, int i, int depth, boolean force, List<Row> out) {
+            Note note = index.notes.get(i);
+            boolean kids = !index.kids.get(i).isEmpty();
+            boolean collapsed = collapsed(note.id, depth, force, kids);
+            int replies = index.descendants(i);
+            out.add(
+                    postRow(
+                            Row.Kind.POST,
+                            index,
+                            i,
+                            depth,
+                            note.body == null ? "" : note.body,
+                            formatWhen(note.at),
+                            null,
+                            replies,
+                            note.files.size(),
+                            collapsed,
+                            note.id.equals(focusId)));
+            if (!collapsed) {
+                for (int child : index.kids.get(i)) {
+                    walkPosts(index, child, depth + 1, force, out);
+                }
+            }
+        }
+
+        private boolean collapsed(String id, int depth, boolean force, boolean kids) {
+            if (force || !kids) {
+                return false;
+            }
+            if (opened.containsKey(id)) {
+                return !Boolean.TRUE.equals(opened.get(id));
+            }
+            return depth >= 2;
+        }
+
+        private Row postRow(
+                Row.Kind kind,
+                Index index,
+                int i,
+                int depth,
+                String text,
+                String when,
+                String quote,
+                int replies,
+                int fileCount,
+                boolean collapsed,
+                boolean focused) {
+            Note note = index.notes.get(i);
+            String chip = null;
+            String chipKind = null;
+            String chipDetail = null;
+            if (!note.files.isEmpty()) {
+                Attached file = note.files.get(0);
+                chip = file.name;
+                chipKind = file.kind;
+                chipDetail = file.bytes > 0 ? formatBytes(file.bytes) : "";
+                if (note.files.size() > 1) {
+                    String more = "+" + (note.files.size() - 1);
+                    chipDetail = chipDetail.isEmpty() ? more : chipDetail + " · " + more;
+                }
+            }
+            return new Row(
+                    kind,
+                    note.id,
+                    depth,
+                    text,
+                    note.author,
+                    when,
+                    quote,
+                    replies,
+                    fileCount,
+                    collapsed,
+                    focused,
+                    note.fromSelf,
+                    false,
+                    chip,
+                    chipKind,
+                    chipDetail);
+        }
+
+        private List<Row> streamRows(Index index) {
+            List<Integer> order = new ArrayList<>();
+            for (int i = 0; i < index.notes.size(); i++) {
+                order.add(i);
+            }
+            order.sort(index::byTime);
+            long now = System.currentTimeMillis() / 1000L;
+            List<Row> rows = new ArrayList<>();
+            String lastDay = null;
+            for (int i : order) {
+                Note note = index.notes.get(i);
+                String day = dayLabel(note.at, now);
+                if (!day.equals(lastDay)) {
+                    rows.add(Row.day("day-" + note.id, day));
+                    lastDay = day;
+                }
+                String quote = null;
+                if (index.parent[i] >= 0) {
+                    Note parent = index.notes.get(index.parent[i]);
+                    quote = parent.author + ": " + firstLine(parent.body);
+                }
+                rows.add(
+                        new Row(
+                                Row.Kind.STREAM,
+                                note.id,
+                                0,
+                                note.body == null ? "" : note.body,
+                                note.author,
+                                formatWhen(note.at),
+                                quote,
+                                0,
+                                note.files.size(),
+                                false,
+                                note.id.equals(focusId),
+                                note.fromSelf,
+                                false,
+                                null,
+                                null,
+                                null));
+            }
+            return rows;
+        }
+
+        private List<Row> fileRows() {
+            Index index = new Index(notes);
+            List<FileRef> refs = index.filesIn(threadId);
+            if (group != Group.FLAT && folder == null) {
+                List<String> labels = new ArrayList<>();
+                for (FileRef ref : refs) {
+                    String key = index.groupKey(ref, group);
+                    if (!labels.contains(key)) {
+                        labels.add(key);
+                    }
+                }
+                labels.sort(Desk::compareNatural);
+                List<Row> rows = new ArrayList<>();
+                for (String label : labels) {
+                    rows.add(Row.file(label, label, true));
+                }
+                return rows;
+            }
+            if (folder != null) {
+                refs.removeIf(ref -> !index.groupKey(ref, group).equals(folder));
+            }
+            refs.sort((a, b) -> compareFiles(a, b, sort));
+            List<Row> rows = new ArrayList<>();
+            for (FileRef ref : refs) {
+                rows.add(Row.file(notes.get(ref.note).id, ref.file.name, false));
+            }
+            return rows;
         }
 
         private static boolean same(String a, String b) {
@@ -369,28 +998,114 @@ public final class Desk {
         private static final class Mark {
             final View view;
             final String threadId;
+            final boolean files;
 
-            Mark(View view, String threadId) {
+            Mark(View view, String threadId, boolean files) {
                 this.view = view;
                 this.threadId = threadId;
+                this.files = files;
             }
         }
     }
 
-    private static void walk(Index index, int i, int depth, String focusId, List<Line> out) {
+    private static void walk(
+            Index index,
+            int i,
+            int depth,
+            String focusId,
+            boolean force,
+            Map<String, Boolean> opened,
+            List<Line> out) {
         Note note = index.notes.get(i);
+        boolean kids = !index.kids.get(i).isEmpty();
+        boolean collapsed;
+        if (force || !kids) {
+            collapsed = false;
+        } else if (opened != null && opened.containsKey(note.id)) {
+            collapsed = !Boolean.TRUE.equals(opened.get(note.id));
+        } else {
+            collapsed = depth >= 2;
+        }
         String text =
-                depth == 0
-                        ? index.title(i)
-                        : note.author + " — " + firstLine(note.body);
-        boolean showKids = depth < 1 || index.isStrictAncestor(i, focusId);
-        int folded = !showKids ? index.kids.get(i).size() : 0;
+                depth == 0 ? index.title(i) : note.author + " — " + firstLine(note.body);
+        int folded = collapsed ? index.descendants(i) : 0;
         out.add(new Line(note.id, depth, text, folded, note.id.equals(focusId)));
-        if (showKids) {
+        if (!collapsed) {
             for (int child : index.kids.get(i)) {
-                walk(index, child, depth + 1, focusId, out);
+                walk(index, child, depth + 1, focusId, force, opened, out);
             }
         }
+    }
+
+    /** A hit, the posts it answers, and the replies under it. */
+    static List<Note> matching(List<Note> notes, String query) {
+        String trimmed = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
+        if (trimmed.isEmpty() || notes.isEmpty()) {
+            return notes;
+        }
+        String[] words = trimmed.split("\\s+");
+        Map<String, Note> byId = new HashMap<>();
+        Map<String, List<String>> kids = new HashMap<>();
+        for (Note note : notes) {
+            byId.put(note.id, note);
+            kids.put(note.id, new ArrayList<>());
+        }
+        for (Note note : notes) {
+            if (note.parentId != null && byId.containsKey(note.parentId) && !note.parentId.equals(note.id)) {
+                kids.get(note.parentId).add(note.id);
+            }
+        }
+        Set<String> keep = new HashSet<>();
+        for (Note note : notes) {
+            if (!hits(note, words)) {
+                continue;
+            }
+            String cursor = note.id;
+            Set<String> guard = new HashSet<>();
+            while (cursor != null && guard.add(cursor)) {
+                keep.add(cursor);
+                Note current = byId.get(cursor);
+                String parent = current == null ? null : current.parentId;
+                cursor = parent != null && byId.containsKey(parent) ? parent : null;
+            }
+            keepDescendants(note.id, kids, keep);
+        }
+        List<Note> out = new ArrayList<>();
+        for (Note note : notes) {
+            if (keep.contains(note.id)) {
+                out.add(note);
+            }
+        }
+        return out;
+    }
+
+    private static void keepDescendants(String id, Map<String, List<String>> kids, Set<String> keep) {
+        for (String child : kids.getOrDefault(id, List.of())) {
+            if (keep.add(child)) {
+                keepDescendants(child, kids, keep);
+            }
+        }
+    }
+
+    static boolean hits(Note note, String[] words) {
+        StringBuilder text = new StringBuilder();
+        if (note.body != null) {
+            text.append(note.body);
+        }
+        text.append(' ');
+        if (note.author != null) {
+            text.append(note.author);
+        }
+        for (Attached file : note.files) {
+            text.append(' ').append(file.name);
+        }
+        String haystack = text.toString().toLowerCase(Locale.ROOT);
+        for (String word : words) {
+            if (!haystack.contains(word)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     static String firstLine(String body) {
@@ -496,26 +1211,63 @@ public final class Desk {
             return i;
         }
 
+        /** A root is a thread once something answers it. */
         boolean isCard(int i) {
-            return subtreeCount(i) > 1 || notes.get(i).fromSelf;
+            return subtreeCount(i) > 1;
         }
 
         List<Integer> cards() {
             List<Integer> cards = new ArrayList<>();
-            for (int root : roots) {
+            for (int root : rootsSorted(ShelfSort.ACTIVITY)) {
                 if (isCard(root)) {
                     cards.add(root);
                 }
             }
-            cards.sort(
-                    (a, b) -> {
-                        int byActivity = Long.compare(activity(b), activity(a));
-                        if (byActivity != 0) {
-                            return byActivity;
-                        }
-                        return notes.get(a).id.compareTo(notes.get(b).id);
-                    });
             return cards;
+        }
+
+        List<Integer> rootsSorted(ShelfSort sort) {
+            List<Integer> ordered = new ArrayList<>(roots);
+            ordered.sort((a, b) -> compareShelf(a, b, sort == null ? ShelfSort.ACTIVITY : sort));
+            return ordered;
+        }
+
+        int descendants(int i) {
+            return subtreeCount(i) - 1;
+        }
+
+        int filesUnder(int i) {
+            int count = notes.get(i).files.size();
+            for (int child : kids.get(i)) {
+                count += filesUnder(child);
+            }
+            return count;
+        }
+
+        private int compareShelf(int a, int b, ShelfSort sort) {
+            if (sort == ShelfSort.REPLIES) {
+                int byReplies = Integer.compare(descendants(b), descendants(a));
+                if (byReplies != 0) {
+                    return byReplies;
+                }
+            } else if (sort == ShelfSort.NEWEST) {
+                int byAt = Long.compare(notes.get(b).at, notes.get(a).at);
+                if (byAt != 0) {
+                    return byAt;
+                }
+                return notes.get(a).id.compareTo(notes.get(b).id);
+            } else if (sort == ShelfSort.OLDEST) {
+                int byAt = Long.compare(notes.get(a).at, notes.get(b).at);
+                if (byAt != 0) {
+                    return byAt;
+                }
+                return notes.get(a).id.compareTo(notes.get(b).id);
+            }
+            int byActivity = Long.compare(activity(b), activity(a));
+            if (byActivity != 0) {
+                return byActivity;
+            }
+            return notes.get(a).id.compareTo(notes.get(b).id);
         }
 
         int byTime(int a, int b) {
@@ -535,44 +1287,6 @@ public final class Desk {
                 return notes.get(i).files.get(0).name;
             }
             return notes.get(i).id;
-        }
-
-        boolean isStrictAncestor(int i, String focusId) {
-            if (focusId == null) {
-                return false;
-            }
-            Integer focus = byId.get(focusId);
-            if (focus == null) {
-                return false;
-            }
-            int cursor = focus;
-            int guard = 0;
-            while (parent[cursor] >= 0 && guard <= parent.length) {
-                if (parent[cursor] == i) {
-                    return true;
-                }
-                cursor = parent[cursor];
-                guard++;
-            }
-            return false;
-        }
-
-        int firstHit(String query) {
-            String[] words = query.trim().toLowerCase(Locale.ROOT).split("\\s+");
-            if (query.trim().isEmpty()) {
-                return -1;
-            }
-            List<Integer> order = new ArrayList<>();
-            for (int i = 0; i < notes.size(); i++) {
-                order.add(i);
-            }
-            order.sort(this::byTime);
-            for (int i : order) {
-                if (matches(i, words)) {
-                    return i;
-                }
-            }
-            return -1;
         }
 
         List<FileRef> filesIn(String threadId) {
@@ -602,22 +1316,6 @@ public final class Desk {
                 case EXTENSION -> extension(file.name);
                 case THREAD -> title(rootOf(ref.note));
             };
-        }
-
-        private boolean matches(int i, String[] words) {
-            Note note = notes.get(i);
-            StringBuilder text = new StringBuilder(note.body.toLowerCase(Locale.ROOT));
-            text.append(' ').append(note.author.toLowerCase(Locale.ROOT));
-            for (Attached file : note.files) {
-                text.append(' ').append(file.name.toLowerCase(Locale.ROOT));
-            }
-            String haystack = text.toString();
-            for (String word : words) {
-                if (!haystack.contains(word)) {
-                    return false;
-                }
-            }
-            return true;
         }
 
         private int subtreeCount(int i) {

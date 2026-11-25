@@ -8,11 +8,11 @@ The app stays this Java codebase. Codename One, Kotlin Multiplatform, and Flutte
 
 `de.monocles.chat.desk.Desk` is the two readings that are new here.
 
-Threads, Board, and Stream are one room. A post is a thread once it has a reply. Your own new post stays on the thread list before anyone replies. A lone message from someone else opens in the stream. Changing the shelf leaves an open thread. Back returns to it. Search that hits a reply opens that thread. Search that hits a lone message opens the stream.
+Threads, Board, and Stream are one room. A thread is a post with at least one reply. A post with none stays off that list and in the stream, including your own. The board lists every post. The first two levels are open. A reply under those stays folded until that line is opened, and opening the thread shows the whole tree. Search on the shelf keeps a hit with the posts above and below it. Sort on Threads and Board is activity, replies, newest, or oldest. A double-tap on a stream message opens the board with the posts above it unfolded. Changing the shelf leaves an open thread. Back returns to it.
 
 The same messages are a directory. A thread's files include the files on its replies. Name order is natural, so `shot2` comes before `shot10`. Grouping adds one level of folders: type, month, sender, extension, or thread.
 
-The conversation screen still draws the list Monocles already had. The next change is to drive that screen from `Desk`.
+The conversation screen reads the open room through `Desk`. Threads, Board, Stream, and Files are the shelf. Chat on that shelf is the transcript Monocles already drew. A long press on a row opens that message in the next reading.
 
 ## Upstream
 

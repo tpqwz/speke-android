@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="desk_page">#0E1621</color>
+    <color name="desk_elev">#17212B</color>
+    <color name="desk_control">#1C2B3A</color>
+    <color name="desk_hair">#243444</color>
+    <color name="desk_text">#E7EEF5</color>
+    <color name="desk_muted">#8AA0B3</color>
+    <color name="desk_accent">#4AA3FF</color>
+    <color name="desk_ink">#07131E</color>
+    <color name="desk_in">#182533</color>
+    <color name="desk_out">#265280</color>
+    <color name="desk_quote">#24FFFFFF</color>
+    <color name="desk_day">#33000000</color>
+</resources>

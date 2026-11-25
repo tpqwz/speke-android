@@ -78,10 +78,193 @@
                     android:visibility="invisible" />
 
                 <LinearLayout
+                    android:id="@+id/desk_shelf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/top_bar_anchor"
+                    android:background="@color/desk_page"
+                    android:clickable="true"
+                    android:elevation="@dimen/floating_toolbar_elevation"
+                    android:focusable="true"
+                    android:orientation="vertical"
+                    android:outlineProvider="none"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="4dp">
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/desk_threads"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_desk_button"
+                                android:paddingStart="12dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="8dp"
+                                android:text="@string/desk_threads"
+                                android:textColor="@color/desk_text"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/desk_board"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_desk_button"
+                                android:paddingStart="12dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="8dp"
+                                android:text="@string/desk_board"
+                                android:textColor="@color/desk_text"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/desk_stream"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_desk_button"
+                                android:paddingStart="12dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="8dp"
+                                android:text="@string/desk_stream"
+                                android:textColor="@color/desk_text"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/desk_files"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_desk_button"
+                                android:paddingStart="12dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="8dp"
+                                android:text="@string/desk_files"
+                                android:textColor="@color/desk_text"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/desk_chat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_desk_button"
+                                android:paddingStart="12dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="8dp"
+                                android:text="@string/desk_chat"
+                                android:textColor="@color/desk_text"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </HorizontalScrollView>
+
+                    <LinearLayout
+                        android:id="@+id/desk_tools"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="12dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="12dp">
+
+                        <EditText
+                            android:id="@+id/desk_query"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_desk_field"
+                            android:hint="@string/desk_search_hint"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="text"
+                            android:paddingStart="10dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="8dp"
+                            android:singleLine="true"
+                            android:textColor="@color/desk_text"
+                            android:textColorHint="@color/desk_muted"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/desk_shelf_sort"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_desk_button"
+                            android:paddingStart="12dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/desk_sort_activity"
+                            android:textColor="@color/desk_text"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/desk_group"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_desk_button"
+                            android:paddingStart="12dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/desk_group"
+                            android:textColor="@color/desk_text"
+                            android:textSize="14sp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/desk_sort"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_desk_button"
+                            android:paddingStart="12dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/desk_sort"
+                            android:textColor="@color/desk_text"
+                            android:textSize="14sp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/desk_hint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="12dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="4dp"
+                        android:textColor="@color/desk_muted"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/muc_subject"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/top_bar_anchor"
+                    android:layout_below="@+id/desk_shelf"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:layout_marginStart="@dimen/floating_bar_margin"

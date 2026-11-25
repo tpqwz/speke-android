@@ -61,6 +61,26 @@ public class ChannelBindingRulesTest {
         Assert.assertEquals(ABORT, ChannelBindingRules.evaluate(SASL2, false, true, false));
     }
 
+    /** egoish.org offers only PLAIN and still announces channel-binding types. */
+    @Test
+    public void egoishPlainChannelBindingUsesLegacySasl() {
+        Assert.assertTrue(
+                ChannelBindingRules.legacySaslForPlainChannelBinding(
+                        "egoish.org", true, true, List.of("PLAIN"), true));
+        Assert.assertFalse(
+                ChannelBindingRules.legacySaslForPlainChannelBinding(
+                        "egoish.org", true, true, List.of("PLAIN", "SCRAM-SHA-256-PLUS"), true));
+        Assert.assertFalse(
+                ChannelBindingRules.legacySaslForPlainChannelBinding(
+                        "example.org", true, true, List.of("PLAIN"), true));
+        Assert.assertFalse(
+                ChannelBindingRules.legacySaslForPlainChannelBinding(
+                        "egoish.org", true, true, List.of("PLAIN"), false));
+        Assert.assertFalse(
+                ChannelBindingRules.legacySaslForPlainChannelBinding(
+                        "egoish.org", true, false, List.of("PLAIN"), true));
+    }
+
     /**
      * Rule 5 is only a SHOULD for SASL1; the "y" flag still makes the server refuse a downgrade.
      */

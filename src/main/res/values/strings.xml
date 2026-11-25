@@ -1837,4 +1837,38 @@
     <string name="shared_file_download_description">%1$s, %2$s. Download</string>
     <string name="shared_file_open_description">%1$s, %2$s. Open</string>
     <string name="playback_speed">Playback speed</string>
+    <string name="desk_threads">Threads</string>
+    <string name="desk_board">Board</string>
+    <string name="desk_stream">Stream</string>
+    <string name="desk_files">Files</string>
+    <string name="desk_chat">Chat</string>
+    <string name="desk_group">Group</string>
+    <string name="desk_sort">Sort</string>
+    <string name="desk_reply_folded">1 reply folded</string>
+    <string name="desk_replies_folded">%d replies folded</string>
+    <string name="desk_empty">Nothing in this reading</string>
+    <string name="desk_search_hint">Search this room</string>
+    <string name="desk_hint_stream">Replies quote the message they answer. Double-tap a message to open it on the board.</string>
+    <string name="desk_hint_thread">This thread, with its files. The file explorer opens the same set.</string>
+    <string name="desk_hint_shelf">Threads are posts with replies. A post with none stays in the stream.</string>
+    <string name="desk_empty_search">Nothing matches that search.</string>
+    <string name="desk_empty_shelf">Nothing on this shelf.</string>
+    <string name="desk_empty_threads">No threads yet. Posts with no replies are in the stream.</string>
+    <string name="desk_reply">Reply</string>
+    <string name="desk_fold">Fold</string>
+    <string name="desk_message">Message</string>
+    <string name="desk_sort_activity">Activity</string>
+    <string name="desk_sort_replies">Replies</string>
+    <string name="desk_sort_newest">Newest</string>
+    <string name="desk_sort_oldest">Oldest</string>
+    <string name="desk_today">Today</string>
+    <string name="desk_yesterday">Yesterday</string>
+    <plurals name="desk_replies">
+        <item quantity="one">1 reply</item>
+        <item quantity="other">%d replies</item>
+    </plurals>
+    <plurals name="desk_files_count">
+        <item quantity="one">1 file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
 </resources>

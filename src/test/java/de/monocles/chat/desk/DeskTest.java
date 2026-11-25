@@ -6,9 +6,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import de.monocles.chat.desk.Desk.Attached;
 import de.monocles.chat.desk.Desk.Line;
 import de.monocles.chat.desk.Desk.Note;
+import de.monocles.chat.desk.Desk.Row;
 import de.monocles.chat.desk.Desk.Session;
+import de.monocles.chat.desk.Desk.Sort;
 import de.monocles.chat.desk.Desk.StreamLine;
 import de.monocles.chat.desk.Desk.View;
 import java.util.List;
@@ -30,17 +33,22 @@ public class DeskTest {
     @Test
     public void aReplyMakesAThreadAndALoneNoteDoesNot() {
         assertEquals(
-                List.of("Hold the bisque at 200.", "Second frame from the end of the pier."),
+                List.of("Second frame from the end of the pier."),
                 Desk.threadTitles(Desk.sample()));
     }
 
     @Test
-    public void yourUnansweredPostStaysAndAnOrphanIsItsOwnRoot() {
+    public void yourUnansweredPostStaysInTheStream() {
         List<Note> notes =
                 List.of(
                         new Note("orphan", "missing", "Ada", "Orphan", 1, false, List.of()),
                         new Note("mine", null, "Ada", "Mine", 2, true, List.of()));
-        assertEquals(List.of("Mine"), Desk.threadTitles(notes));
+        assertEquals(List.of(), Desk.threadTitles(notes));
+        Session session = new Session(notes);
+        session.setView(View.BOARD);
+        assertEquals(
+                List.of("mine", "orphan"),
+                session.rows().stream().map(row -> row.id).toList());
     }
 
     @Test
@@ -51,13 +59,36 @@ public class DeskTest {
     }
 
     @Test
-    public void theSecondLevelFoldsUntilTheLineIsOpened() {
-        List<Line> folded = Desk.thread(Desk.sample(), "m1", null);
-        assertEquals(1, folded.get(1).folded);
-        assertFalse(folded.stream().anyMatch(line -> line.text.contains("climb")));
-        List<Line> open = Desk.thread(Desk.sample(), "m1", "m2b");
-        assertTrue(open.stream().anyMatch(line -> line.focused && line.text.contains("climb")));
+    public void openingAThreadShowsTheWholeTree() {
+        List<Line> open = Desk.thread(Desk.sample(), "m1", null);
+        assertTrue(open.stream().anyMatch(line -> line.text.contains("climb")));
         assertTrue(open.stream().noneMatch(line -> line.folded > 0));
+    }
+
+    @Test
+    public void aReplyUnderTheSecondLevelStaysFoldedUntilOpened() {
+        List<Note> notes =
+                List.of(
+                        new Note("a", null, "Ada", "Root", 1, false, List.of()),
+                        new Note("b", "a", "Ada", "Child", 2, false, List.of()),
+                        new Note("c", "b", "Ada", "Grand", 3, false, List.of()),
+                        new Note("d", "c", "Ada", "Great", 4, false, List.of()));
+        Session session = new Session(notes);
+        session.setView(View.BOARD);
+        assertTrue(session.rows().stream().anyMatch(row -> row.text.equals("Grand")));
+        assertTrue(session.rows().stream().noneMatch(row -> row.text.equals("Great")));
+        Row grand =
+                session.rows().stream()
+                        .filter(row -> row.text.equals("Grand"))
+                        .findFirst()
+                        .orElseThrow();
+        assertTrue(grand.collapsed);
+        assertEquals(1, grand.replies);
+        session.toggleFold(grand.id, true);
+        assertTrue(session.rows().stream().anyMatch(row -> row.text.equals("Great")));
+        session.openThread("a");
+        assertTrue(session.rows().stream().anyMatch(row -> row.text.equals("Great")));
+        assertTrue(session.rows().stream().noneMatch(row -> row.collapsed));
     }
 
     @Test
@@ -67,6 +98,8 @@ public class DeskTest {
         session.setView(View.BOARD);
         assertEquals(View.BOARD, session.view());
         assertNull(session.threadId());
+        assertTrue(session.rows().stream().anyMatch(row -> row.text.equals("Hold the bisque at 200.")));
+        assertTrue(session.rows().stream().anyMatch(row -> row.text.contains("climb")));
         assertTrue(session.back());
         assertEquals("m1", session.threadId());
     }
@@ -76,17 +109,27 @@ public class DeskTest {
         Session session = Session.sample();
         assertThrows(IllegalArgumentException.class, () -> session.openThread("m4"));
         session.search("glaze");
+        assertEquals(View.THREADS, session.view());
+        assertEquals(List.of("m4"), session.rows().stream().map(row -> row.id).toList());
+        assertEquals(0, session.rows().get(0).replies);
+        session.openListed("m4");
         assertEquals(View.STREAM, session.view());
         assertNull(session.threadId());
         assertEquals("m4", session.focusId());
     }
 
     @Test
-    public void searchForRopeOpensThePierThreadOnThatLine() {
+    public void searchForRopeKeepsThePierThreadAndOpensOnThatLine() {
         Session session = Session.sample();
-        session.search("rope");
+        session.search("climb");
+        assertNull(session.threadId());
+        assertEquals(List.of("m1"), session.rows().stream().map(row -> row.id).toList());
+        session.openListed("m1");
         assertEquals("m1", session.threadId());
-        assertEquals("m2", session.focusId());
+        assertEquals("m2b", session.focusId());
+        assertTrue(
+                session.rows().stream()
+                        .anyMatch(row -> row.focused && row.text.contains("climb")));
     }
 
     @Test
@@ -102,6 +145,110 @@ public class DeskTest {
                 Desk.files(Desk.sample(), null, Desk.Group.EXTENSION, "jpg"));
         assertEquals(
                 List.of("2026-04"), Desk.files(Desk.sample(), null, Desk.Group.MONTH, null));
+    }
+
+    @Test
+    public void theShelfRowsCarryTheThreadIds() {
+        List<Row> rows = Session.sample().rows();
+        assertEquals(1, rows.size());
+        assertEquals("m1", rows.get(0).id);
+        assertEquals("Second frame from the end of the pier.", rows.get(0).text);
+        assertEquals("Ada", rows.get(0).author);
+        assertEquals("02 Apr 2026 00:02", rows.get(0).when);
+        assertEquals(2, rows.get(0).replies);
+        assertEquals(3, rows.get(0).fileCount);
+    }
+
+    @Test
+    public void theBoardListsEveryPostNewestActivityFirst() {
+        Session session = Session.sample();
+        session.setView(View.BOARD);
+        assertEquals(
+                List.of("m4", "m3", "m1"),
+                session.rows().stream().filter(row -> row.depth == 0).map(row -> row.id).toList());
+        session.setShelfSort(Desk.ShelfSort.REPLIES);
+        assertEquals(
+                List.of("m1", "m4", "m3"),
+                session.rows().stream().filter(row -> row.depth == 0).map(row -> row.id).toList());
+        session.setShelfSort(Desk.ShelfSort.OLDEST);
+        assertEquals(
+                List.of("m1", "m3", "m4"),
+                session.rows().stream().filter(row -> row.depth == 0).map(row -> row.id).toList());
+        Row pier =
+                session.rows().stream().filter(row -> "m1".equals(row.id)).findFirst().orElseThrow();
+        assertEquals("shot2.jpg", pier.chip);
+        assertEquals("1.2 KB · +1", pier.chipDetail);
+    }
+
+    @Test
+    public void showInOpensTheOtherReadings() {
+        Session session = Session.sample();
+        session.showIn("m2", View.BOARD);
+        assertEquals(View.BOARD, session.view());
+        assertNull(session.threadId());
+        assertEquals("m2", session.focusId());
+        session.showIn("m2", View.THREADS);
+        assertEquals("m1", session.threadId());
+        assertEquals("m2", session.focusId());
+        assertThrows(IllegalArgumentException.class, () -> session.showIn("m4", View.THREADS));
+        session.showIn("m4", View.BOARD);
+        assertEquals(View.BOARD, session.view());
+        assertEquals("m4", session.focusId());
+        session.showIn("m4", View.STREAM);
+        assertEquals(View.STREAM, session.view());
+        assertEquals("m4", session.focusId());
+    }
+
+    @Test
+    public void filesCloseOnTheShelfAndBackReturns() {
+        Session session = Session.sample();
+        session.openThread("m1");
+        session.openFiles();
+        assertEquals(
+                List.of("rope-note.txt", "shot2.jpg", "shot10.jpg"),
+                session.rows().stream().map(row -> row.text).toList());
+        session.setGroup(Desk.Group.EXTENSION);
+        assertTrue(session.rows().get(0).folder);
+        session.openFolder("jpg");
+        assertEquals(List.of("shot2.jpg", "shot10.jpg"), session.rows().stream().map(row -> row.text).toList());
+        assertTrue(session.back());
+        assertEquals("m1", session.threadId());
+        assertFalse(session.filesOpen());
+    }
+
+    @Test
+    public void sizeOrderPutsTheSmallerFileFirst() {
+        List<Note> notes =
+                List.of(
+                        new Note(
+                                "a",
+                                null,
+                                "Ada",
+                                "A",
+                                1,
+                                true,
+                                List.of(
+                                        new Attached("big.pdf", "document", "Ada", 50, 1),
+                                        new Attached("small.txt", "text", "Ada", 5, 1))));
+        assertEquals(
+                List.of("small.txt", "big.pdf"),
+                Desk.files(notes, null, Desk.Group.FLAT, null, Sort.SIZE));
+    }
+
+    @Test
+    public void aNewNoteListKeepsTheOpenThread() {
+        Session session = Session.sample();
+        session.openThread("m1");
+        session.replace(Desk.sample());
+        assertEquals("m1", session.threadId());
+        session.replace(List.of());
+        assertNull(session.threadId());
+    }
+
+    @Test
+    public void millisBecomeSeconds() {
+        assertEquals(1_775_088_000L, DeskNotes.seconds(1_775_088_000_000L));
+        assertEquals(1_775_088_000L, DeskNotes.seconds(1_775_088_000L));
     }
 
     @Test

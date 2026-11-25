@@ -1923,7 +1923,8 @@ public class XmppConnection implements Runnable {
             throw new StateChangingException(Account.State.REGISTRATION_NOT_SUPPORTED);
         } else if (streamFeatures.hasStreamFeature(Authentication.class)
                 && shouldAuthenticate
-                && this.loginInfo == null) {
+                && this.loginInfo == null
+                && !legacySaslForPlainChannelBinding()) {
             authenticate(SaslMechanism.Version.SASL_2);
         } else if (streamFeatures.hasStreamFeature(Mechanisms.class)
                 && shouldAuthenticate
@@ -1967,7 +1968,9 @@ public class XmppConnection implements Runnable {
 
     private void authenticate() throws IOException {
         final boolean isSecure = isSecure();
-        if (isSecure && this.streamFeatures.hasStreamFeature(Authentication.class)) {
+        if (isSecure
+                && this.streamFeatures.hasStreamFeature(Authentication.class)
+                && !legacySaslForPlainChannelBinding()) {
             authenticate(SaslMechanism.Version.SASL_2);
         } else if (isSecure && this.streamFeatures.hasStreamFeature(Mechanisms.class)) {
             authenticate(SaslMechanism.Version.SASL);
@@ -1981,6 +1984,21 @@ public class XmppConnection implements Runnable {
                 || Config.ALLOW_NON_TLS_CONNECTIONS
                 || account.isDirectToOnion()
                 || account.isI2P();
+    }
+
+    private boolean legacySaslForPlainChannelBinding() {
+        final Authentication authentication =
+                this.streamFeatures.getExtension(Authentication.class);
+        final SaslChannelBinding channelBinding =
+                this.streamFeatures.getExtension(SaslChannelBinding.class);
+        return ChannelBindingRules.legacySaslForPlainChannelBinding(
+                account.getServer(),
+                authentication != null,
+                this.streamFeatures.hasStreamFeature(Mechanisms.class),
+                authentication == null
+                        ? Collections.emptyList()
+                        : authentication.getMechanismNames(),
+                channelBinding != null && !channelBinding.getChannelBindingTypes().isEmpty());
     }
 
     private void authenticate(final SaslMechanism.Version version) throws IOException {

@@ -66,4 +66,23 @@ public final class ChannelBindingRules {
         }
         return Outcome.PROCEED;
     }
+
+    /**
+     * egoish.org checks the password with an external program, so it offers only PLAIN, and it
+     * still announces channel-binding types. SASL2 must abort that pair. SASL1 may continue.
+     * shortcut: this host only, until that server stops announcing channel-binding without a -PLUS
+     * mechanism.
+     */
+    public static boolean legacySaslForPlainChannelBinding(
+            final String server,
+            final boolean sasl2Offered,
+            final boolean sasl1Offered,
+            final Collection<String> sasl2Mechanisms,
+            final boolean bindingsAnnounced) {
+        return "egoish.org".equals(server)
+                && sasl2Offered
+                && sasl1Offered
+                && bindingsAnnounced
+                && !anyPlusMechanism(sasl2Mechanisms);
+    }
 }
