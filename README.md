@@ -33,7 +33,7 @@ Screens designed by Pigeonalley (https://pigeonalley.com)
 <a href="https://f-droid.org/app/de.monocles.chat"><img src="https://f-droid.org/badge/get-it-on-en.png" alt="Get it on F-Droid" height="100"></a>
 <a href="https://play.google.com/store/apps/details?id=eu.monocles.chat"><img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/art/GetItOnGooglePlay_Badge_Web_color_English.png" alt="Get it on Google Play" height="100"></a>
 
-Nightly and beta APKs are available on Codeberg under [Releases](https://codeberg.org/monocles/monocles_chat/releases).
+Beta APKs are on [Releases](https://github.com/tpqwz/lanoxe-android/releases).
 
 LaNoxe requires Android 7.0 or newer.
 
