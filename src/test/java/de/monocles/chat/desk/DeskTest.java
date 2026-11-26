@@ -20,6 +20,22 @@ import org.junit.Test;
 public class DeskTest {
 
     @Test
+    public void aPostKeepsItsFirstHttpsAddress() {
+        assertEquals("https://example.com/a", Desk.linkIn("see https://example.com/a."));
+        assertEquals("example.com", Desk.linkHost("https://www.example.com/a"));
+        assertEquals("example.com", Desk.linkHost("https://example.com:443/a"));
+        assertNull(Desk.linkIn("http://example.com/a"));
+        assertNull(Desk.linkIn("no address"));
+        List<Note> notes =
+                List.of(
+                        new Note("root", null, "Ada", "https://feeds.example.com/a", 10, false, List.of()),
+                        new Note("reply", "root", "Jules", "Read it", 11, false, List.of()));
+        Row row = new Session(notes).rows().get(0);
+        assertEquals("https://feeds.example.com/a", row.link);
+        assertEquals("feeds.example.com", Desk.linkHost(row.link));
+    }
+
+    @Test
     public void april2026() {
         assertEquals("2026-04", Desk.monthKey(1_775_088_000L));
     }
@@ -105,17 +121,29 @@ public class DeskTest {
     }
 
     @Test
-    public void aLoneMessageOpensInTheStream() {
+    public void aLoneMessageStaysOnTheListForChat() {
         Session session = Session.sample();
         assertThrows(IllegalArgumentException.class, () -> session.openThread("m4"));
         session.search("glaze");
         assertEquals(View.THREADS, session.view());
         assertEquals(List.of("m4"), session.rows().stream().map(row -> row.id).toList());
         assertEquals(0, session.rows().get(0).replies);
-        session.openListed("m4");
-        assertEquals(View.STREAM, session.view());
+        assertFalse(session.openListed("m4"));
+        assertEquals(View.THREADS, session.view());
         assertNull(session.threadId());
         assertEquals("m4", session.focusId());
+        assertFalse(session.hasBack());
+    }
+
+    @Test
+    public void threadsChipClosesTheOpenThreadWithoutStacking() {
+        Session session = Session.sample();
+        session.openThread("m1");
+        session.showList();
+        assertNull(session.threadId());
+        assertEquals(View.THREADS, session.view());
+        assertFalse(session.hasBack());
+        assertFalse(session.back());
     }
 
     @Test
@@ -207,13 +235,43 @@ public class DeskTest {
         assertEquals(
                 List.of("rope-note.txt", "shot2.jpg", "shot10.jpg"),
                 session.rows().stream().map(row -> row.text).toList());
+        Row shot =
+                session.rows().stream()
+                        .filter(row -> "shot2.jpg".equals(row.text))
+                        .findFirst()
+                        .orElseThrow();
+        assertEquals("Ada", shot.author);
+        assertEquals("1.2 KB", shot.chip);
+        assertEquals("JPG image", shot.chipKind);
+        assertEquals("", Desk.formatSize(0));
+        assertEquals("80 B", Desk.formatSize(80));
         session.setGroup(Desk.Group.EXTENSION);
-        assertTrue(session.rows().get(0).folder);
+        Row jpg =
+                session.rows().stream().filter(row -> "jpg".equals(row.id)).findFirst().orElseThrow();
+        assertEquals(".jpg", jpg.text);
+        assertEquals(2, jpg.fileCount);
+        assertTrue(jpg.folder);
         session.openFolder("jpg");
         assertEquals(List.of("shot2.jpg", "shot10.jpg"), session.rows().stream().map(row -> row.text).toList());
         assertTrue(session.back());
+        assertTrue(session.filesOpen());
+        assertTrue(session.rows().stream().anyMatch(row -> row.folder));
+        assertTrue(session.back());
         assertEquals("m1", session.threadId());
         assertFalse(session.filesOpen());
+    }
+
+    @Test
+    public void fileSearchStaysInTheThreadAndKeepsTheDirectory() {
+        Session session = Session.sample();
+        session.openThread("m1");
+        session.openFiles();
+        session.setQuery("shot");
+        assertTrue(session.filesOpen());
+        assertEquals("m1", session.threadId());
+        assertEquals(
+                List.of("shot2.jpg", "shot10.jpg"),
+                session.rows().stream().map(row -> row.text).toList());
     }
 
     @Test

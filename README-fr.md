@@ -1,8 +1,8 @@
-# <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/src/monocleschat/ic_launcher-playstore.png" width="30"> monocles chat
+# <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/src/monocleschat/ic_launcher-playstore.png" width="30"> LaNoxe
 
 🇬🇧 [English](README.md) / 🇩🇪 [Deutsch](README-de.md) / 🇮🇹 [Italiano](README-it.md) / 🇵🇱 [Polski](README-pl.md) / 🇹🇷 [Türkçe](README-tr.md)
 
-monocles chat est un client XMPP moderne et sécurisé pour Android. Il est basé sur [Conversations](https://codeberg.org/iNPUTmice/Conversations), intègre des fonctionnalités de [blabber.im](https://codeberg.org/kriztan/blabber.im) et de [Cheogram](https://git.sr.ht/~singpolyma/cheogram-android), et ajoute de nombreuses modifications et fonctionnalités propres pour améliorer la facilité d'utilisation et la sécurité.
+LaNoxe est un client XMPP moderne et sécurisé pour Android. Il est basé sur [Conversations](https://codeberg.org/iNPUTmice/Conversations), intègre des fonctionnalités de [blabber.im](https://codeberg.org/kriztan/blabber.im) et de [Cheogram](https://git.sr.ht/~singpolyma/cheogram-android), et ajoute de nombreuses modifications et fonctionnalités propres pour améliorer la facilité d'utilisation et la sécurité.
 
 <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/00.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/01.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/02.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/03.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/04.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/05.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/06.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/07.png" width="200" />
 
@@ -35,7 +35,7 @@ monocles chat est un client XMPP moderne et sécurisé pour Android. Il est bas�
 
 Les APK nightly et bêta sont disponibles sur Codeberg dans [Releases](https://codeberg.org/monocles/monocles_chat/releases).
 
-monocles chat nécessite Android 7.0 ou une version plus récente.
+LaNoxe nécessite Android 7.0 ou une version plus récente.
 
 ## Compiler depuis les sources
 
@@ -102,7 +102,7 @@ Si nous ne pouvons pas résoudre votre problème là-bas, vous pouvez ouvrir un 
 
 3. Suivez les étapes [6] à [10] des instructions pour Windows.
 
-4. Commencez à écrire le journal dans un fichier sur votre ordinateur. Nous utilisons `logcat.txt`. monocles chat doit être en cours d'exécution. Entrez :
+4. Commencez à écrire le journal dans un fichier sur votre ordinateur. Nous utilisons `logcat.txt`. LaNoxe doit être en cours d'exécution. Entrez :
     ```
     $ adb -d logcat -v time --pid=$(adb -d shell pidof -s de.monocles.chat) > logcat.txt
     ```
@@ -151,10 +151,10 @@ Si nous ne pouvons pas résoudre votre problème là-bas, vous pouvez ouvrir un 
 
 ## Licence
 
-monocles chat est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la [GNU Affero General Public License](LICENSE) telle que publiée par la Free Software Foundation, uniquement dans sa version 3 (AGPL-3.0-only).
+LaNoxe est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la [GNU Affero General Public License](LICENSE) telle que publiée par la Free Software Foundation, uniquement dans sa version 3 (AGPL-3.0-only).
 
 L'application inclut [libsignal](https://github.com/signalapp/libsignal) (Copyright © Signal Messenger, LLC), distribuée sous la GNU AGPLv3 uniquement. L'application dans son ensemble est donc distribuée selon les termes de l'AGPLv3, version 3 uniquement. Cela inclut l'obligation de mettre l'intégralité du code source correspondant à la disposition de ses utilisateurs. Le code issu de Conversations, blabber.im et Cheogram, la bibliothèque [libsignal-protocol-java](https://github.com/signalapp/libsignal-protocol-java) intégrée pour l'OMEMO hérité, ainsi que les contributions faites lorsque ce dépôt était sous GPLv3, est sous licence GNU GPLv3 ; la section 13 de la GPLv3 permet de le combiner avec du code sous AGPLv3.
 
-monocles chat est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de QUALITÉ MARCHANDE ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+LaNoxe est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de QUALITÉ MARCHANDE ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 Copyright © 2020-2026 Arne-Brün Vogelsang et contributeurs

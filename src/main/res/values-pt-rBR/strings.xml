@@ -809,7 +809,7 @@
     <string name="conversations_backup">Backup do Conversations</string>
     <string name="event">Evento</string>
     <string name="open_backup">Abrir backup</string>
-    <string name="not_a_backup_file">O arquivo que você selecionou não é um backup do monocles chat</string>
+    <string name="not_a_backup_file">O arquivo que você selecionou não é um backup do LaNoxe</string>
     <string name="account_already_setup">Esta conta já foi configurada</string>
     <string name="please_enter_password">Por favor, digite a senha para esta conta</string>
     <string name="unable_to_perform_this_action">Não foi possível executar essa ação</string>
@@ -901,7 +901,7 @@
     <string name="failed_deliveries">Entregas não efetuadas</string>
     <string name="more_options">Mais opções</string>
     <string name="no_application_found">Não foi encontrado nenhum aplicativo</string>
-    <string name="invite_to_app">Convidar para o monocles chat</string>
+    <string name="invite_to_app">Convidar para o LaNoxe</string>
     <string name="unable_to_parse_invite">Não foi possível processar o convite</string>
     <string name="server_does_not_support_easy_onboarding_invites">O servidor não suporta a criação de convites</string>
     <string name="no_active_accounts_support_this">Nenhuma conta ativa suporta esse recurso</string>
@@ -940,7 +940,7 @@
     <string name="title_undo_swipe_out_chat">Chat arquivado</string>
     <string name="pref_dynamic_colors">Cores dinâmicas</string>
     <string name="pref_send_link_previews">Enviar prévias de links</string>
-    <string name="welcome_header">Seja bem-vindo(a) ao\nMonocles Chat</string>
+    <string name="welcome_header">Seja bem-vindo(a) ao\nLaNoxe</string>
     <string name="retract_message">Cancelar mensagem</string>
     <string name="outgoing_call_duration_timestamp">Ligação realizada (%s) · %s</string>
     <string name="incoming_call_duration_timestamp">Ligação recebida (%s) · %s</string>
@@ -1251,8 +1251,8 @@
     <string name="flip_camera">Vire a câmera</string>
     <string name="video_is_enabled_tap_to_disable">O vídeo está ativado. Toque para desativar.</string>
     <string name="video_is_disabled_tap_to_enable">O vídeo está desativado. Toque para ativar.</string>
-    <string name="welcome_to_monocles_chat">Bem-vindo(a) ao Monocles Chat</string>
-    <string name="do_you_have_an_account">Você já tem um ID XMPP? Pode ser esse o caso se você já estiver usando um cliente XMPP diferente ou já use o Monocles Chat, Conversations ou Snikket antes. Caso contrário, você pode criar um novo ID XMPP agora.</string>
+    <string name="welcome_to_monocles_chat">Bem-vindo(a) ao LaNoxe</string>
+    <string name="do_you_have_an_account">Você já tem um ID XMPP? Pode ser esse o caso se você já estiver usando um cliente XMPP diferente ou já use o LaNoxe, Conversations ou Snikket antes. Caso contrário, você pode criar um novo ID XMPP agora.</string>
     <string name="your_server_invitation">Seu convite para o servidor</string>
     <string name="i_am_snikket_user">Eu sou um usuário de Snikket</string>
     <string name="pref_dialler_integration_incoming">Use contas telefônicas para ligações recebidas</string>
@@ -1358,14 +1358,14 @@
     <string name="remove_bookmark_text">Deseja remover %s dos favoritos? A conversa associada a este favorito não será removida.</string>
     <string name="error_loading_chat_providers">Erro ao carregar provedores de conversa</string>
     <string name="pref_use_i2p_summary">Tunnel todas as conexões através da rede I2P. Requer cliente I2P</string>
-    <string name="internal_meda_viewer_summary">Use o visualizador de mídia interno para abrir arquivos de imagem ou vídeo dentro do Monocles Chat</string>
+    <string name="internal_meda_viewer_summary">Use o visualizador de mídia interno para abrir arquivos de imagem ou vídeo dentro do LaNoxe</string>
     <string name="xmpp_network_description">A rede XMPP é alimentada por um protocolo chamado XMPP. É uma rede descentralizada, o que significa que ninguém possui ou controla tudo. É uma rede federada, o que significa que qualquer pessoa pode executar um serviço XMPP. As mensagens para outros usuários XMPP são, por padrão, criptografadas de ponta a ponta com OMEMO.\n\nOs endereços são chamados de IDs XMPP e são semelhantes a endereços de e-mail:</string>
     <string name="call_is_using_earpiece">A ligação está usando fone de ouvido.</string>
     <string name="cant_open_file">Não é possível abrir o arquivo</string>
     <string name="call_is_using_speaker_tap_to_switch_to_earpiece">A ligação está usando o alto-falante. Toque para mudar para o fone de ouvido.</string>
     <string name="block_avatar">Bloquear avatar</string>
     <string name="mute_locally">Silenciar localmente</string>
-    <string name="monocles_chat_intro_description">O Monocles Chat é um aplicativo que conecta você a uma rede global chamada XMPP. Essa rede inclui serviços, chamados gateways, para conversar com outras redes, como SMS, IRC, Matrix e outras.</string>
+    <string name="monocles_chat_intro_description">O LaNoxe é um aplicativo que conecta você a uma rede global chamada XMPP. Essa rede inclui serviços, chamados gateways, para conversar com outras redes, como SMS, IRC, Matrix e outras.</string>
     <string name="sticker_deleted">Figurinha excluída</string>
     <string name="pref_load_image_from_any_link_title">Carregar links de imagem</string>
     <string name="compose_using_rich_text">Escrever usando texto formatado</string>

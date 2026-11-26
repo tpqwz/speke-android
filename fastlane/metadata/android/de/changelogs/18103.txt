@@ -16,7 +16,7 @@
 * Option hinzufügen, um Avatar-Zugriffsmodell auf Kontakte zu beschränken
 * Behebt das Erscheinen von Emoji-Popups, wenn auf einen Link geklickt wird.
 * Korrektur der Zeichenkette von muc-Teilnehmern
-* Dateien und Sicherungsordner in Dokumente/monocles chat/ ändern
+* Dateien und Sicherungsordner in Dokumente/LaNoxe/ ändern
 * Grundlegende Unterstützung für das Hinzufügen nach Jid im Gruppenchat erstellen
 * Anpassung der Anrufintegrationstöne
 * Liste der verwendeten Clients in den Kontaktdetails anzeigen

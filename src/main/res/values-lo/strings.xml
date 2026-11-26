@@ -860,7 +860,7 @@
     <string name="conversations_backup">ການສຳຮອງຂໍ້ມູນການສົນທະນາ</string>
     <string name="event">ເຫດການ</string>
     <string name="open_backup">ເປີດການສຳຮອງຂໍ້ມູນ</string>
-    <string name="not_a_backup_file">ໄຟລ໌ທີ່ທ່ານເລືອກບໍ່ແມ່ນໄຟລ໌ສຳຮອງຂໍ້ມູນຂອງ monocles chat</string>
+    <string name="not_a_backup_file">ໄຟລ໌ທີ່ທ່ານເລືອກບໍ່ແມ່ນໄຟລ໌ສຳຮອງຂໍ້ມູນຂອງ LaNoxe</string>
     <string name="outdated_backup_file_format">ທ່ານກຳລັງພະຍາຍາມນຳເຂົ້າຮູບແບບໄຟລ໌ສຳຮອງທີ່ລ້າສະໄໝ</string>
     <string name="non_quicksy_backup">Quicksy ສາມາດກູ້ຄືນການສຳຮອງຂໍ້ມູນສຳລັບບັນຊີ quicksy.im ໄດ້ເທົ່ານັ້ນ</string>
     <string name="account_already_setup">ບັນຊີນີ້ຖືກຕັ້ງຄ່າແລ້ວ</string>
@@ -1032,8 +1032,8 @@
     <string name="video_is_enabled_tap_to_disable">ເປີດວິດີໂອແລ້ວ. ແຕະເພື່ອປິດ.</string>
     <string name="video_is_disabled_tap_to_enable">ປິດວິດີໂອແລ້ວ. ແຕະເພື່ອເປີດ.</string>
     <string name="server_info_login_mechanism">ກົນໄກການເຂົ້າສູ່ລະບົບ</string>
-    <string name="welcome_to_monocles_chat">ຍິນດີຕ້ອນຮັບສູ່ monocles chat</string>
-    <string name="monocles_chat_intro_description">monocles chat ແມ່ນແອັບທີ່ເຊື່ອມຕໍ່ທ່ານກັບເຄືອຂ່າຍທົ່ວໂລກທີ່ເອີ້ນວ່າ XMPP. ເຄືອຂ່າຍນີ້ລວມມີບໍລິການທີ່ເອີ້ນວ່າ ເກດເວ (gateways) ເພື່ອສົນທະນາກັບເຄືອຂ່າຍອື່ນໆ ເຊັ່ນ SMS, IRC, Matrix ແລະ ອື່ນໆ.</string>
+    <string name="welcome_to_monocles_chat">ຍິນດີຕ້ອນຮັບສູ່ LaNoxe</string>
+    <string name="monocles_chat_intro_description">LaNoxe ແມ່ນແອັບທີ່ເຊື່ອມຕໍ່ທ່ານກັບເຄືອຂ່າຍທົ່ວໂລກທີ່ເອີ້ນວ່າ XMPP. ເຄືອຂ່າຍນີ້ລວມມີບໍລິການທີ່ເອີ້ນວ່າ ເກດເວ (gateways) ເພື່ອສົນທະນາກັບເຄືອຂ່າຍອື່ນໆ ເຊັ່ນ SMS, IRC, Matrix ແລະ ອື່ນໆ.</string>
     <string name="how_the_xmpp_network_works">ວິທີທີ່ເຄືອຂ່າຍ XMPP ເຮັດວຽກ</string>
     <string name="do_you_really_want_to_retract_this_message">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການຍົກເລີກຂໍ້ຄວາມນີ້? ຈະມີການສົ່ງຄຳຂໍຍົກເລີກໄປ, ແຕ່ແອັບຂອງຜູ້ຮັບອາດຈະບໍ່ຍອມຮັບມັນ.</string>
     <string name="show_avatar">ສະແດງຮູບໂປຣໄຟລ໌</string>
@@ -1062,7 +1062,7 @@
     <string name="show_link_previews">ສະແດງຕົວຢ່າງລິ້ງ</string>
     <string name="show_link_previews_summary">ສະແດງຄຳອະທິບາຍລິ້ງເມື່ອຜູ້ສົ່ງໃສ່ມານຳ</string>
     <string name="internal_meda_viewer_title">ຕົວເບິ່ງມີເດຍພາຍໃນ</string>
-    <string name="internal_meda_viewer_summary">ໃຊ້ຕົວເບິ່ງມີເດຍພາຍໃນເພື່ອເປີດໄຟລ໌ຮູບພາບ ຫຼື ວິດີໂອຢູ່ພາຍໃນແອັບ monocles chat</string>
+    <string name="internal_meda_viewer_summary">ໃຊ້ຕົວເບິ່ງມີເດຍພາຍໃນເພື່ອເປີດໄຟລ໌ຮູບພາບ ຫຼື ວິດີໂອຢູ່ພາຍໃນແອັບ LaNoxe</string>
     <string name="send_otr_message">ຂຽນຂໍ້ຄວາມ…</string>
     <string name="unknown_otr_fingerprint">ບໍ່ຮູ້ຈັກລາຍນິ້ວມື OTR</string>
     <string name="verify_otr">ຢັ້ງຢືນ OTR</string>
@@ -1116,7 +1116,7 @@
     <string name="create_new_account">ຂ້ອຍຕ້ອງການສະໝັກສະມາຊິກ</string>
     <string name="i_already_have_an_account">ຂ້ອຍມີທີ່ຢູ່ XMPP ແລ້ວ</string>
     <string name="i_am_snikket_user">ຂ້ອຍເປັນຜູ້ໃຊ້ Snikket</string>
-    <string name="do_you_have_an_account">ເຈົ້າມີທີ່ຢູ່ XMPP ແລ້ວບໍ? ອາດຈະມີແລ້ວຖ້າເຈົ້າໃຊ້ແອັບ XMPP ອື່ນ ຫຼື ເຄີຍໃຊ້ monocles chat, Conversations, ຫຼື Snikket ມາກ່ອນ. ຖ້າຍັງບໍ່ມີ ເຈົ້າສາມາດສ້າງທີ່ຢູ່ XMPP ໃໝ່ໄດ້ເລີຍຕອນນີ້.</string>
+    <string name="do_you_have_an_account">ເຈົ້າມີທີ່ຢູ່ XMPP ແລ້ວບໍ? ອາດຈະມີແລ້ວຖ້າເຈົ້າໃຊ້ແອັບ XMPP ອື່ນ ຫຼື ເຄີຍໃຊ້ LaNoxe, Conversations, ຫຼື Snikket ມາກ່ອນ. ຖ້າຍັງບໍ່ມີ ເຈົ້າສາມາດສ້າງທີ່ຢູ່ XMPP ໃໝ່ໄດ້ເລີຍຕອນນີ້.</string>
     <string name="server_select_text">XMPP ແມ່ນເຄືອຂ່າຍສົ່ງຂໍ້ຄວາມທັນທີທີ່ບໍ່ຂຶ້ນກັບຜູ້ໃຫ້ບໍລິການໃດໜຶ່ງ, ຂັບເຄື່ອນດ້ວຍໂປຣໂຕຄໍ XMPP. ເຈົ້າສາມາດໃຊ້ແອັບນີ້ກັບບໍລິການ XMPP ໃດກໍໄດ້ທີ່ເຈົ້າເລືອກ.</string>
     <string name="magic_create_text">ພວກເຮົາຈະແນະນຳຂັ້ນຕອນການສ້າງບັນຊີດ້ວຍລະຫັດຜ່ານແບບສຸ່ມ ເຊິ່ງເຈົ້າສາມາດປ່ຽນໄດ້ໃນໜ້າຕໍ່ໄປ. \nຫຼັງຈາກນັ້ນ, ເຈົ້າຈະສາມາດສື່ສານກັບຜູ້ໃຊ້ຈາກຜູ້ໃຫ້ບໍລິການນີ້ ແລະ ອື່ນໆໄດ້ ໂດຍການແບ່ງປັນທີ່ຢູ່ XMPP ເຕັມຂອງເຈົ້າ.</string>
     <string name="magic_create_text_on_x">ເຈົ້າໄດ້ຮັບເຊີນໃຫ້ເຂົ້າຮ່ວມ %1$s. ພວກເຮົາຈະແນະນຳຂັ້ນຕອນການສ້າງບັນຊີໃຫ້ເຈົ້າ.\nເມື່ອເລືອກ %1$s ເປັນຜູ້ໃຫ້ບໍລິການ ເຈົ້າຈະສາມາດສື່ສານກັບຜູ້ໃຊ້ຈາກຜູ້ໃຫ້ບໍລິການອື່ນໆໄດ້ ໂດຍການໃຫ້ທີ່ຢູ່ XMPP ເຕັມຂອງເຈົ້າແກ່ເຂົາເຈົ້າ.</string>
@@ -1134,7 +1134,7 @@
     <string name="action_close">ປິດ</string>
     <string name="action_execute">ໄປ</string>
     <string name="pref_theme_custom">ກຳນົດເອງ</string>
-    <string name="invite_to_app">ເຊີນມາໃຊ້ monocles chat</string>
+    <string name="invite_to_app">ເຊີນມາໃຊ້ LaNoxe</string>
     <string name="only_this_thread">ສະແດງສະເພາະກະທູ້ນີ້</string>
     <string name="pref_dialler_integration_incoming">ໃຊ້ບັນຊີໂທລະສັບສຳລັບສາຍໂທເຂົ້າ</string>
     <string name="pref_dialler_integration_incoming_summary">ສາຍໂທເຂົ້າຈາກເບີໂທລະສັບອາດຈະດັງໃນແອັບໂທລະສັບຂອງລະບົບ ແທນທີ່ຈະດັງຕາມການຕັ້ງຄ່າແຈ້ງເຕືອນຂອງແອັບນີ້</string>
@@ -1252,7 +1252,7 @@
     <string name="pref_import_settings">ນຳເຂົ້າການຕັ້ງຄ່າ</string>
     <string name="pref_import_settings_summary">ນຳເຂົ້າ settings.dat ຈາກໂຟນເດີສຳຮອງຂໍ້ມູນ</string>
     <string name="pref_export_settings">ສົ່ງອອກການຕັ້ງຄ່າ</string>
-    <string name="pref_export_settings_summary">ສົ່ງອອກການຕັ້ງຄ່າຂອງແອັບ monocles chat ໄປຍັງໂຟນເດີສຳຮອງຂໍ້ມູນ</string>
+    <string name="pref_export_settings_summary">ສົ່ງອອກການຕັ້ງຄ່າຂອງແອັບ LaNoxe ໄປຍັງໂຟນເດີສຳຮອງຂໍ້ມູນ</string>
     <string name="success_import_settings">ນຳເຂົ້າການຕັ້ງຄ່າສຳເລັດແລ້ວ</string>
     <string name="error_import_settings">ເກີດຂໍ້ຜິດພາດໃນຂະນະທີ່ນຳເຂົ້າການຕັ້ງຄ່າ</string>
     <string name="could_not_modify_call">ບໍ່ສາມາດແກ້ໄຂການໂທໄດ້</string>

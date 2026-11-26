@@ -2,5 +2,5 @@
 * Security: Introduce backup file format v2
 * Update translations
 * Remove redundant message deletion menu 
-* Fix import monocles chat backups
+* Fix import LaNoxe backups
 * Fix crash when a user has SVG Avatar

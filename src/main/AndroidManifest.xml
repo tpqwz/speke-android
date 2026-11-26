@@ -475,6 +475,9 @@
             android:name=".ui.CallsActivity"
             android:label="@string/calls" />
         <activity
+            android:name=".ui.FeedsActivity"
+            android:label="@string/rss" />
+        <activity
             android:name=".ui.PostsActivity"
             android:label="@string/feeds" />
         <activity

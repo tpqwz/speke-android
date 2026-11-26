@@ -1,5 +1,6 @@
 package eu.siacs.conversations.ui.service;
 
+import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
@@ -11,31 +12,38 @@ import eu.siacs.conversations.entities.Message;
 import eu.siacs.conversations.ui.ConversationsActivity;
 
 /**
- * Binds the always-visible "now playing" bar (view_audio_miniplayer.xml, included under the toolbar
- * in {@link ConversationsActivity}) to the app-scoped {@link BackgroundAudioController}. Shows
- * while an audio message is loaded, mirrors play/pause and progress, and lets the user pause, stop,
- * or jump to the playing message.
+ * Binds the now-playing bar (view_audio_miniplayer.xml) to the app-scoped {@link
+ * BackgroundAudioController}. A voice message keeps the private title off the bar. An episode uses
+ * its public name. The bar can pause, stop, and skip 15 seconds.
  */
 public class AudioMiniPlayer implements BackgroundAudioController.Listener {
 
-    private final ConversationsActivity activity;
+    private static final long SKIP_MS = 15_000L;
+
+    private final Activity activity;
     private final BackgroundAudioController controller;
     private final View root;
     private final MaterialButton playPause;
     private final MaterialButton speed;
+    private final TextView title;
     private final TextView subtitle;
     private final LinearProgressIndicator progress;
 
-    public AudioMiniPlayer(final ConversationsActivity activity, final View root) {
+    public AudioMiniPlayer(final Activity activity, final View root) {
         this.activity = activity;
         this.root = root;
         this.controller = BackgroundAudioController.getInstance(activity);
         this.playPause = root.findViewById(R.id.miniplayer_play_pause);
+        this.title = root.findViewById(R.id.miniplayer_title);
         this.subtitle = root.findViewById(R.id.miniplayer_subtitle);
         this.progress = root.findViewById(R.id.miniplayer_progress);
         final MaterialButton close = root.findViewById(R.id.miniplayer_close);
         this.speed = root.findViewById(R.id.miniplayer_speed);
+        root.findViewById(R.id.miniplayer_back)
+                .setOnClickListener(v -> controller.seekBy(-SKIP_MS));
         this.playPause.setOnClickListener(v -> controller.toggleCurrentPlayPause());
+        root.findViewById(R.id.miniplayer_forward)
+                .setOnClickListener(v -> controller.seekBy(SKIP_MS));
         this.speed.setOnClickListener(v -> controller.cyclePlaybackSpeed());
         close.setOnClickListener(v -> controller.stop());
         this.root.setOnClickListener(v -> jumpToMessage());
@@ -57,12 +65,13 @@ public class AudioMiniPlayer implements BackgroundAudioController.Listener {
 
     private void jumpToMessage() {
         final Message message = controller.getCurrentMessage();
-        if (message == null) {
+        if (message == null || !(activity instanceof ConversationsActivity)) {
             return;
         }
         final Conversational conversation = message.getConversation();
         if (conversation instanceof Conversation) {
-            activity.openConversationAtMessage((Conversation) conversation, message.getUuid());
+            ((ConversationsActivity) activity)
+                    .openConversationAtMessage((Conversation) conversation, message.getUuid());
         }
     }
 
@@ -78,7 +87,8 @@ public class AudioMiniPlayer implements BackgroundAudioController.Listener {
 
     private void update() {
         final Message message = controller.getCurrentMessage();
-        if (message == null) {
+        final String playingTitle = controller.getCurrentTitle();
+        if (message == null && (playingTitle == null || playingTitle.isEmpty())) {
             root.setVisibility(View.GONE);
             return;
         }
@@ -89,12 +99,17 @@ public class AudioMiniPlayer implements BackgroundAudioController.Listener {
         playPause.setContentDescription(
                 activity.getString(playing ? R.string.pause_audio : R.string.play_audio));
         AudioPlayer.applySpeed(speed, controller.getPlaybackSpeed());
-        final String title = controller.getCurrentTitle();
-        if (title != null && !title.isEmpty()) {
-            subtitle.setText(title);
-            subtitle.setVisibility(View.VISIBLE);
-        } else {
+        if (message == null) {
+            title.setText(playingTitle);
             subtitle.setVisibility(View.GONE);
+        } else {
+            title.setText(R.string.voice_message);
+            if (playingTitle != null && !playingTitle.isEmpty()) {
+                subtitle.setText(playingTitle);
+                subtitle.setVisibility(View.VISIBLE);
+            } else {
+                subtitle.setVisibility(View.GONE);
+            }
         }
         final int duration = controller.getDurationMs();
         final int current = controller.getCurrentPositionMs();

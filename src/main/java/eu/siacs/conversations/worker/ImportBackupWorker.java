@@ -1114,14 +1114,16 @@ public class ImportBackupWorker extends Worker {
             roots.add(new File(filesDir, legacy));
         }
         roots.add(context.getCacheDir());
-        roots.add(new File(Environment.getExternalStorageDirectory(), appName));
-        for (final String type :
-                new String[] {
-                    Environment.DIRECTORY_DOCUMENTS, Environment.DIRECTORY_DOWNLOADS,
-                    Environment.DIRECTORY_PICTURES, Environment.DIRECTORY_MOVIES,
-                    Environment.DIRECTORY_MUSIC, Environment.DIRECTORY_DCIM
-                }) {
-            roots.add(new File(Environment.getExternalStoragePublicDirectory(type), appName));
+        for (final String name : new String[] {appName, "monocles chat"}) {
+            roots.add(new File(Environment.getExternalStorageDirectory(), name));
+            for (final String type :
+                    new String[] {
+                        Environment.DIRECTORY_DOCUMENTS, Environment.DIRECTORY_DOWNLOADS,
+                        Environment.DIRECTORY_PICTURES, Environment.DIRECTORY_MOVIES,
+                        Environment.DIRECTORY_MUSIC, Environment.DIRECTORY_DCIM
+                    }) {
+                roots.add(new File(Environment.getExternalStoragePublicDirectory(type), name));
+            }
         }
         return roots.build();
     }

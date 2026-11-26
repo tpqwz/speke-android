@@ -736,7 +736,7 @@
     <string name="conversations_backup">Back-up</string>
     <string name="event">Activiteit</string>
     <string name="open_backup">Back-up openen</string>
-    <string name="not_a_backup_file">Het gekozen bestand is geen monocles chat back-up</string>
+    <string name="not_a_backup_file">Het gekozen bestand is geen LaNoxe back-up</string>
     <string name="account_already_setup">Dit account is al toegevoegd</string>
     <string name="please_enter_password">Voer het wachtwoord van dit account in</string>
     <string name="open_join_dialog">Deelnemen aan openbaar kanaal…</string>
@@ -769,7 +769,7 @@
     <string name="failed_deliveries">Berichten niet verstuurd</string>
     <string name="more_options">Meer opties</string>
     <string name="no_application_found">Geen app gevonden</string>
-    <string name="invite_to_app">Uitnodigen voor monocles chat</string>
+    <string name="invite_to_app">Uitnodigen voor LaNoxe</string>
     <string name="unable_to_parse_invite">Kan uitnodiging niet verwerken</string>
     <string name="no_active_accounts_support_this">Geen van je actieve accounts ondersteunen deze functie</string>
     <string name="backup_started_message">De back-up is gestart. Je krijgt een melding zodra deze is voltooid.</string>
@@ -825,7 +825,7 @@
     <string name="file_deleted">Het bestand is verwijderd</string>
     <string name="pref_show_own_accounts">Eigen accounts tonen</string>
     <string name="pref_show_own_accounts_summary">Toon het gebruikte account onder gesprekken en contacten</string>
-    <string name="welcome_header">Welkom bij monocles chat</string>
+    <string name="welcome_header">Welkom bij LaNoxe</string>
     <string name="unable_to_perform_this_action">Kan de gevraagde actie niet uitvoeren</string>
     <string name="gpx_track">GPX-spoor</string>
     <string name="missed_call">Gemiste oproep</string>
@@ -1144,8 +1144,8 @@
     <string name="flip_camera">Andere camera</string>
     <string name="video_is_enabled_tap_to_disable">Video is ingeschakeld. Druk hier om uit te schakelen.</string>
     <string name="video_is_disabled_tap_to_enable">Video is uitgeschakeld. Druk hier om in te schakelen.</string>
-    <string name="welcome_to_monocles_chat">Welkom bij monocles chat</string>
-    <string name="monocles_chat_intro_description">monocles chat is een app die je verbindt met het wereldwijde netwerk XMPP. Dit netwerk bevat zogenaamde gateways om te chatten met andere netwerken, zoals SMS, IRC, Matrix en meer.</string>
+    <string name="welcome_to_monocles_chat">Welkom bij LaNoxe</string>
+    <string name="monocles_chat_intro_description">LaNoxe is een app die je verbindt met het wereldwijde netwerk XMPP. Dit netwerk bevat zogenaamde gateways om te chatten met andere netwerken, zoals SMS, IRC, Matrix en meer.</string>
     <string name="how_the_xmpp_network_works">Hoe XMPP werkt</string>
     <string name="do_you_really_want_to_retract_this_message">Wil je dit bericht intrekken? Er zal een verzoek tot intrekking worden verstuurd, maar het is mogelijk dat de app van de ontvanger dit verzoek negeert.</string>
     <string name="store_media_only_in_cache">Media in verborgen opslag plaatsen</string>
@@ -1212,7 +1212,7 @@
     <string name="could_not_add_reaction">Kan reactie niet toevoegen</string>
     <string name="add_reaction_title">Reactie toevoegen</string>
     <string name="more_reactions">Meer reacties</string>
-    <string name="do_you_have_an_account">Heb je al een XMPP-adres? Dit kan het geval zijn als je al een andere XMPP-app gebruikt of eerder monocles chat, Conversations of Snikket hebt gebruikt. Zo niet, dan kun je nu een nieuw XMPP-adres aanmaken.</string>
+    <string name="do_you_have_an_account">Heb je al een XMPP-adres? Dit kan het geval zijn als je al een andere XMPP-app gebruikt of eerder LaNoxe, Conversations of Snikket hebt gebruikt. Zo niet, dan kun je nu een nieuw XMPP-adres aanmaken.</string>
     <string name="server_select_text">XMPP is een provider-onafhankelijk instant messaging-netwerk. Je kunt deze app gebruiken met iedere XMPP-dienst.</string>
     <string name="action_cancel">Annuleren</string>
     <string name="action_next">Volgende</string>
@@ -1269,7 +1269,7 @@
     <string name="pref_reset_dns_server_title">DNS resetten</string>
     <string name="dns_server_reset">DNS-instellingen zijn gereset</string>
     <string name="success_import_settings">Instellingen zijn geïmporteerd</string>
-    <string name="pref_export_settings_summary">Exporteer de instellingen van monocles chat naar de back-upmap</string>
+    <string name="pref_export_settings_summary">Exporteer de instellingen van LaNoxe naar de back-upmap</string>
     <string name="pref_export_settings">Instellingen exporteren</string>
     <string name="pref_import_settings">Instellingen importeren</string>
     <string name="pref_category_settings">Instellingen</string>

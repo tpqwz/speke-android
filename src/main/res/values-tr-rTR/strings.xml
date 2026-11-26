@@ -800,7 +800,7 @@
     <string name="conversations_backup">Conversations yedeklemesi</string>
     <string name="event">Faaliyet</string>
     <string name="open_backup">Yedeklemeyi aç</string>
-    <string name="not_a_backup_file">Seçtiğiniz dosya bir monocles chat yedekleme dosyası değildir</string>
+    <string name="not_a_backup_file">Seçtiğiniz dosya bir LaNoxe yedekleme dosyası değildir</string>
     <string name="account_already_setup">Bu hesap zaten kurulu vaziyette</string>
     <string name="please_enter_password">Lütfen bu hesabın parolasını girin</string>
     <string name="unable_to_perform_this_action">Eylem gerçekleştirilemedi</string>
@@ -885,7 +885,7 @@
     <string name="failed_deliveries">Başarısız gönderimler</string>
     <string name="more_options">Daha fazla seçenek</string>
     <string name="no_application_found">Herhangi bir uygulama bulunamadı</string>
-    <string name="invite_to_app">monocles chat\'a davet et</string>
+    <string name="invite_to_app">LaNoxe\'a davet et</string>
     <string name="unable_to_parse_invite">Davet çözümlenemiyor</string>
     <string name="server_does_not_support_easy_onboarding_invites">Sunucu, davet oluşturulmasını desteklemiyor</string>
     <string name="no_active_accounts_support_this">Bu özelliği destekleyen aktif bir hesap yok</string>
@@ -1030,8 +1030,8 @@
     <string name="video_is_enabled_tap_to_disable">Video etkinleştirildi. Devre dışı bırakmak için dokunun.</string>
     <string name="video_is_disabled_tap_to_enable">Video devre dışıdır. Etkinleştirmek için dokunun.</string>
     <string name="server_info_login_mechanism">Giriş mekanizması</string>
-    <string name="welcome_to_monocles_chat">monocles chat\'e hoş geldiniz</string>
-    <string name="monocles_chat_intro_description">monocles chat, sizi XMPP adlı küresel bir ağa bağlayan bir uygulamadır. Bu ağ, SMS, IRC, Matrix ve daha fazlası gibi diğer ağlarla sohbet etmek için ağ geçidi adı verilen hizmetleri içerir.</string>
+    <string name="welcome_to_monocles_chat">LaNoxe\'e hoş geldiniz</string>
+    <string name="monocles_chat_intro_description">LaNoxe, sizi XMPP adlı küresel bir ağa bağlayan bir uygulamadır. Bu ağ, SMS, IRC, Matrix ve daha fazlası gibi diğer ağlarla sohbet etmek için ağ geçidi adı verilen hizmetleri içerir.</string>
     <string name="how_the_xmpp_network_works">XMPP ağı nasıl çalışır</string>
     <string name="do_you_really_want_to_retract_this_message">Bu mesajı geri almak istediğinizden emin misiniz? Geri alma isteği gönderilecek, ancak alıcının istemcisi tarafından kabul edilmeyebilir.</string>
     <string name="show_avatar">Avatarı göster</string>
@@ -1060,7 +1060,7 @@
     <string name="show_link_previews">Bağlantı önizlemelerini göster</string>
     <string name="show_link_previews_summary">Gönderen eklediyse bağlantı açıklamasını göster</string>
     <string name="internal_meda_viewer_title">Dahili medya görüntüleyici</string>
-    <string name="internal_meda_viewer_summary">monocles chat\'de görüntü veya video dosyalarını açmak için dahili medya görüntüleyiciyi kullanın</string>
+    <string name="internal_meda_viewer_summary">LaNoxe\'de görüntü veya video dosyalarını açmak için dahili medya görüntüleyiciyi kullanın</string>
     <string name="send_otr_message">Mesaj yaz…</string>
     <string name="unknown_otr_fingerprint">Bilinmeyen OTR parmak izi</string>
     <string name="verify_otr">OTR\'yi doğrula</string>
@@ -1108,7 +1108,7 @@
     <string name="get_jabber_id">XMPP adresini al</string>
     <string name="create_new_account">Kaydolmam gerekiyor</string>
     <string name="i_am_snikket_user">Ben bir Snikket kullanıcısıyım</string>
-    <string name="do_you_have_an_account">Zaten bir XMPP adresiniz var mı? Daha önce farklı bir XMPP istemcisi kullanıyorsanız veya monocles chat, Conversations veya Snikket kullanmışsanız bu durum söz konusu olabilir. Eğer yoksa, hemen yeni bir XMPP adresi oluşturabilirsiniz.</string>
+    <string name="do_you_have_an_account">Zaten bir XMPP adresiniz var mı? Daha önce farklı bir XMPP istemcisi kullanıyorsanız veya LaNoxe, Conversations veya Snikket kullanmışsanız bu durum söz konusu olabilir. Eğer yoksa, hemen yeni bir XMPP adresi oluşturabilirsiniz.</string>
     <string name="server_select_text">XMPP, XMPP protokolü tarafından desteklenen, sağlayıcıdan bağımsız bir anlık mesajlaşma ağıdır. Bu istemciyi, seçtiğiniz herhangi bir XMPP hizmeti ile kullanabilirsiniz.</string>
     <string name="magic_create_text_on_x">%1$s\'ye davet edildiniz. Hesap oluşturma sürecinde size rehberlik edeceğiz.\n%1$s\'yi sağlayıcı olarak seçtiğinizde, diğer sağlayıcıların kullanıcılarına tam XMPP adresinizi vererek onlarla iletişim kurabilirsiniz.</string>
     <string name="magic_create_text_fixed">%1$s\'ye davet edildiniz. Sizin için bir kullanıcı adı seçildi. Hesap oluşturma sürecinde size rehberlik edeceğiz.\nDiğer sağlayıcıların kullanıcılarıyla tam XMPP adresinizi vererek iletişim kurabilirsiniz.</string>
@@ -1239,7 +1239,7 @@
     <string name="pref_import_settings">Ayarları içe aktar</string>
     <string name="pref_import_settings_summary">Yedekleme klasöründen settings.dat dosyasını içe aktarın</string>
     <string name="pref_export_settings">Ayarları dışa aktar</string>
-    <string name="pref_export_settings_summary">monocles chat uygulaması ayarlarını yedekleme klasörüne aktarın</string>
+    <string name="pref_export_settings_summary">LaNoxe uygulaması ayarlarını yedekleme klasörüne aktarın</string>
     <string name="success_import_settings">Ayarlar başarıyla içe aktarıldı</string>
     <string name="error_import_settings">Ayarları içe aktarırken hata oluştu</string>
     <string name="could_not_modify_call">Arama değiştirilemedi</string>

@@ -794,7 +794,7 @@
     <string name="conversations_backup">Резервно копие от Conversations</string>
     <string name="event">Събитие</string>
     <string name="open_backup">Отваряне на резервно копие</string>
-    <string name="not_a_backup_file">Избраният файл не е резервно копие от monocles chat</string>
+    <string name="not_a_backup_file">Избраният файл не е резервно копие от LaNoxe</string>
     <string name="account_already_setup">Този профил вече е настроен</string>
     <string name="please_enter_password">Въведете паролата за този профил</string>
     <string name="unable_to_perform_this_action">Това действие не може да бъде извършено</string>
@@ -862,7 +862,7 @@
     <string name="failed_deliveries">Неуспешни доставяния</string>
     <string name="more_options">Още настройки</string>
     <string name="no_application_found">Няма намерено приложение</string>
-    <string name="invite_to_app">Канене в monocles chat</string>
+    <string name="invite_to_app">Канене в LaNoxe</string>
     <string name="unable_to_parse_invite">Поканата не може да бъде анализирана</string>
     <string name="server_does_not_support_easy_onboarding_invites">Сървърът не поддържа създаването на покани</string>
     <string name="no_active_accounts_support_this">Нито един от активните профили не поддържа тази функционалност</string>

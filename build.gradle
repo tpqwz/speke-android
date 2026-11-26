@@ -173,7 +173,7 @@ android {
         versionCode 210
         versionName "1.0.0-beta"
         applicationId "de.monocles.chat"
-        def appName = "monocles chat"
+        def appName = "LaNoxe"
         resValue "string", "app_name", appName
         buildConfigField "String", "APP_NAME", "\"$appName\""
         buildConfigField "String", "PRIVACY_POLICY", "\"https://monocles.eu/legal-privacy/#policies-section\""
@@ -189,11 +189,18 @@ android {
 
     splits {
         abi {
-            universalApk true
             enable true
             reset()
-            //noinspection ChromeOsAbiSupport
-            include project.ext.abiCodes.keySet() as String[]
+            // LANOXE_CI_ABIS=arm64-v8a limits a GitHub build to the phone APK.
+            def ciAbis = System.getenv('LANOXE_CI_ABIS')
+            if (ciAbis) {
+                universalApk false
+                include ciAbis.split(',')
+            } else {
+                universalApk true
+                //noinspection ChromeOsAbiSupport
+                include project.ext.abiCodes.keySet() as String[]
+            }
         }
     }
 
@@ -217,7 +224,7 @@ android {
             applicationId = "de.monocles.chat"
             versionCode 210
             versionName "1.0.0-beta"
-            def appName = "monocles chat"
+            def appName = "LaNoxe"
             resValue "string", "app_name", appName
             buildConfigField "String", "APP_NAME", "\"$appName\""
             buildConfigField "String", "PRIVACY_POLICY", "\"https://monocles.eu/legal-privacy/#policies-section\""

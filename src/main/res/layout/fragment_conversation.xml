@@ -92,6 +92,7 @@
                     android:paddingBottom="4dp">
 
                     <HorizontalScrollView
+                        android:id="@+id/desk_readings"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="12dp"
@@ -114,34 +115,6 @@
                                 android:paddingEnd="12dp"
                                 android:paddingBottom="8dp"
                                 android:text="@string/desk_threads"
-                                android:textColor="@color/desk_text"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/desk_board"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
-                                android:background="@drawable/bg_desk_button"
-                                android:paddingStart="12dp"
-                                android:paddingTop="8dp"
-                                android:paddingEnd="12dp"
-                                android:paddingBottom="8dp"
-                                android:text="@string/desk_board"
-                                android:textColor="@color/desk_text"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/desk_stream"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
-                                android:background="@drawable/bg_desk_button"
-                                android:paddingStart="12dp"
-                                android:paddingTop="8dp"
-                                android:paddingEnd="12dp"
-                                android:paddingBottom="8dp"
-                                android:text="@string/desk_stream"
                                 android:textColor="@color/desk_text"
                                 android:textSize="14sp" />
 
@@ -246,6 +219,34 @@
                             android:textColor="@color/desk_text"
                             android:textSize="14sp"
                             android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/desk_density"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_desk_button"
+                            android:paddingStart="12dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/desk_view_compact"
+                            android:textColor="@color/desk_text"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/desk_theme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_desk_button"
+                            android:paddingStart="12dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/desk_theme_night"
+                            android:textColor="@color/desk_text"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <TextView

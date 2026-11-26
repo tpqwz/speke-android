@@ -6,13 +6,15 @@ The app stays this Java codebase. Codename One, Kotlin Multiplatform, and Flutte
 
 ## Desk
 
-`de.monocles.chat.desk.Desk` is the two readings that are new here.
+`de.monocles.chat.desk.Desk` is the reading that is new here.
 
-Threads, Board, and Stream are one room. A thread is a post with at least one reply. A post with none stays off that list and in the stream, including your own. The board lists every post. The first two levels are open. A reply under those stays folded until that line is opened, and opening the thread shows the whole tree. Search on the shelf keeps a hit with the posts above and below it. Sort on Threads and Board is activity, replies, newest, or oldest. A double-tap on a stream message opens the board with the posts above it unfolded. Changing the shelf leaves an open thread. Back returns to it.
+Threads and Chat are one room. A thread is a post with at least one reply. A post with none stays off that list and opens in Chat, including your own. Opening a thread shows the whole tree. Search on the shelf keeps a hit with the posts above and below it. Sort on the thread list is activity, replies, newest, or oldest. That list is compact or card. Compact is one line. Card shows the post, and an https link in it is drawn as a card with the site and the address. The toolbar back from an open thread, or from Chat opened on a post with no replies, returns to the thread list. A second back leaves the conversation. Tapping Threads while a thread is open closes it without stacking that return.
 
-The same messages are a directory. A thread's files include the files on its replies. Name order is natural, so `shot2` comes before `shot10`. Grouping adds one level of folders: type, month, sender, extension, or thread.
+The same messages are a directory. A thread's files include the files on its replies. Name order is natural, so `shot2` comes before `shot10`. Grouping adds one level of folders: type, month, sender, extension, or thread. Opening a file opens that message in Chat, and back returns to the directory. Back from a folder returns to the folder list.
 
-The conversation screen reads the open room through `Desk`. Threads, Board, Stream, and Files are the shelf. Chat on that shelf is the transcript Monocles already drew. A long press on a row opens that message in the next reading.
+The conversation screen reads the open room through `Desk`. Threads, Files, and Chat are the shelf. Chat on that shelf is the conversation transcript. The shelf has three themes. Night is the dark page. Original keeps the floating bar, the wallpaper, and the app's own colors. Plain is that same bar on a solid page.
+
+The bottom bar is Chats, Calls, RSS, and Podcasts. RSS and Podcasts share one list of feed addresses kept on the phone. RSS shows each item's link. Podcasts shows items that include audio. The same feed can appear in both. Sharing sends the link, or the episode's audio address, into a chat you pick. An episode plays in the in-app player under the toolbar. That player can pause and skip 15 seconds, and the episode name is its title.
 
 ## Upstream
 

@@ -1,6 +1,6 @@
-monocles chat, Android için modern ve güvenli bir XMPP sohbet istemcisidir. Conversations’ı temel alır, blabber.im ve Cheogram’ın özelliklerini içerir ve kullanılabilirliği ve güvenliği artıran birçok değişiklik ve ek özellik sunar.
+LaNoxe, Android için modern ve güvenli bir XMPP sohbet istemcisidir. Conversations’ı temel alır, blabber.im ve Cheogram’ın özelliklerini içerir ve kullanılabilirliği ve güvenliği artıran birçok değişiklik ve ek özellik sunar.
 
-Bağlantı güvenliği ve kişisel verilerin korunması bizim için çok önemlidir. Uygulama ile sunucu arasında şifreli bağlantıları zorunlu kılarız; bu da yabancıların mesajlarınızı ele geçirip okumasını neredeyse imkânsız hâle getirir. Bu nedenle eski şifreleme takımlarını kaldırdık. Kalanlar monocles chat sunucusu için optimize edilmiştir, ancak günümüz standartlarına uyan diğer XMPP sunucularıyla da uyumludur.
+Bağlantı güvenliği ve kişisel verilerin korunması bizim için çok önemlidir. Uygulama ile sunucu arasında şifreli bağlantıları zorunlu kılarız; bu da yabancıların mesajlarınızı ele geçirip okumasını neredeyse imkânsız hâle getirir. Bu nedenle eski şifreleme takımlarını kaldırdık. Kalanlar LaNoxe sunucusu için optimize edilmiştir, ancak günümüz standartlarına uyan diğer XMPP sunucularıyla da uyumludur.
 
 Bu sizin için yeterli değilse OMEMO veya OpenPGP gibi uçtan uca şifreleme kullanabilirsiniz. Mesajlar gönderen cihazda şifrelenir ve yalnızca gönderildikleri cihazlar tarafından çözülebilir.
 

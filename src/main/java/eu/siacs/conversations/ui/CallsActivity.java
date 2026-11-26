@@ -51,16 +51,12 @@ public class CallsActivity extends XmppActivity {
                 startActivity(new Intent(getApplicationContext(), ConversationsActivity.class));
                 overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
                 return true;
-            } else if (navId == R.id.feeds) {
-                Intent i = new Intent(getApplicationContext(), PostsActivity.class);
-                i.putExtra("show_nav_bar", true);
-                startActivity(i);
+            } else if (navId == R.id.rss) {
+                startActivity(FeedsActivity.intent(this, false, true));
                 overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
                 return true;
-            } else if (navId == R.id.stories) {
-                Intent i = new Intent(getApplicationContext(), StoriesActivity.class);
-                i.putExtra("show_nav_bar", true);
-                startActivity(i);
+            } else if (navId == R.id.podcasts) {
+                startActivity(FeedsActivity.intent(this, true, true));
                 overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
                 return true;
             } else if (navId == R.id.calls) {
@@ -125,24 +121,6 @@ public class CallsActivity extends XmppActivity {
         bottomBadge.setNumber(unreadCount);
         bottomBadge.setVisible(unreadCount > 0);
         bottomBadge.setHorizontalOffset(20);
-
-        // Show badge for new stories in bottom nav
-        long lastRead = getPreferences().getLong("last_read_story_timestamp", 0);
-        boolean hasNewStories =
-                xmppConnectionService.getStories().stream()
-                        .anyMatch(s -> s.getPublished() > lastRead);
-        var storiesBadge = bottomnav.getOrCreateBadge(R.id.stories);
-        storiesBadge.setVisible(hasNewStories);
-
-        // Show badge for new posts in bottom nav
-        long lastReadPosts = getPreferences().getLong("last_read_post_timestamp", 0);
-        boolean hasNewPosts =
-                xmppConnectionService.databaseBackend.getPosts().stream()
-                        .anyMatch(p ->
-                                p.getPublished() != null
-                                        && p.getPublished().getTime() > lastReadPosts);
-        var postsBadge = bottomnav.getOrCreateBadge(R.id.feeds);
-        postsBadge.setVisible(hasNewPosts);
 
         // Show badge for missed calls in bottom nav
         boolean hasNewMissedCalls =

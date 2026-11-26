@@ -21,6 +21,23 @@
         android:paddingEnd="4dp">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/miniplayer_back"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:minHeight="48dp"
+            android:insetTop="10dp"
+            android:insetBottom="10dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:text="-15"
+            android:contentDescription="@string/skip_back_15"
+            android:textAppearance="?attr/textAppearanceLabelSmall" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/miniplayer_play_pause"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
@@ -28,6 +45,23 @@
             android:contentDescription="@string/play_audio"
             app:icon="@drawable/rounded_play_arrow_36"
             app:iconSize="28dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/miniplayer_forward"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:minHeight="48dp"
+            android:insetTop="10dp"
+            android:insetBottom="10dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:text="+15"
+            android:contentDescription="@string/skip_forward_15"
+            android:textAppearance="?attr/textAppearanceLabelSmall" />
 
         <LinearLayout
             android:layout_width="0dp"

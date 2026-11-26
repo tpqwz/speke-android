@@ -1,4 +1,4 @@
-monocles chat is een moderne en veilige XMPP-chatclient voor Android. Hij is gebaseerd op Conversations, bevat functies van blabber.im en Cheogram en voegt veel eigen aanpassingen en functies toe die de bruikbaarheid en veiligheid verbeteren.
+LaNoxe is een moderne en veilige XMPP-chatclient voor Android. Hij is gebaseerd op Conversations, bevat functies van blabber.im en Cheogram en voegt veel eigen aanpassingen en functies toe die de bruikbaarheid en veiligheid verbeteren.
 
 Een veilige verbinding en de bescherming van persoonlijke gegevens zijn erg belangrijk voor ons. We dwingen versleutelde verbindingen tussen de app en de server af, waardoor het voor vreemden bijna onmogelijk is om je berichten te onderscheppen en te lezen. Daarom hebben we verouderde versleutelingsmethoden verwijderd. De overgebleven methoden zijn afgestemd op de monocles chat-server, maar blijven compatibel met andere XMPP-servers die de huidige standaarden volgen.
 

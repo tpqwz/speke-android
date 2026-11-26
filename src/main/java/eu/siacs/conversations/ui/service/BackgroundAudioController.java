@@ -191,6 +191,40 @@ public class BackgroundAudioController implements SensorEventListener {
         registerProximity();
     }
 
+    /**
+     * Play a remote episode. The title is the public episode name. A voice message still goes
+     * through {@link #play}, which keeps the private title off the session.
+     */
+    public void playRemote(final Uri uri, final String title) {
+        if (uri == null) {
+            return;
+        }
+        final String shown = title == null || title.isEmpty() ? uri.toString() : title;
+        run(
+                () -> {
+                    final MediaItem item =
+                            new MediaItem.Builder()
+                                    .setMediaId(uri.toString())
+                                    .setUri(uri)
+                                    .setMediaMetadata(
+                                            new MediaMetadata.Builder()
+                                                    .setTitle(shown)
+                                                    .setIsBrowsable(false)
+                                                    .setIsPlayable(true)
+                                                    .build())
+                                    .build();
+                    currentMessage = null;
+                    currentTitle = shown;
+                    controller.setMediaItem(item);
+                    controller.setPlaybackSpeed(speed);
+                    controller.prepare();
+                    controller.play();
+                    setEarpiece(false);
+                    notifyState();
+                });
+        unregisterProximity();
+    }
+
     public void toggleCurrentPlayPause() {
         run(() -> {
             if (controller.isPlaying()) {
@@ -210,6 +244,23 @@ public class BackgroundAudioController implements SensorEventListener {
                 controller.seekTo((long) (duration * fraction));
             }
         });
+    }
+
+    /** Move by a fixed step, staying inside the episode. Fifteen seconds is the player step. */
+    public void seekBy(final long deltaMs) {
+        run(
+                () -> {
+                    long next = controller.getCurrentPosition() + deltaMs;
+                    if (next < 0) {
+                        next = 0;
+                    }
+                    final long duration = controller.getDuration();
+                    if (duration != C.TIME_UNSET && duration > 0 && next > duration) {
+                        next = duration;
+                    }
+                    controller.seekTo(next);
+                    notifyState();
+                });
     }
 
     // region playback speed
@@ -282,6 +333,14 @@ public class BackgroundAudioController implements SensorEventListener {
 
     private final Player.Listener playerListener =
             new Player.Listener() {
+                @Override
+                public void onPositionDiscontinuity(
+                        final Player.PositionInfo oldPosition,
+                        final Player.PositionInfo newPosition,
+                        final int reason) {
+                    notifyState();
+                }
+
                 @Override
                 public void onIsPlayingChanged(final boolean isPlaying) {
                     if (isPlaying) {
@@ -427,10 +486,14 @@ public class BackgroundAudioController implements SensorEventListener {
     }
 
     private void registerProximity() {
-        if (foreground && sensorManager != null && proximitySensor != null) {
-            sensorManager.registerListener(
-                    this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+        // A remote episode stays on the speaker. Only a voice message follows the ear.
+        if (currentMessage == null
+                || !foreground
+                || sensorManager == null
+                || proximitySensor == null) {
+            return;
         }
+        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private void unregisterProximity() {

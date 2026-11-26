@@ -830,7 +830,7 @@
     <string name="conversations_backup">Kopia zapasowa Conversations</string>
     <string name="event">Zdarzenie</string>
     <string name="open_backup">Otwórz kopię zapasową</string>
-    <string name="not_a_backup_file">Plik, który otworzyłeś, nie jest plikiem kopii zapasowej monocles chat</string>
+    <string name="not_a_backup_file">Plik, który otworzyłeś, nie jest plikiem kopii zapasowej LaNoxe</string>
     <string name="account_already_setup">To konto zostało już ustawione</string>
     <string name="please_enter_password">Proszę podać hasło dla tego konta</string>
     <string name="unable_to_perform_this_action">Nie można wykonać tej akcji</string>
@@ -927,7 +927,7 @@
     <string name="failed_deliveries">Nie dostarczone wiadomości</string>
     <string name="more_options">Więcej ustawień</string>
     <string name="no_application_found">Nie znaleziono żadnej aplikacji</string>
-    <string name="invite_to_app">Zaproś do monocles chat</string>
+    <string name="invite_to_app">Zaproś do LaNoxe</string>
     <string name="unable_to_parse_invite">Nie można przetworzyć zaproszenia</string>
     <string name="server_does_not_support_easy_onboarding_invites">Serwer nie wspiera tworzenia zaproszeń</string>
     <string name="no_active_accounts_support_this">Nie ma aktywnych kont wspierających tę funkcję</string>
@@ -1076,7 +1076,7 @@
     <string name="options">Opcje</string>
     <string name="show_avatar">Pokaż awatar</string>
     <string name="video_is_enabled_tap_to_disable">Wideo jest włączone. Dotknij aby wyłączyć.</string>
-    <string name="monocles_chat_intro_description">monocles chat to aplikacja dzięki której połączysz się do globalnej sieci XMPP. Ta sieć zawiera serwisy, zwane przejściami, aby móc rozmawiać z innymi sieciami takimi jak SMS, IRC, Matrix i inne.</string>
+    <string name="monocles_chat_intro_description">LaNoxe to aplikacja dzięki której połączysz się do globalnej sieci XMPP. Ta sieć zawiera serwisy, zwane przejściami, aby móc rozmawiać z innymi sieciami takimi jak SMS, IRC, Matrix i inne.</string>
     <string name="emojis">Emoji</string>
     <string name="shared_secret_secret">Wspólny sekret</string>
     <string name="action_execute">Idź</string>
@@ -1100,7 +1100,7 @@
     <string name="call_is_using_bluetooth">Rozmowa używa Bluetooth.</string>
     <string name="flip_camera">Odwróć kamerę</string>
     <string name="video_is_disabled_tap_to_enable">Wideo jest wyłączone. Dotknij aby włączyć.</string>
-    <string name="welcome_to_monocles_chat">Witamy w monocles chat</string>
+    <string name="welcome_to_monocles_chat">Witamy w LaNoxe</string>
     <string name="how_the_xmpp_network_works">Jak działa sieć XMPP</string>
     <string name="do_you_really_want_to_retract_this_message">Czy na pewno chcesz wycofać tą wiadomość?</string>
     <string name="store_media_only_in_cache">Zachowuj media tylko w cache\'u</string>

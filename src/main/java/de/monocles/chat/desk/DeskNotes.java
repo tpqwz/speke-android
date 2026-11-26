@@ -59,7 +59,9 @@ public final class DeskNotes {
         if (name == null) {
             return;
         }
-        files.add(new Desk.Attached(name, kind(name), author, 0, at));
+        Message.FileParams params = message.getFileParams();
+        long bytes = params == null ? 0 : params.getSize();
+        files.add(new Desk.Attached(name, kind(name), author, bytes, at));
     }
 
     /** The words that were written. A reply's quoted parent is a fallback, not part of the note. */

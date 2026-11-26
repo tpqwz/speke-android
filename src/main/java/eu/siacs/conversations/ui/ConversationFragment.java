@@ -35,6 +35,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.icu.util.Calendar;
 import android.icu.util.TimeZone;
 import android.media.MediaRecorder;
@@ -140,6 +141,7 @@ import de.monocles.chat.WebxdcPage;
 import de.monocles.chat.WebxdcStore;
 import de.monocles.chat.desk.Desk;
 import de.monocles.chat.desk.DeskAdapter;
+import de.monocles.chat.desk.DeskLook;
 import de.monocles.chat.desk.DeskNotes;
 import de.monocles.chat.pinnedmessage.PinnedMessageAdapter;
 import de.monocles.chat.pinnedmessage.PinnedMessageRepository;
@@ -191,6 +193,7 @@ import eu.siacs.conversations.ui.util.ShareUtil;
 import eu.siacs.conversations.ui.util.TrustKeys;
 import eu.siacs.conversations.ui.util.ViewUtil;
 import eu.siacs.conversations.ui.widget.EditMessage;
+import eu.siacs.conversations.ui.widget.FadingEdgeRecyclerView;
 import eu.siacs.conversations.utils.AccountUtils;
 import eu.siacs.conversations.utils.ChatBackgroundHelper;
 import eu.siacs.conversations.utils.Compatibility;
@@ -345,12 +348,19 @@ public class ConversationFragment extends XmppFragment
     private DeskAdapter deskAdapter;
     /** Chat on the shelf is the transcript. The other readings are the desk. */
     private boolean deskChat;
+    /** Chat opened from a post with no replies. Back returns to the thread list. */
+    private boolean deskChatFromList;
     private boolean deskReveal;
     private boolean deskStickEnd;
     /** A refresh or a fold should not jump the shelf back to the first row. */
     private boolean deskKeepPlace;
     /** The light conversation bar and composer, remembered so Chat can have them back. */
     private boolean deskFrame;
+    /** Plain keeps a solid page, so a later refresh must not put the wallpaper back. */
+    private boolean deskSolid;
+    private int solidPage;
+    private static final String DESK_THEME = "desk_theme";
+    private static final String DESK_DENSITY = "desk_density";
     private Boolean savedLightStatus;
     private Boolean savedLightNav;
     private int savedTitleColor = Integer.MIN_VALUE;
@@ -1168,11 +1178,11 @@ public class ConversationFragment extends XmppFragment
             new OnBackPressedCallback(false) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (deskSession != null && deskSession.back()) {
-                        deskChat = false;
-                        showReading();
+                    if (!leaveDeskPlace()) {
+                        setEnabled(false);
+                        return;
                     }
-                    setEnabled(deskSession != null && deskSession.hasBack());
+                    setEnabled(deskPlaceReturns());
                 }
             };
 
@@ -2554,12 +2564,13 @@ public class ConversationFragment extends XmppFragment
 
         binding.messagesView.setAdapter(messageListAdapter);
         attachSwipeToReply();
-        binding.deskThreads.setOnClickListener(v -> openShelf(Desk.View.THREADS));
-        binding.deskBoard.setOnClickListener(v -> openShelf(Desk.View.BOARD));
-        binding.deskStream.setOnClickListener(
+        binding.deskThreads.setOnClickListener(
                 v -> {
-                    deskStickEnd = true;
-                    openShelf(Desk.View.STREAM);
+                    deskChat = false;
+                    deskChatFromList = false;
+                    ensureDesk();
+                    deskSession.showList();
+                    showReading();
                 });
         binding.deskQuery.addTextChangedListener(
                 new TextWatcher() {
@@ -2583,34 +2594,31 @@ public class ConversationFragment extends XmppFragment
                     public void afterTextChanged(Editable s) {}
                 });
         binding.deskShelfSort.setOnClickListener(v -> showShelfSort());
+        binding.deskDensity.setOnClickListener(
+                v -> {
+                    activity.getPreferences()
+                            .edit()
+                            .putString(DESK_DENSITY, deskCards() ? "compact" : "card")
+                            .apply();
+                    showReading();
+                });
+        binding.deskTheme.setOnClickListener(v -> showDeskTheme());
         binding.deskFiles.setOnClickListener(
                 v -> {
                     deskChat = false;
+                    deskChatFromList = false;
                     ensureDesk();
                     deskSession.openFiles();
                     showReading();
                 });
         binding.deskChat.setOnClickListener(
                 v -> {
+                    deskChatFromList = false;
                     deskChat = true;
                     showReading();
                 });
-        binding.deskGroup.setOnClickListener(
-                v -> {
-                    if (deskSession == null) {
-                        return;
-                    }
-                    deskSession.setGroup(nextGroup(deskSession.group()));
-                    showReading();
-                });
-        binding.deskSort.setOnClickListener(
-                v -> {
-                    if (deskSession == null) {
-                        return;
-                    }
-                    deskSession.setSort(nextSort(deskSession.sort()));
-                    showReading();
-                });
+        binding.deskGroup.setOnClickListener(v -> showGroup());
+        binding.deskSort.setOnClickListener(v -> showFileSort());
 
         binding.textinput.addTextChangedListener(
                 new StylingHelper.MessageEditorStyler(binding.textinput, messageListAdapter));
@@ -4607,6 +4615,9 @@ public class ConversationFragment extends XmppFragment
             messageOptionsDialog.dismiss();
             return true;
         }
+        if (leaveDeskPlace()) {
+            return true;
+        }
         return false;
     }
 
@@ -5197,6 +5208,10 @@ public class ConversationFragment extends XmppFragment
     private void updateChatBG() {
         if (deskFrame) {
             holdDeskPage();
+            return;
+        }
+        if (deskSolid) {
+            holdSolidPage();
             return;
         }
         if (activity != null && conversation != null) {
@@ -6732,13 +6747,6 @@ public class ConversationFragment extends XmppFragment
         this.refresh(true);
     }
 
-    private void openShelf(Desk.View view) {
-        deskChat = false;
-        ensureDesk();
-        deskSession.setView(view);
-        showReading();
-    }
-
     private void showShelfSort() {
         if (activity == null || deskSession == null) {
             return;
@@ -6772,6 +6780,75 @@ public class ConversationFragment extends XmppFragment
         };
     }
 
+    private void showGroup() {
+        if (activity == null || deskSession == null) {
+            return;
+        }
+        PopupMenu menu = new PopupMenu(activity, binding.deskGroup);
+        Desk.Group[] groups = Desk.Group.values();
+        for (int i = 0; i < groups.length; i++) {
+            menu.getMenu().add(0, i, i, groupLabel(groups[i]));
+        }
+        menu.setOnMenuItemClickListener(
+                item -> {
+                    if (deskSession == null) {
+                        return true;
+                    }
+                    int which = item.getItemId();
+                    if (which >= 0 && which < groups.length) {
+                        deskSession.setGroup(groups[which]);
+                        showReading();
+                    }
+                    return true;
+                });
+        menu.show();
+    }
+
+    private void showFileSort() {
+        if (activity == null || deskSession == null) {
+            return;
+        }
+        PopupMenu menu = new PopupMenu(activity, binding.deskSort);
+        Desk.Sort[] sorts = Desk.Sort.values();
+        for (int i = 0; i < sorts.length; i++) {
+            menu.getMenu().add(0, i, i, fileSortLabel(sorts[i]));
+        }
+        menu.setOnMenuItemClickListener(
+                item -> {
+                    if (deskSession == null) {
+                        return true;
+                    }
+                    int which = item.getItemId();
+                    if (which >= 0 && which < sorts.length) {
+                        deskSession.setSort(sorts[which]);
+                        showReading();
+                    }
+                    return true;
+                });
+        menu.show();
+    }
+
+    private String groupLabel(Desk.Group group) {
+        return switch (group) {
+            case FLAT -> getString(R.string.desk_group_flat);
+            case TYPE -> getString(R.string.desk_group_type);
+            case MONTH -> getString(R.string.desk_group_month);
+            case SENDER -> getString(R.string.desk_group_sender);
+            case EXTENSION -> getString(R.string.desk_group_extension);
+            case THREAD -> getString(R.string.desk_group_thread);
+        };
+    }
+
+    private String fileSortLabel(Desk.Sort sort) {
+        return switch (sort) {
+            case NAME -> getString(R.string.desk_file_sort_name);
+            case DATE -> getString(R.string.desk_file_sort_date);
+            case SIZE -> getString(R.string.desk_file_sort_size);
+            case KIND -> getString(R.string.desk_file_sort_kind);
+            case SENDER -> getString(R.string.desk_file_sort_sender);
+        };
+    }
+
     private void ensureDesk() {
         synchronized (messageList) {
             List<Desk.Note> notes = DeskNotes.from(messageList);
@@ -6787,19 +6864,29 @@ public class ConversationFragment extends XmppFragment
         if (binding == null || messagesLayoutManager == null || messageListAdapter == null) {
             return;
         }
-        applyDeskFrame(!deskChat);
+        DeskLook look = DeskLook.of(binding.getRoot().getContext(), deskTheme());
+        applyReadingChrome(look);
+        paintShelf(look);
+        paintSnackbar(look);
         if (deskChat) {
             messagesLayoutManager.setStackFromEnd(true);
             if (binding.messagesView.getAdapter() != messageListAdapter) {
                 binding.messagesView.setAdapter(messageListAdapter);
             }
-            binding.deskTools.setVisibility(GONE);
+            binding.deskTools.setVisibility(VISIBLE);
+            binding.deskQuery.setVisibility(GONE);
+            binding.deskShelfSort.setVisibility(GONE);
+            binding.deskDensity.setVisibility(GONE);
+            binding.deskGroup.setVisibility(GONE);
+            binding.deskSort.setVisibility(GONE);
             binding.deskHint.setVisibility(GONE);
+            pinTheme(true);
             binding.messagesView.setBackground(null);
+            settleList(look);
             deskReveal = false;
             deskStickEnd = false;
-            backPressedLeaveDesk.setEnabled(false);
-            markShelf(null, false);
+            backPressedLeaveDesk.setEnabled(deskPlaceReturns());
+            markShelf(null, false, look);
             return;
         }
         ensureDesk();
@@ -6850,28 +6937,42 @@ public class ConversationFragment extends XmppFragment
                                 }
                             });
         }
+        deskAdapter.setLook(look);
+        deskAdapter.setCards(deskCards());
         messagesLayoutManager.setStackFromEnd(false);
         if (binding.messagesView.getAdapter() != deskAdapter) {
             binding.messagesView.setAdapter(deskAdapter);
         }
-        if (activity != null) {
-            binding.messagesView.setBackgroundColor(activity.getColor(R.color.desk_page));
+        if (look.night) {
+            binding.messagesView.setBackgroundColor(look.page);
+        } else {
+            binding.messagesView.setBackground(null);
         }
+        settleList(look);
         binding.deskTools.setVisibility(VISIBLE);
+        pinTheme(false);
         boolean files = deskSession.filesOpen();
-        boolean stream =
-                deskSession.view() == Desk.View.STREAM && deskSession.threadId() == null;
-        binding.deskQuery.setVisibility(files ? GONE : VISIBLE);
-        binding.deskShelfSort.setVisibility(files || stream ? GONE : VISIBLE);
+        boolean inThread = deskSession.threadId() != null;
+        binding.deskQuery.setVisibility(VISIBLE);
+        binding.deskShelfSort.setVisibility(files || inThread ? GONE : VISIBLE);
+        binding.deskDensity.setVisibility(files || inThread ? GONE : VISIBLE);
+        binding.deskDensity.setText(deskCards() ? R.string.desk_view_card : R.string.desk_view_compact);
         binding.deskGroup.setVisibility(files ? VISIBLE : GONE);
         binding.deskSort.setVisibility(files ? VISIBLE : GONE);
-        binding.deskHint.setVisibility(files ? GONE : VISIBLE);
-        if (!files) {
-            String query = deskSession.query();
-            if (!query.equals(binding.deskQuery.getText().toString())) {
-                binding.deskQuery.setText(query);
-                binding.deskQuery.setSelection(binding.deskQuery.getText().length());
-            }
+        binding.deskHint.setVisibility(VISIBLE);
+        String query = deskSession.query();
+        if (!query.equals(binding.deskQuery.getText().toString())) {
+            binding.deskQuery.setText(query);
+            binding.deskQuery.setSelection(binding.deskQuery.getText().length());
+        }
+        binding.deskQuery.setHint(
+                getString(files ? R.string.desk_filter_hint : R.string.desk_search_hint));
+        if (files) {
+            binding.deskGroup.setText(groupLabel(deskSession.group()));
+            binding.deskSort.setText(fileSortLabel(deskSession.sort()));
+            binding.deskHint.setText(
+                    inThread ? R.string.desk_hint_files_thread : R.string.desk_hint_files);
+        } else {
             binding.deskShelfSort.setText(shelfSortLabel(deskSession.shelfSort()));
             binding.deskHint.setText(
                     switch (deskSession.cue()) {
@@ -6880,10 +6981,6 @@ public class ConversationFragment extends XmppFragment
                         case HIDDEN -> R.string.desk_hint_shelf;
                         case SHELF -> R.string.desk_hint_shelf;
                     });
-        }
-        if (files) {
-            binding.deskGroup.setText(deskSession.group().name().toLowerCase(Locale.ROOT));
-            binding.deskSort.setText(deskSession.sort().name().toLowerCase(Locale.ROOT));
         }
         String empty =
                 switch (deskSession.emptyKind()) {
@@ -6928,8 +7025,88 @@ public class ConversationFragment extends XmppFragment
             }
             deskStickEnd = false;
         }
-        backPressedLeaveDesk.setEnabled(deskSession.hasBack());
-        markShelf(deskSession.view(), files);
+        backPressedLeaveDesk.setEnabled(deskPlaceReturns());
+        markShelf(deskSession.view(), files, look);
+    }
+
+    /** Night chat fades under the bars. Every other reading keeps the shelf padding empty. */
+    private void settleList(DeskLook look) {
+        boolean through = deskChat && look.night;
+        binding.messagesView.setClipToPadding(false);
+        binding.messagesView.setShelf(
+                through
+                        ? FadingEdgeRecyclerView.Shelf.THROUGH
+                        : FadingEdgeRecyclerView.Shelf.DISSOLVE);
+    }
+
+    private boolean deskPlaceReturns() {
+        return deskChatFromList || (deskSession != null && deskSession.hasBack());
+    }
+
+    /**
+     * Toolbar and gesture back. An open thread, or Chat opened from a post with no replies,
+     * returns to the thread list.
+     */
+    private boolean leaveDeskPlace() {
+        if (binding == null) {
+            return false;
+        }
+        if (deskChatFromList) {
+            deskChatFromList = false;
+            deskChat = false;
+            showReading();
+            return true;
+        }
+        if (deskSession != null && deskSession.back()) {
+            deskChat = false;
+            showReading();
+            return true;
+        }
+        return false;
+    }
+
+    private void showChatMessage(String id) {
+        deskChatFromList = true;
+        deskChat = true;
+        showReading();
+        if (id == null || messagesLayoutManager == null || binding == null) {
+            return;
+        }
+        final int index = getIndexOfExtended(id, messageList);
+        if (index < 0) {
+            return;
+        }
+        messagesLayoutManager.scrollToPositionWithOffset(index, 0);
+        binding.messagesView.post(
+                () -> {
+                    if (messagesLayoutManager != null) {
+                        messagesLayoutManager.scrollToPositionWithOffset(index, 0);
+                    }
+                });
+        highlightMessage(id);
+    }
+
+    /** Night desk uses the page colors. Chat and the light themes keep the inverse pill. */
+    private void paintSnackbar(DeskLook look) {
+        if (look.night && !deskChat) {
+            GradientDrawable background = new GradientDrawable();
+            background.setColor(look.control);
+            background.setCornerRadius(
+                    TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP,
+                            8,
+                            binding.snackbar.getResources().getDisplayMetrics()));
+            binding.snackbar.setBackground(background);
+            binding.snackbarMessage.setTextColor(look.text);
+            binding.snackbarAction.setTextColor(look.accent);
+            return;
+        }
+        binding.snackbar.setBackgroundResource(R.drawable.snackbar);
+        int onInverse =
+                com.google.android.material.color.MaterialColors.getColor(
+                        binding.snackbar, com.google.android.material.R.attr.colorOnSurfaceInverse);
+        binding.snackbarMessage.setTextColor(onInverse);
+        binding.snackbarAction.setTextColor(onInverse);
     }
 
     /** showReading that puts the shelf back where it was after the rows are replaced. */
@@ -6949,8 +7126,15 @@ public class ConversationFragment extends XmppFragment
         try {
             if (row.folder) {
                 deskSession.openFolder(row.id);
+            } else if (row.kind == Desk.Row.Kind.FILE) {
+                showChatMessage(row.id);
+                return;
             } else if (row.kind == Desk.Row.Kind.THREAD) {
-                deskSession.openListed(row.id);
+                if (!deskSession.openListed(row.id)) {
+                    showChatMessage(deskSession.focusId());
+                    return;
+                }
+                deskChatFromList = false;
                 deskReveal = true;
             } else if (deskSession.filesOpen()) {
                 return;
@@ -7100,6 +7284,139 @@ public class ConversationFragment extends XmppFragment
         insets.setAppearanceLightNavigationBars(false);
     }
 
+    private void holdSolidPage() {
+        if (binding == null) {
+            return;
+        }
+        binding.backgroundImage.setVisibility(GONE);
+        binding.conversationsFragment.setBackgroundColor(solidPage);
+    }
+
+    private DeskLook.Theme deskTheme() {
+        if (activity == null) {
+            return DeskLook.Theme.NIGHT;
+        }
+        return DeskLook.Theme.parse(
+                activity.getPreferences().getString(DESK_THEME, DeskLook.Theme.NIGHT.key));
+    }
+
+    private void showDeskTheme() {
+        if (activity == null) {
+            return;
+        }
+        PopupMenu menu = new PopupMenu(activity, binding.deskTheme);
+        DeskLook.Theme[] themes = DeskLook.Theme.values();
+        for (int i = 0; i < themes.length; i++) {
+            menu.getMenu().add(0, i, i, themeLabel(themes[i]));
+        }
+        menu.setOnMenuItemClickListener(
+                item -> {
+                    int which = item.getItemId();
+                    if (which < 0 || which >= themes.length) {
+                        return true;
+                    }
+                    activity.getPreferences().edit().putString(DESK_THEME, themes[which].key).apply();
+                    showReading();
+                    return true;
+                });
+        menu.show();
+    }
+
+    private boolean deskCards() {
+        return "card".equals(activity.getPreferences().getString(DESK_DENSITY, "compact"));
+    }
+
+    private String themeLabel(DeskLook.Theme theme) {
+        return switch (theme) {
+            case ORIGINAL -> getString(R.string.desk_theme_original);
+            case PLAIN -> getString(R.string.desk_theme_plain);
+            case NIGHT -> getString(R.string.desk_theme_night);
+        };
+    }
+
+    /** Night takes the dark page. Original lets the wallpaper through. Plain is a solid page. */
+    private void applyReadingChrome(DeskLook look) {
+        boolean wantFrame = look.night && !deskChat;
+        boolean wasFrame = deskFrame;
+        boolean wasSolid = deskSolid;
+        deskSolid = !look.night && !look.wallpaper;
+        solidPage = look.page;
+        applyDeskFrame(wantFrame);
+        if (deskSolid) {
+            holdSolidPage();
+        } else if (!wantFrame && (wasFrame || wasSolid)) {
+            updateChatBG();
+        }
+    }
+
+    private void paintShelf(DeskLook look) {
+        if (look.night) {
+            binding.deskShelf.setBackgroundColor(look.page);
+            binding.deskReadings.setBackground(null);
+            binding.deskTools.setBackground(null);
+            island(binding.deskReadings, false);
+            island(binding.deskTools, false);
+        } else {
+            binding.deskShelf.setBackgroundColor(Color.TRANSPARENT);
+            binding.deskReadings.setBackgroundResource(R.drawable.bg_floating_bar);
+            binding.deskTools.setBackgroundResource(R.drawable.bg_floating_bar);
+            island(binding.deskReadings, true);
+            island(binding.deskTools, true);
+        }
+        binding.deskQuery.setBackground(look.field(binding.deskQuery.getContext()));
+        binding.deskQuery.setTextColor(look.text);
+        binding.deskQuery.setHintTextColor(look.muted);
+        binding.deskHint.setTextColor(look.muted);
+        binding.deskTheme.setText(themeLabel(look.theme));
+        paintChip(binding.deskShelfSort, false, look);
+        paintChip(binding.deskDensity, false, look);
+        paintChip(binding.deskGroup, false, look);
+        paintChip(binding.deskSort, false, look);
+        paintChip(binding.deskTheme, false, look);
+    }
+
+    /** Chat keeps only the theme chip, held at the end. Readings use the full tools row. */
+    private void pinTheme(boolean alone) {
+        if (!(binding.deskTools.getLayoutParams() instanceof LinearLayout.LayoutParams params)) {
+            return;
+        }
+        int width = alone ? ViewGroup.LayoutParams.WRAP_CONTENT : ViewGroup.LayoutParams.MATCH_PARENT;
+        int gravity = alone ? Gravity.END : Gravity.START;
+        if (params.width == width && params.gravity == gravity) {
+            return;
+        }
+        params.width = width;
+        params.gravity = gravity;
+        binding.deskTools.setLayoutParams(params);
+    }
+
+    private void island(View view, boolean on) {
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams params)) {
+            return;
+        }
+        int side =
+                on
+                        ? view.getResources().getDimensionPixelSize(R.dimen.floating_bar_margin)
+                        : 0;
+        int top =
+                on
+                        ? view.getResources()
+                                .getDimensionPixelSize(R.dimen.floating_toolbar_margin_bottom)
+                        : 0;
+        float lift =
+                on
+                        ? view.getResources().getDimension(R.dimen.floating_toolbar_elevation)
+                        : 0f;
+        if (params.getMarginStart() == side && params.topMargin == top && view.getElevation() == lift) {
+            return;
+        }
+        params.setMarginStart(side);
+        params.setMarginEnd(side);
+        params.topMargin = top;
+        view.setLayoutParams(params);
+        view.setElevation(lift);
+    }
+
     private void paintToolbar(View bar, int color) {
         if (!(bar instanceof androidx.appcompat.widget.Toolbar toolbar)) {
             return;
@@ -7143,28 +7460,16 @@ public class ConversationFragment extends XmppFragment
         }
     }
 
-    private void markShelf(Desk.View view, boolean files) {
-        markOne(binding.deskThreads, !files && view == Desk.View.THREADS);
-        markOne(binding.deskBoard, !files && view == Desk.View.BOARD);
-        markOne(binding.deskStream, !files && view == Desk.View.STREAM);
-        markOne(binding.deskFiles, files);
-        markOne(binding.deskChat, view == null);
+    private void markShelf(Desk.View view, boolean files, DeskLook look) {
+        paintChip(binding.deskThreads, !files && view == Desk.View.THREADS, look);
+        paintChip(binding.deskFiles, files, look);
+        paintChip(binding.deskChat, view == null, look);
     }
 
-    private static void markOne(TextView view, boolean selected) {
-        view.setBackgroundResource(selected ? R.drawable.bg_desk_button_on : R.drawable.bg_desk_button);
-        view.setTextColor(view.getContext().getColor(selected ? R.color.desk_ink : R.color.desk_text));
+    private static void paintChip(TextView view, boolean selected, DeskLook look) {
+        view.setBackground(look.chip(view.getContext(), selected));
+        view.setTextColor(selected ? look.ink : look.text);
         view.setTypeface(null, Typeface.NORMAL);
-    }
-
-    private static Desk.Group nextGroup(Desk.Group group) {
-        Desk.Group[] values = Desk.Group.values();
-        return values[(group.ordinal() + 1) % values.length];
-    }
-
-    private static Desk.Sort nextSort(Desk.Sort sort) {
-        Desk.Sort[] values = Desk.Sort.values();
-        return values[(sort.ordinal() + 1) % values.length];
     }
 
     private void refresh(boolean notifyConversationRead) {

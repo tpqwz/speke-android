@@ -613,10 +613,10 @@ public class ConversationsOverviewFragment extends XmppFragment {
             }
             return true;
         } else if (id == R.id.action_feeds) {
-            startActivity(new Intent(getActivity(), PostsActivity.class));
+            startActivity(FeedsActivity.intent(getActivity(), false, false));
             return true;
         } else if (id == R.id.action_stories) {
-            startActivity(new Intent(getActivity(), StoriesActivity.class));
+            startActivity(FeedsActivity.intent(getActivity(), true, false));
             return true;
         } else if (id == R.id.action_calls) {
             startActivity(new Intent(getActivity(), CallsActivity.class));

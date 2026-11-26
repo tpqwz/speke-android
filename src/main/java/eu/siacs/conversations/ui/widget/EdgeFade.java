@@ -94,6 +94,66 @@ public final class EdgeFade {
         }
     }
 
+    /**
+     * Draws nothing in the top padding, then dissolves the first {@code fadeLength} of the body so
+     * a row meeting the shelf fades out instead of ending on a cut glyph. The bottom padding still
+     * dissolves under the composer.
+     */
+    public void drawSettled(final Canvas canvas, final View view, final Content content) {
+        final int width = view.getWidth();
+        final int height = view.getHeight();
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+        final int bodyTop = Math.min(view.getPaddingTop(), height);
+        final int bodyBottom = Math.max(bodyTop, height - view.getPaddingBottom());
+        final int fade = Math.min(fadeLength, bodyBottom - bodyTop);
+        if (fade > 0) {
+            final int solid = canvas.save();
+            canvas.clipRect(0, bodyTop + fade, width, bodyBottom);
+            content.draw(canvas);
+            canvas.restoreToCount(solid);
+            final int layer = canvas.saveLayer(0, bodyTop, width, bodyTop + fade, null);
+            canvas.clipRect(0, bodyTop, width, bodyTop + fade);
+            content.draw(canvas);
+            paint.setShader(settledRamp(bodyTop, fade));
+            canvas.drawRect(0, bodyTop, width, bodyTop + fade, paint);
+            canvas.restoreToCount(layer);
+        } else {
+            final int solid = canvas.save();
+            canvas.clipRect(0, bodyTop, width, bodyBottom);
+            content.draw(canvas);
+            canvas.restoreToCount(solid);
+        }
+        if (bodyBottom < height) {
+            updateShaders(width, height, view.getPaddingTop(), view.getPaddingBottom());
+            band(canvas, content, width, bodyBottom, height, bottom);
+        }
+    }
+
+    private int settledFrom;
+    private int settledSpan;
+    private LinearGradient settled;
+
+    /** Full mask at the shelf edge, none at the end of the ramp. A partial mask would leave the cut. */
+    private LinearGradient settledRamp(final int from, final int span) {
+        if (settled != null && settledFrom == from && settledSpan == span) {
+            return settled;
+        }
+        settledFrom = from;
+        settledSpan = span;
+        settled =
+                new LinearGradient(
+                        0,
+                        from,
+                        0,
+                        from + span,
+                        new int[] {0xFF000000, 0x00000000},
+                        null,
+                        Shader.TileMode.CLAMP);
+        return settled;
+    }
+
     private void band(
             final Canvas canvas,
             final Content content,

@@ -86,7 +86,11 @@ public class BackupFile implements Comparable<BackupFile> {
         final List<Jid> accounts = database.getAccountJids(false);
         final var backupFiles = new ImmutableList.Builder<BackupFile>();
         final var apps =
-                ImmutableSet.of("Conversations", "Quicksy", context.getString(R.string.app_name));
+                ImmutableSet.of(
+                        "Conversations",
+                        "Quicksy",
+                        "monocles chat",
+                        context.getString(R.string.app_name));
 
         final var uriPermissions = context.getContentResolver().getPersistedUriPermissions();
 
@@ -141,6 +145,14 @@ public class BackupFile implements Comparable<BackupFile> {
                     Config.LOGTAG,
                     "including default directory since no uri permissions have been granted");
             directories.add(FileBackend.getBackupDirectory(context));
+            // Backups written before this fork was named LaNoxe.
+            directories.add(
+                    new File(
+                            new File(
+                                    Environment.getExternalStoragePublicDirectory(
+                                            Environment.DIRECTORY_DOCUMENTS),
+                                    "monocles chat"),
+                            "Backup"));
         }
         for (final File directory : directories) {
             if (!directory.exists() || !directory.isDirectory()) {

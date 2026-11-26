@@ -8,6 +8,6 @@
     <files-path name="stickers"     path="Stickers/" />
     <!-- Camera captures written to internal hidden storage (getTakePhotoUri / getTakeVideoUri when internal hidden storage is enabled) -->
     <files-path name="internal_camera" path="Camera/" />
-    <!-- Received files, backups and public camera captures saved under Documents/monocles chat/ (getStorageLocation, getTakePhotoUri/getTakeVideoUri, ExportBackupWorker) -->
+    <!-- Received files, backups and public camera captures saved under Documents/LaNoxe/ (getStorageLocation, getTakePhotoUri/getTakeVideoUri, ExportBackupWorker) -->
     <external-path name="ext_documents"   path="Documents/" />
 </paths>

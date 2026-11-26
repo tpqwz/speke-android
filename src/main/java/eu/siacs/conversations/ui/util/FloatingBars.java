@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.ListView;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -401,7 +402,27 @@ public final class FloatingBars {
         final RecyclerView list = view instanceof RecyclerView ? (RecyclerView) view : null;
         final boolean restingAtStart = restingAtEdge(list, true);
         final boolean restingAtEnd = restingAtEdge(list, false);
+        // ListView keeps the first row where it was, so a bar that grows covers it. When the
+        // reader is still at the top, put that row at the new padding. setSelection would pin it
+        // to y=0 and draw it under the bar.
+        final boolean listAtTop;
+        if (view instanceof ListView) {
+            final ListView rows = (ListView) view;
+            final int oldTop = rows.getPaddingTop();
+            listAtTop =
+                    rows.getFirstVisiblePosition() == 0
+                            && (rows.getChildCount() == 0 || rows.getChildAt(0).getTop() >= oldTop);
+        } else {
+            listAtTop = false;
+        }
         view.setPadding(view.getPaddingLeft(), top, view.getPaddingRight(), bottom);
+        if (view instanceof ListView) {
+            if (listAtTop) {
+                final ListView rows = (ListView) view;
+                rows.post(() -> rows.setSelectionFromTop(0, rows.getPaddingTop()));
+            }
+            return;
+        }
         if (!restingAtStart && !restingAtEnd) {
             return;
         }

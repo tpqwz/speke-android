@@ -178,6 +178,8 @@ public final class Desk {
         public final String chip;
         public final String chipKind;
         public final String chipDetail;
+        /** An https address in the post, when it has one. */
+        public final String link;
 
         public Row(
                 Kind kind,
@@ -195,7 +197,8 @@ public final class Desk {
                 boolean folder,
                 String chip,
                 String chipKind,
-                String chipDetail) {
+                String chipDetail,
+                String link) {
             this.kind = kind;
             this.id = id;
             this.depth = depth;
@@ -212,11 +215,34 @@ public final class Desk {
             this.chip = chip;
             this.chipKind = chipKind;
             this.chipDetail = chipDetail;
+            this.link = link;
         }
 
-        static Row file(String id, String text, boolean folder) {
+        static Row file(
+                String id, String name, String sender, String when, String size, String type) {
             return new Row(
-                    folder ? Kind.FOLDER : Kind.FILE,
+                    Kind.FILE,
+                    id,
+                    0,
+                    name,
+                    sender,
+                    when,
+                    null,
+                    0,
+                    0,
+                    false,
+                    false,
+                    false,
+                    false,
+                    size,
+                    type,
+                    null,
+                    null);
+        }
+
+        static Row folder(String id, String text, int count) {
+            return new Row(
+                    Kind.FOLDER,
                     id,
                     0,
                     text,
@@ -224,11 +250,12 @@ public final class Desk {
                     "",
                     null,
                     0,
-                    0,
+                    count,
                     false,
                     false,
                     false,
-                    folder,
+                    true,
+                    null,
                     null,
                     null,
                     null);
@@ -236,7 +263,23 @@ public final class Desk {
 
         static Row day(String id, String label) {
             return new Row(
-                    Kind.DAY, id, 0, label, "", "", null, 0, 0, false, false, false, false, null, null, null);
+                    Kind.DAY,
+                    id,
+                    0,
+                    label,
+                    "",
+                    "",
+                    null,
+                    0,
+                    0,
+                    false,
+                    false,
+                    false,
+                    false,
+                    null,
+                    null,
+                    null,
+                    null);
         }
     }
 
@@ -549,6 +592,28 @@ public final class Desk {
             go(next, null);
         }
 
+        /**
+         * The Threads chip. An open thread closes onto the list. That return is not stacked again,
+         * so Back does not re-enter the thread. Files stay on the stack.
+         */
+        public void showList() {
+            if (files) {
+                go(View.THREADS, null);
+                return;
+            }
+            if (view == View.THREADS && threadId != null) {
+                Mark top = back.peekLast();
+                if (top != null && top.view == View.THREADS && top.threadId == null && !top.files) {
+                    back.pollLast();
+                }
+                threadId = null;
+                focusId = null;
+                folder = null;
+                return;
+            }
+            go(View.THREADS, null);
+        }
+
         public void openThread(String id) {
             Index index = new Index(notes);
             int i = index.require(id);
@@ -594,8 +659,9 @@ public final class Desk {
             if (files) {
                 return;
             }
-            back.add(new Mark(view, threadId, false));
+            back.add(new Mark(view, threadId, false, folder));
             files = true;
+            folder = null;
             focusId = null;
         }
 
@@ -607,7 +673,12 @@ public final class Desk {
             if (!labels.contains(name)) {
                 throw new IllegalArgumentException("That folder is not in this arrangement.");
             }
+            if (name.equals(folder)) {
+                return;
+            }
+            back.add(new Mark(view, threadId, files, folder));
             folder = name;
+            focusId = null;
         }
 
         public void setGroup(Group next) {
@@ -632,7 +703,10 @@ public final class Desk {
                 return;
             }
             query = cleaned;
-            threadId = null;
+            // A directory filter stays in this thread. Search on the shelf still closes one.
+            if (!files) {
+                threadId = null;
+            }
             focusId = null;
         }
 
@@ -647,9 +721,9 @@ public final class Desk {
 
         /**
          * Open the thread this row names. A search opens it on the latest matching line. A post
-         * with no replies opens in the stream.
+         * with no replies stays on this shelf; the caller opens it in chat. Returns false then.
          */
-        public void openListed(String id) {
+        public boolean openListed(String id) {
             Index index = new Index(notes);
             int i = index.require(id);
             int root = index.rootOf(i);
@@ -657,13 +731,14 @@ public final class Desk {
             if (!query.trim().isEmpty()) {
                 target = bestMatch(index, root, query.trim().toLowerCase(Locale.ROOT).split("\\s+"));
             }
-            if (index.isCard(root)) {
-                View stay = view == View.STREAM ? View.BOARD : view;
-                go(stay, notes.get(root).id);
-            } else {
-                go(View.STREAM, null);
-            }
             focusId = notes.get(target).id;
+            if (!index.isCard(root)) {
+                return false;
+            }
+            View stay = view == View.STREAM ? View.THREADS : view;
+            go(stay, notes.get(root).id);
+            focusId = notes.get(target).id;
+            return true;
         }
 
         /** Record the fold the other way. Open means the map value is true. */
@@ -677,7 +752,7 @@ public final class Desk {
             int root = index.rootOf(index.require(id));
             String nextThread = index.isCard(root) ? notes.get(root).id : null;
             if (!files) {
-                back.add(new Mark(view, threadId, false));
+                back.add(new Mark(view, threadId, false, folder));
             }
             threadId = nextThread;
             files = true;
@@ -687,7 +762,10 @@ public final class Desk {
 
         public Empty emptyKind() {
             if (files) {
-                return fileRows().isEmpty() ? Empty.SHELF : Empty.NONE;
+                if (!fileRows().isEmpty()) {
+                    return Empty.NONE;
+                }
+                return query.trim().isEmpty() ? Empty.SHELF : Empty.SEARCH;
             }
             if (threadId != null) {
                 return Empty.NONE;
@@ -747,7 +825,7 @@ public final class Desk {
             view = previous.view;
             threadId = previous.threadId;
             files = previous.files;
-            folder = null;
+            folder = previous.folder;
             focusId = null;
             return true;
         }
@@ -756,7 +834,7 @@ public final class Desk {
             if (!files && nextView == view && same(nextThread, threadId)) {
                 return;
             }
-            back.add(new Mark(view, threadId, files));
+            back.add(new Mark(view, threadId, files, folder));
             view = nextView;
             threadId = nextThread;
             files = false;
@@ -916,7 +994,8 @@ public final class Desk {
                     false,
                     chip,
                     chipKind,
-                    chipDetail);
+                    chipDetail,
+                    linkIn(note.body));
         }
 
         private List<Row> streamRows(Index index) {
@@ -957,7 +1036,8 @@ public final class Desk {
                                 false,
                                 null,
                                 null,
-                                null));
+                                null,
+                                linkIn(note.body)));
             }
             return rows;
         }
@@ -965,6 +1045,10 @@ public final class Desk {
         private List<Row> fileRows() {
             Index index = new Index(notes);
             List<FileRef> refs = index.filesIn(threadId);
+            String[] words = query.trim().toLowerCase(Locale.ROOT).split("\\s+");
+            if (!query.trim().isEmpty()) {
+                refs.removeIf(ref -> !matchesFile(ref, words));
+            }
             if (group != Group.FLAT && folder == null) {
                 List<String> labels = new ArrayList<>();
                 for (FileRef ref : refs) {
@@ -976,7 +1060,13 @@ public final class Desk {
                 labels.sort(Desk::compareNatural);
                 List<Row> rows = new ArrayList<>();
                 for (String label : labels) {
-                    rows.add(Row.file(label, label, true));
+                    int count = 0;
+                    for (FileRef ref : refs) {
+                        if (index.groupKey(ref, group).equals(label)) {
+                            count++;
+                        }
+                    }
+                    rows.add(Row.folder(label, folderLabel(group, label), count));
                 }
                 return rows;
             }
@@ -986,9 +1076,52 @@ public final class Desk {
             refs.sort((a, b) -> compareFiles(a, b, sort));
             List<Row> rows = new ArrayList<>();
             for (FileRef ref : refs) {
-                rows.add(Row.file(notes.get(ref.note).id, ref.file.name, false));
+                Attached file = ref.file;
+                String size = formatSize(file.bytes);
+                rows.add(
+                        Row.file(
+                                notes.get(ref.note).id,
+                                file.name,
+                                file.sender,
+                                formatWhen(file.at),
+                                size.isEmpty() ? null : size,
+                                typeLabel(file)));
             }
             return rows;
+        }
+
+        private static boolean matchesFile(FileRef ref, String[] words) {
+            String hay =
+                    (ref.file.name
+                                    + " "
+                                    + ref.file.sender
+                                    + " "
+                                    + ref.file.kind
+                                    + " "
+                                    + extension(ref.file.name))
+                            .toLowerCase(Locale.ROOT);
+            for (String word : words) {
+                if (!word.isEmpty() && !hay.contains(word)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static String folderLabel(Group group, String key) {
+            if (group == Group.EXTENSION) {
+                return "none".equals(key) ? "No extension" : "." + key;
+            }
+            return key;
+        }
+
+        private static String typeLabel(Attached file) {
+            String kind = file.kind == null || file.kind.isEmpty() ? "file" : file.kind;
+            String ext = extension(file.name);
+            if ("none".equals(ext)) {
+                return kind;
+            }
+            return ext.toUpperCase(Locale.ROOT) + " " + kind;
         }
 
         private static boolean same(String a, String b) {
@@ -999,11 +1132,13 @@ public final class Desk {
             final View view;
             final String threadId;
             final boolean files;
+            final String folder;
 
-            Mark(View view, String threadId, boolean files) {
+            Mark(View view, String threadId, boolean files, String folder) {
                 this.view = view;
                 this.threadId = threadId;
                 this.files = files;
+                this.folder = folder;
             }
         }
     }
@@ -1106,6 +1241,57 @@ public final class Desk {
             }
         }
         return true;
+    }
+
+    /** The first https address in a post, without a trailing period or bracket. */
+    public static String linkIn(String text) {
+        if (text == null) {
+            return null;
+        }
+        int at = text.indexOf("https://");
+        if (at < 0) {
+            return null;
+        }
+        int end = at;
+        while (end < text.length() && !Character.isWhitespace(text.charAt(end))) {
+            end++;
+        }
+        while (end > at && ".,);]}>\"'".indexOf(text.charAt(end - 1)) >= 0) {
+            end--;
+        }
+        if (end <= at + "https://".length()) {
+            return null;
+        }
+        return text.substring(at, end);
+    }
+
+    /** The site of an https address, without a leading www. */
+    public static String linkHost(String url) {
+        if (url == null || !url.startsWith("https://")) {
+            return "";
+        }
+        String rest = url.substring("https://".length());
+        int cut = rest.length();
+        for (int i = 0; i < rest.length(); i++) {
+            char c = rest.charAt(i);
+            if (c == '/' || c == '?' || c == '#') {
+                cut = i;
+                break;
+            }
+        }
+        String host = rest.substring(0, cut);
+        int at = host.lastIndexOf('@');
+        if (at >= 0) {
+            host = host.substring(at + 1);
+        }
+        if (host.regionMatches(true, 0, "www.", 0, 4)) {
+            host = host.substring(4);
+        }
+        int colon = host.indexOf(':');
+        if (colon >= 0) {
+            host = host.substring(0, colon);
+        }
+        return host.toLowerCase(Locale.ROOT);
     }
 
     static String firstLine(String body) {
@@ -1348,6 +1534,20 @@ public final class Desk {
             }
             return true;
         }
+    }
+
+    /** A short size, or empty when the message recorded none. */
+    static String formatSize(long bytes) {
+        if (bytes <= 0) {
+            return "";
+        }
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
+        if (bytes < 1024L * 1024L) {
+            return String.format(Locale.ROOT, "%.1f KB", bytes / 1024.0);
+        }
+        return String.format(Locale.ROOT, "%.1f MB", bytes / (1024.0 * 1024.0));
     }
 
     private static String extension(String name) {

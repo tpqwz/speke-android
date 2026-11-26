@@ -790,7 +790,7 @@
     <string name="conversations_backup">Conversations のバックアップ</string>
     <string name="event">出来事</string>
     <string name="open_backup">バックアップを開く</string>
-    <string name="not_a_backup_file">選択したファイルは、 monocles chat のバックアップファイルではありません</string>
+    <string name="not_a_backup_file">選択したファイルは、 LaNoxe のバックアップファイルではありません</string>
     <string name="account_already_setup">このアカウントは既に設定されています</string>
     <string name="please_enter_password">このアカウントのパスワートを入力してください</string>
     <string name="unable_to_perform_this_action">この操作を実行できません</string>
@@ -871,7 +871,7 @@
     <string name="failed_deliveries">配信に失敗</string>
     <string name="more_options">更なるオプション</string>
     <string name="no_application_found">アプリケーションが見つかりません</string>
-    <string name="invite_to_app">monocles chatに招待</string>
+    <string name="invite_to_app">LaNoxeに招待</string>
     <string name="unable_to_parse_invite">招待を解析できません</string>
     <string name="server_does_not_support_easy_onboarding_invites">サーバーは招待の作成に対応していません</string>
     <string name="no_active_accounts_support_this">この機能をサポートするアクティブなアカウントがありません</string>
@@ -974,7 +974,7 @@
     <string name="welcome_header">会話に参加しよう</string>
     <string name="channel_discover_opt_in_message">談話室発見は、第三者のサービスである &lt;a href=https://search.jabber.network&gt;search.jabber.network&lt;/a&gt; を利用します。&lt;br&gt;&lt;br&gt;この機能を使うと、あなたののIPアドレスや検索キーワードがそのサービスに送信されます。詳しくは、&lt;a href=https://search.jabber.network/privacy&gt;個人情報保護方針&lt;/a&gt;をご覧ください。</string>
     <string name="pref_show_show_nav_drawer_summary">会話の並び変えに役立つ navigation drawer (サイドメニュー)を配置します</string>
-    <string name="do_you_have_an_account">既に XMPP ID を持っていますか? すなわち、別の XMPP クライアントを使用中か、以前に monocles chat 、 Conversations 、または Snikket を使用していたかもしれません。そうでなければ、新規 XMPP ID を今、作成できます。</string>
+    <string name="do_you_have_an_account">既に XMPP ID を持っていますか? すなわち、別の XMPP クライアントを使用中か、以前に LaNoxe 、 Conversations 、または Snikket を使用していたかもしれません。そうでなければ、新規 XMPP ID を今、作成できます。</string>
     <string name="magic_create_text_on_x">あなたは%1$sさんから招待されました。我々は、アカウントを作成する過程を指南します。\n%1$s を提供者として選択すると、あなたの完全な XMPP ID を他の提供者のユーザーに示すことで、その人と連絡を取ることができます。</string>
     <string name="pref_chat_background_summary">会話画面の背景として、自分の画像を選択します。</string>
     <string name="pref_dialler_integration_incoming_summary">電話番号からの着信通話は、このアプリの通知設定の代わりに、システムのダイヤラーで鳴るかもしれません</string>
@@ -993,7 +993,7 @@
     <string name="server_info_login_mechanism">ログイン方法</string>
     <string name="could_not_disable_video">ビデオを無効化できません。</string>
     <string name="store_media_only_in_cache">メディアをキャッシュ内のみに保管</string>
-    <string name="monocles_chat_intro_description">monocles chat は XMPP と呼ばれる全世界のネットワークに接続するアプリです。このネットワークは SMS 、 IRC 、 Matrix などような他のネットワークと話をするためのゲートウェイと呼ばれるサービスが含まれています。</string>
+    <string name="monocles_chat_intro_description">LaNoxe は XMPP と呼ばれる全世界のネットワークに接続するアプリです。このネットワークは SMS 、 IRC 、 Matrix などような他のネットワークと話をするためのゲートウェイと呼ばれるサービスが含まれています。</string>
     <string name="how_the_xmpp_network_works">XMPP ネットワークはどのように機能するか</string>
     <string name="do_you_really_want_to_retract_this_message">このメッセージを本当に撤回しますか?</string>
     <string name="show_link_previews_summary">送信者がリンクの詳細を含めている場合は、それを表示する</string>
@@ -1003,7 +1003,7 @@
     <string name="copy_GIFs_to_GIFs_folder">GIF を GIF フォルダにコピー</string>
     <string name="pref_jump_to_commands_tab">コマンドに飛ぶ</string>
     <string name="internal_meda_viewer_title">内部のメディア表示器</string>
-    <string name="internal_meda_viewer_summary">monocles chat の内側で画像またはビデオのファイルを開くために、 monocles chat 内部のメディア表示器を使用する</string>
+    <string name="internal_meda_viewer_summary">LaNoxe の内側で画像またはビデオのファイルを開くために、 LaNoxe 内部のメディア表示器を使用する</string>
     <string name="schedule_message">後で送信</string>
     <string name="pref_show_mappreview_inside_summary">チャット画面内に直接地図プレビューを表示すると、monocles chat-サーバーへの接続が確立されます。</string>
     <string name="pref_show_own_accounts">自分のアカウント名を表示</string>
@@ -1032,7 +1032,7 @@
     <string name="call_is_using_bluetooth">通話は bluetooth を使用中です。</string>
     <string name="flip_camera">表裏反転カメラ</string>
     <string name="video_is_disabled_tap_to_enable">ビデオは無効です。触れると、有効化します。</string>
-    <string name="welcome_to_monocles_chat">monocles chat へようこそ</string>
+    <string name="welcome_to_monocles_chat">LaNoxe へようこそ</string>
     <string name="cant_open_file">ファイルを開けません</string>
     <string name="encryption">暗号化</string>
     <string name="choose_widget">ウィジェットを選択</string>
@@ -1276,7 +1276,7 @@
     <string name="pref_dns_server_ipv6_summary">初期設定の私事禁秘に焦点を当てた IPv6 DNS サーバー Mullvad を変更します。空欄の場合は、あなたの端末または VPN のDNS サーバーを使用します</string>
     <string name="pref_import_settings_summary">バックアップフォルダから settings.dat を取り込みます</string>
     <string name="pref_export_settings">設定を書き出す</string>
-    <string name="pref_export_settings_summary">バックアップフォルダに monocles chat アプリの設定を書き出します</string>
+    <string name="pref_export_settings_summary">バックアップフォルダに LaNoxe アプリの設定を書き出します</string>
     <string name="success_import_settings">設定の取り込みに成功しました</string>
     <string name="pref_auto_accept_unmetered_summary">従量課金回線で通信する際、上記の大きさ上限を使用しません</string>
     <string name="always_accept_when_unmetered">従量課金回線時に常に受取</string>

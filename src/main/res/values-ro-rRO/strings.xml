@@ -819,7 +819,7 @@
     <string name="conversations_backup">Copie de siguranță Conversations</string>
     <string name="event">Eveniment</string>
     <string name="open_backup">Deschide o copie de siguranță</string>
-    <string name="not_a_backup_file">Fișierul selectat nu este o copie de siguranță monocles chat</string>
+    <string name="not_a_backup_file">Fișierul selectat nu este o copie de siguranță LaNoxe</string>
     <string name="account_already_setup">Acest cont a fost deja configurat</string>
     <string name="please_enter_password">Va rugăm să introduceți parola pentru acest cont</string>
     <string name="unable_to_perform_this_action">Nu s-a putut realiza această acțiune</string>
@@ -911,7 +911,7 @@
     <string name="failed_deliveries">Trimiteri eșuate</string>
     <string name="more_options">Mai multe</string>
     <string name="no_application_found">Nu s-a găsit nici o aplicație</string>
-    <string name="invite_to_app">Invitați la monocles chat</string>
+    <string name="invite_to_app">Invitați la LaNoxe</string>
     <string name="unable_to_parse_invite">Nu s-a putut procesa invitația</string>
     <string name="server_does_not_support_easy_onboarding_invites">Serverul nu suportă generarea de invitații</string>
     <string name="no_active_accounts_support_this">Nici un cont activ nu suporta această caracteristică</string>

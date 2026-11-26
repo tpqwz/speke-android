@@ -4,7 +4,7 @@ package de.monocles.chat;
 // indexed by the system MediaScanner. Unfortunately, the conventional way of creating `.nomedia'
 // won't solve the problem without requiring permission to gain access to all files in storage.
 //
-// To avoid that nasty permission, monocles chat would migrate them to the context directory which
+// To avoid that nasty permission, they are migrated to the context directory which
 // won't get indexed. The trick is that, it requires the old Stickers folder to never exist.
 //
 // Stickers later moved once more, from the external app directory (Android/data/..., readable by

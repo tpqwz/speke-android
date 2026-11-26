@@ -813,7 +813,7 @@
     <string name="conversations_backup">Conversations резерв копиясе</string>
     <string name="event">Вакыйга</string>
     <string name="open_backup">Резерв копияне ачу</string>
-    <string name="not_a_backup_file">Сез сайлаган файл monocles chat резерв копиясе файлы түгел</string>
+    <string name="not_a_backup_file">Сез сайлаган файл LaNoxe резерв копиясе файлы түгел</string>
     <string name="account_already_setup">Бу аккаунт инде көйләнгән</string>
     <string name="please_enter_password">Зинһар, бу аккаунт өчен парольне кертегез</string>
     <string name="unable_to_perform_this_action">Бу гамәлне башкара алмады</string>
@@ -886,7 +886,7 @@
     <string name="failed_deliveries">Ирештерелмәгән хәбәрләр</string>
     <string name="more_options">Тагын</string>
     <string name="no_application_found">Кушымта табылмады</string>
-    <string name="invite_to_app">monocles chat-ка чакыру</string>
+    <string name="invite_to_app">LaNoxe-ка чакыру</string>
     <string name="unable_to_parse_invite">Чакыруны анализлый алмады</string>
     <string name="server_does_not_support_easy_onboarding_invites">Сервер чакырулар төзүне хуплый</string>
     <string name="no_active_accounts_support_this">Бернинди актив аккаунт та бу функцияне хуплый</string>
@@ -1071,7 +1071,7 @@
     <string name="video_is_enabled_tap_to_disable">Видео кабызылган. Сүндерү өчен басыгыз.</string>
     <string name="video_is_disabled_tap_to_enable">Видео сүндерелгән. Кабызу өчен басыгыз.</string>
     <string name="server_info_login_mechanism">Керү ысулы</string>
-    <string name="welcome_to_monocles_chat">monocles chat-ка рәхим итегез</string>
+    <string name="welcome_to_monocles_chat">LaNoxe-ка рәхим итегез</string>
     <string name="how_the_xmpp_network_works">XMPP челтәре ничек эшли</string>
     <string name="do_you_really_want_to_retract_this_message">Сез чыннан да бу хәбәрне кире алырга телисезме? Кире алу соравы җибәреләчәк, ләкин алучының клиенты аны кабул итмәскә мөмкин.</string>
     <string name="show_avatar">Аватарны күрсәтү</string>
@@ -1101,7 +1101,7 @@
     <string name="encrypted_with_otr">OTR белән шифрланган</string>
     <string name="add_reaction_title">Реакция өстәү</string>
     <string name="more_reactions">Күбрәк реакцияләр</string>
-    <string name="monocles_chat_intro_description">Monocles chat - сезне глобаль XMPP челтәренә тоташтыра торган кушымта. Бу челтәр SMS, IRC, Matrix һ.б. кебек башка челтәрләр белән аралашу өчен шлюзлар дип аталган хезмәтләрне үз эченә ала.</string>
+    <string name="monocles_chat_intro_description">LaNoxe - сезне глобаль XMPP челтәренә тоташтыра торган кушымта. Бу челтәр SMS, IRC, Matrix һ.б. кебек башка челтәрләр белән аралашу өчен шлюзлар дип аталган хезмәтләрне үз эченә ала.</string>
     <string name="pref_show_own_accounts">Аккаунт исемен күрсәтү</string>
     <string name="smp_explain_question">Әгәр сезнең һәм контактның беркем дә белмәгән уртак серегез булса (мәсәлән, эчке шаяру яки соңгы тапкыр очрашкач төшке ашка нәрсә ашавыгыз), сез бу серне бер-берегезнең эзләрен тикшерү өчен куллана аласыз.
 \n
@@ -1125,7 +1125,7 @@
     <string name="stickers">Стикерлар</string>
     <string name="gifs">Гифкалар</string>
     <string name="internal_meda_viewer_title">Кертелгән карау коралы</string>
-    <string name="internal_meda_viewer_summary">Monocles Chat-та рәсемнәрне һәм видеоларны ачу өчен кертелгән карау коралын куллану</string>
+    <string name="internal_meda_viewer_summary">LaNoxe-та рәсемнәрне һәм видеоларны ачу өчен кертелгән карау коралын куллану</string>
     <string name="pref_use_unicolored_chatbg">Бер төсле фон</string>
     <string name="pref_use_unicolored_chatbg_summary">Әңгәмәләрдә бер төсле фон куллану</string>
     <string name="delete_background">Чат фонын бетерү</string>
@@ -1168,7 +1168,7 @@
     <string name="change_color">төсне үзгәртү</string>
     <string name="filter">фильтр</string>
     <string name="save_to_downloads">Йөкләүләргә саклау</string>
-    <string name="do_you_have_an_account">Сезнең инде XMPP-адресыгыз бармы? Бу сез инде башка XMPP-клиент кулланган яки monocles chat, Conversations яки Snikket-ны элек кулланган очракта булырга мөмкин. Юк икән, сез хәзер үк яңа XMPP-адрес төзи аласыз.</string>
+    <string name="do_you_have_an_account">Сезнең инде XMPP-адресыгыз бармы? Бу сез инде башка XMPP-клиент кулланган яки LaNoxe, Conversations яки Snikket-ны элек кулланган очракта булырга мөмкин. Юк икән, сез хәзер үк яңа XMPP-адрес төзи аласыз.</string>
     <string name="refresh_feature_discovery">Клиент турында мәгълүматны яңарту</string>
     <string name="pref_chat_background_summary">Чат фоны итеп рәсемнәр сайлау.</string>
     <string name="resize_and_save">Кисеп алынган фрагмент үлчәмен үзгәртү һәм саклау</string>

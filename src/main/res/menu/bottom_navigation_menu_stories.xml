@@ -9,11 +9,11 @@
         android:icon="?attr/ic_calls_unselected"
         android:title="@string/calls"/>
     <item
-        android:id="@+id/stories"
-        android:icon="?attr/ic_stories_selected"
-        android:title="@string/stories"/>
-    <item
-        android:id="@+id/feeds"
+        android:id="@+id/rss"
         android:icon="?attr/feed_unselected"
-        android:title="@string/feeds"/>
+        android:title="@string/rss"/>
+    <item
+        android:id="@+id/podcasts"
+        android:icon="?attr/ic_stories_unselected"
+        android:title="@string/podcasts"/>
 </menu>

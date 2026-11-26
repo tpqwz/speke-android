@@ -29,7 +29,8 @@
   -->
 
 <resources>
-    <string name="pref_about_message" translatable="false"><b>monocles chat</b>
+    <string name="pref_about_message" translatable="false"><b>LaNoxe</b>
+			\n\nThis build is LaNoxe, a fork of monocles chat.
 			\n\nCopyright © 2020-2026 Arne-Brün Vogelsang and contributors
 			\n\nhttps://monocles.eu/more/
 			\n\nThis program is free software: you can redistribute it and/or modify
@@ -49,7 +50,8 @@
 			monocles chat repository was licensed under the GPLv3, are licensed under the GNU General
 			Public License version 3 (GPLv3). Section 13 of the GPLv3 allows it to be combined with AGPLv3 code.
 			\n\nDownload the full original source code at https://codeberg.org/iNPUTmice/Conversations (Copyright © Daniel Gultsch)
-			\n\nDownload the complete modified source code of monocles chat at https://codeberg.org/monocles/monocles_chat
+			\n\nDownload the source code of LaNoxe at https://github.com/tpqwz/lanoxe-android
+			\n\nThe monocles chat source this fork started from is at https://codeberg.org/monocles/monocles_chat
             \n\nYou can buy me a coffee by making a donation in form of a gift in sense of § 516 ff BGB i.e. a gratuitous donation via PayPal for arne-bruen@monocles.de
 			\n\nPrivacy policy: https://monocles.eu/legal-privacy/#policies-section
 			\n\n\nLibraries
