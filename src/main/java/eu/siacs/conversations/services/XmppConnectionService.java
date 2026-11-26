@@ -248,6 +248,8 @@ public class XmppConnectionService extends Service {
     public final CountDownLatch restoredFromDatabaseLatch = new CountDownLatch(1);
     private static final Executor FILE_OBSERVER_EXECUTOR = Executors.newSingleThreadExecutor();
     public static final Executor FILE_ATTACHMENT_EXECUTOR = Executors.newSingleThreadExecutor();
+    /** Messages whose page we already asked for a card, so a refresh does not fetch again. */
+    private final Set<String> linkPreviewTried = Collections.synchronizedSet(new HashSet<>());
     private static final Executor COPY_TO_DOWNLOAD_EXECUTOR = Executors.newSingleThreadExecutor();
     private final ScheduledExecutorService internalPingExecutor =
             Executors.newSingleThreadScheduledExecutor();
@@ -3936,16 +3938,14 @@ public class XmppConnectionService extends Service {
         }
 
         boolean waitForPreview = false;
-        // OMEMO2 is allowed into this block (legacy OMEMO is not). The OGP /
-        // RDF Description metadata produced by the HTML branch below ends up
-        // in message.getPayloads() which AxolotlService.encryptOmemo2 places
-        // inside the authenticated SCE envelope. The image/audio/video/pdf
-        // file-attachment branch is gated separately below so OMEMO2 doesn't
-        // silently re-upload a linked file.
+        // OMEMO2 puts the RDF Description inside the SCE envelope. Legacy OMEMO
+        // keeps the same card in the local payload only: MessageGenerator does
+        // not copy a general payload onto that stanza, so the page title never
+        // leaves this device. The file branch below skips both, so a shared
+        // audio address stays a link instead of a downloaded file.
         if (getPreferences().getBoolean("send_link_previews", true)
                 && !previewedLinks
-                && !message.needsUploading()
-                && message.getEncryption() != Message.ENCRYPTION_AXOLOTL) {
+                && !message.needsUploading()) {
             message.clearLinkDescriptions();
             final List<URI> links = message.getLinks();
             if (!links.isEmpty()) {
@@ -4006,10 +4006,15 @@ public class XmppConnectionService extends Service {
                                     final boolean html =
                                             mimeType.startsWith("text/html")
                                                     || mimeType.startsWith("application/xhtml+xml");
+                                    final boolean keepAsLink =
+                                            message.getEncryption()
+                                                            == Message.ENCRYPTION_AXOLOTL
+                                                    || message.getEncryption()
+                                                            == Message
+                                                                    .ENCRYPTION_AXOLOTL_OMEMO2;
                                     if (response.isSuccessful()
                                             && (image || audio || video || pdf)
-                                            && message.getEncryption()
-                                                    != Message.ENCRYPTION_AXOLOTL_OMEMO2) {
+                                            && !keepAsLink) {
                                         // OMEMO2 messages do not auto-convert a linked
                                         // public file into a re-uploaded encrypted file
                                         // attachment. Doing so would silently change a
@@ -8623,6 +8628,125 @@ public class XmppConnectionService extends Service {
 
     public boolean sendChatStates() {
         return getBooleanPreference("chat_states", R.bool.chat_states);
+    }
+
+    /**
+     * A link already in the open chat gets a site card on this device. The card is stored with the
+     * message. It is not sent again, and a page that is not HTML is left as a link.
+     */
+    public void fillLinkPreviews(final List<Message> shown) {
+        if (shown == null || shown.isEmpty()) return;
+        if (!getBooleanPreference(AppSettings.SHOW_LINK_PREVIEWS, R.bool.show_link_previews)) {
+            return;
+        }
+        final Message newest = shown.get(shown.size() - 1);
+        if (newest.getConversation() == null || newest.getConversation().getAccount() == null) {
+            return;
+        }
+        final Account account = newest.getConversation().getAccount();
+        if (!account.isOnlineAndConnected()) return;
+        final List<Message> candidates = new ArrayList<>();
+        for (int i = shown.size() - 1; i >= 0 && candidates.size() < 30; i--) {
+            final Message message = shown.get(i);
+            if (message == null || message.getUuid() == null) continue;
+            if (message.getType() != Message.TYPE_TEXT
+                    && message.getType() != Message.TYPE_PRIVATE) {
+                continue;
+            }
+            if (message.isDeleted() || !message.getLinkDescriptions().isEmpty()) continue;
+            if (linkPreviewTried.contains(message.getUuid())) continue;
+            candidates.add(message);
+        }
+        if (candidates.isEmpty()) return;
+        FILE_ATTACHMENT_EXECUTOR.execute(() -> {
+            int fetched = 0;
+            for (final Message message : candidates) {
+                if (fetched >= 4) return;
+                if (!hasPreviewableLink(message)) continue;
+                if (!linkPreviewTried.add(message.getUuid())) continue;
+                try {
+                    if (storeHtmlPreview(account, message)) {
+                        fetched++;
+                        updateMessage(message, false);
+                    }
+                } catch (final RuntimeException e) {
+                    Log.d(Config.LOGTAG, "unable to build link preview", e);
+                }
+            }
+        });
+    }
+
+    private static boolean hasPreviewableLink(final Message message) {
+        final List<URI> links;
+        try {
+            links = message.getLinks();
+        } catch (final RuntimeException e) {
+            return false;
+        }
+        for (final URI link : links) {
+            if (previewable(link)) return true;
+        }
+        return false;
+    }
+
+    private static boolean previewable(final URI link) {
+        if (link == null || link.getHost() == null) return false;
+        final boolean hidden =
+                HttpConnectionManager.isOnionHost(link.getHost())
+                        || HttpConnectionManager.isI2PHost(link.getHost());
+        return "https".equals(link.getScheme()) || (hidden && "http".equals(link.getScheme()));
+    }
+
+    /** Stores one HTML OpenGraph card on {@code message}. A file address is not downloaded. */
+    private boolean storeHtmlPreview(final Account account, final Message message) {
+        final List<URI> links = message.getLinks();
+        for (final URI link : links) {
+            if (!previewable(link)) continue;
+            try {
+                final HttpUrl url = HttpUrl.parse(link.toString());
+                if (url == null) continue;
+                final boolean proxied =
+                        HttpConnectionManager.route(
+                                        url.host(),
+                                        useTorToConnect() || account.isOnion(),
+                                        useI2PToConnect() || account.isI2P())
+                                != HttpConnectionManager.Route.DIRECT;
+                final OkHttpClient http =
+                        HttpConnectionManager.linkPreviewClient(
+                                getHttpConnectionManager().buildHttpClient(url, account, 5, false),
+                                proxied);
+                final var head = new okhttp3.Request.Builder().url(url).head().build();
+                try (okhttp3.Response response =
+                        HttpConnectionManager.executeLinkPreviewRequest(http, head)) {
+                    final String mime =
+                            response.header("Content-Type") == null
+                                    ? ""
+                                    : response.header("Content-Type");
+                    if (!response.isSuccessful()) continue;
+                    // A file stays a link. A missing type still gets one HTML read, which
+                    // describeLinkResponse drops when the body is not a page.
+                    if (mime.startsWith("image/")
+                            || mime.startsWith("audio/")
+                            || mime.startsWith("video/")
+                            || mime.equals("application/pdf")) {
+                        continue;
+                    }
+                    final boolean html =
+                            mime.isEmpty()
+                                    || mime.startsWith("text/html")
+                                    || mime.startsWith("application/xhtml+xml");
+                    if (!html) continue;
+                }
+                final Element rdf = fetchLinkDescription(http, url, link);
+                if (rdf != null) {
+                    message.addPayload(rdf);
+                    return true;
+                }
+            } catch (final IOException | RuntimeException e) {
+                Log.d(Config.LOGTAG, "unable to build link preview", e);
+            }
+        }
+        return false;
     }
 
     private static final int LINK_PREVIEW_MAX_BYTES = 90_000;

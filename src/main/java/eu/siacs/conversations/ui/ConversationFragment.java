@@ -7523,6 +7523,10 @@ public class ConversationFragment extends XmppFragment
                         this.messageListAdapter.notifyDataSetChanged();
                         showReadingKeepingPlace();
                     }
+                    if (activity != null && activity.xmppConnectionService != null) {
+                        activity.xmppConnectionService.fillLinkPreviews(
+                                new ArrayList<>(this.messageList));
+                    }
                     if (deskChat
                             && (stickToBottom || forceScrollToBottom)
                             && !conversation.isInHistoryPart()
