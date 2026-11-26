@@ -826,7 +826,7 @@
     <string name="conversations_backup">Резервная копия Conversations</string>
     <string name="event">Событие</string>
     <string name="open_backup">Открыть резервную копию</string>
-    <string name="not_a_backup_file">Выбранный вами файл не является файлом резервной копии LaNoxe</string>
+    <string name="not_a_backup_file">Выбранный вами файл не является файлом резервной копии Speke</string>
     <string name="account_already_setup">Этот аккаунт уже настроен</string>
     <string name="please_enter_password">Пожалуйста, введите пароль для этого аккаунта</string>
     <string name="unable_to_perform_this_action">Не удалось совершить это действие</string>
@@ -899,7 +899,7 @@
     <string name="failed_deliveries">Недоставленные сообщения</string>
     <string name="more_options">Ещё</string>
     <string name="no_application_found">Не найдено приложения</string>
-    <string name="invite_to_app">Пригласить в LaNoxe</string>
+    <string name="invite_to_app">Пригласить в Speke</string>
     <string name="unable_to_parse_invite">Невозможно разобрать приглашение</string>
     <string name="server_does_not_support_easy_onboarding_invites">Сервер не поддерживает создание приглашений</string>
     <string name="no_active_accounts_support_this">Ни однин активный аккаунт не поддерживает эту функцию</string>
@@ -1084,7 +1084,7 @@
     <string name="video_is_enabled_tap_to_disable">Видео включено. Нажмите, чтобы отключить.</string>
     <string name="video_is_disabled_tap_to_enable">Видео отключено. Нажмите, чтобы включить.</string>
     <string name="server_info_login_mechanism">Способ входа</string>
-    <string name="welcome_to_monocles_chat">Добро пожаловать в LaNoxe</string>
+    <string name="welcome_to_monocles_chat">Добро пожаловать в Speke</string>
     <string name="how_the_xmpp_network_works">Как работает сеть XMPP</string>
     <string name="do_you_really_want_to_retract_this_message">Вы уверены, что хотите отозвать это сообщение? Запрос на отзыв будет отправлен, но клиент получателя может его не принять.</string>
     <string name="show_avatar">Показать аватар</string>
@@ -1114,7 +1114,7 @@
     <string name="encrypted_with_otr">Зашифровано с помощью OTR</string>
     <string name="add_reaction_title">Добавить реакцию</string>
     <string name="more_reactions">Больше реакций</string>
-    <string name="monocles_chat_intro_description">LaNoxe - это приложение, которое подключает вас к глобальной сети XMPP. Эта сеть включает в себя службы, называемые шлюзами, для общения с другими сетями, такими как SMS, IRC, Matrix и т. д.</string>
+    <string name="monocles_chat_intro_description">Speke - это приложение, которое подключает вас к глобальной сети XMPP. Эта сеть включает в себя службы, называемые шлюзами, для общения с другими сетями, такими как SMS, IRC, Matrix и т. д.</string>
     <string name="pref_show_own_accounts">Показать имя аккаунта</string>
     <string name="smp_explain_question">Если у вас и вашего контакта есть общий секрет, который никто другой не знает (например, шутка изнутри или просто то, что вы ели на обед в последний раз, когда встречались), вы можете использовать этот секрет, чтобы проверить отпечатки пальцев друг друга.
 \n
@@ -1181,7 +1181,7 @@
     <string name="change_color">изменить цвет</string>
     <string name="filter">фильтр</string>
     <string name="save_to_downloads">Сохранить в загрузки</string>
-    <string name="do_you_have_an_account">У вас уже есть XMPP-адрес? Это может быть в случае, если вы уже используете другой XMPP-клиент или использовали LaNoxe, Conversations или Snikket ранее. Если нет, вы можете создать новый XMPP-адрес прямо сейчас.</string>
+    <string name="do_you_have_an_account">У вас уже есть XMPP-адрес? Это может быть в случае, если вы уже используете другой XMPP-клиент или использовали Speke, Conversations или Snikket ранее. Если нет, вы можете создать новый XMPP-адрес прямо сейчас.</string>
     <string name="refresh_feature_discovery">Обновить данные о клиенте</string>
     <string name="pref_chat_background_summary">Выбрать изображения в качестве фона чата.</string>
     <string name="resize_and_save">Изменить размер выделенного фрагмента и сохранить</string>

@@ -90,6 +90,7 @@ public class BackupFile implements Comparable<BackupFile> {
                         "Conversations",
                         "Quicksy",
                         "monocles chat",
+                        "LaNoxe",
                         context.getString(R.string.app_name));
 
         final var uriPermissions = context.getContentResolver().getPersistedUriPermissions();
@@ -145,14 +146,16 @@ public class BackupFile implements Comparable<BackupFile> {
                     Config.LOGTAG,
                     "including default directory since no uri permissions have been granted");
             directories.add(FileBackend.getBackupDirectory(context));
-            // Backups written before this fork was named LaNoxe.
-            directories.add(
-                    new File(
-                            new File(
-                                    Environment.getExternalStoragePublicDirectory(
-                                            Environment.DIRECTORY_DOCUMENTS),
-                                    "monocles chat"),
-                            "Backup"));
+            // Backups written before this app was named Speke.
+            for (final String earlier : new String[] {"monocles chat", "LaNoxe"}) {
+                directories.add(
+                        new File(
+                                new File(
+                                        Environment.getExternalStoragePublicDirectory(
+                                                Environment.DIRECTORY_DOCUMENTS),
+                                        earlier),
+                                "Backup"));
+            }
         }
         for (final File directory : directories) {
             if (!directory.exists() || !directory.isDirectory()) {

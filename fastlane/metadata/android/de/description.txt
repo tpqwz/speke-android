@@ -1,4 +1,4 @@
-LaNoxe ist ein moderner und sicherer XMPP-Chat-Client für Android. Er basiert auf Conversations, enthält Funktionen von blabber.im und Cheogram und bringt viele eigene Änderungen und Funktionen mit, die Benutzerfreundlichkeit und Sicherheit verbessern.
+Speke ist ein moderner und sicherer XMPP-Chat-Client für Android. Er basiert auf Conversations, enthält Funktionen von blabber.im und Cheogram und bringt viele eigene Änderungen und Funktionen mit, die Benutzerfreundlichkeit und Sicherheit verbessern.
 
 Verbindungssicherheit und der Schutz persönlicher Daten sind uns sehr wichtig. Deshalb erzwingen wir verschlüsselte Verbindungen zwischen App und Server, was es für Fremde nahezu unmöglich macht, deine Nachrichten abzufangen und zu lesen. Dazu haben wir veraltete Verschlüsselungsverfahren entfernt. Die verbleibenden sind optimal auf den monocles-Chat-Server abgestimmt, aber auch mit anderen XMPP-Servern kompatibel, die heutigen Standards folgen.
 

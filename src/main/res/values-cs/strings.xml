@@ -805,7 +805,7 @@
     <string name="conversations_backup">Záloha Conversations</string>
     <string name="event">Událost</string>
     <string name="open_backup">Otevřít zálohu</string>
-    <string name="not_a_backup_file">Soubor, který jste zvolili, není soubor zálohy  LaNoxe</string>
+    <string name="not_a_backup_file">Soubor, který jste zvolili, není soubor zálohy  Speke</string>
     <string name="account_already_setup">Tento účet byl již nastaven</string>
     <string name="please_enter_password">Prosím, zadejte heslo k tomuto účtu</string>
     <string name="unable_to_perform_this_action">Nebylo možné vykonat tuto akci</string>
@@ -876,7 +876,7 @@
     <string name="failed_deliveries">Neúspěšné přenosy</string>
     <string name="more_options">Více možností</string>
     <string name="no_application_found">Nenalezena žádná aplikace</string>
-    <string name="invite_to_app">Pozvat do LaNoxe</string>
+    <string name="invite_to_app">Pozvat do Speke</string>
     <string name="unable_to_parse_invite">Nelze načíst pozvánku</string>
     <string name="server_does_not_support_easy_onboarding_invites">Server nepodporuje vytváření pozvánek</string>
     <string name="no_active_accounts_support_this">Žádný z aktivních účtů tuto funkci nepodporuje</string>
@@ -1018,7 +1018,7 @@
     <string name="pref_use_unicolored_chatbg">Jednobarevné pozadí</string>
     <string name="pref_use_unicolored_chatbg_summary">Použít jednobarevné pozadí pro chaty</string>
     <string name="use_conversations.im">Použít monocles</string>
-    <string name="do_you_have_an_account">Už máte své XMPP ID? Například pokud používáte jiného XMPP klienta nebo jste dříve používali LaNoxe, Conversations nebo Snikket. Pokud ne, můžete si nové XMPP ID vytvořit právě teď.</string>
+    <string name="do_you_have_an_account">Už máte své XMPP ID? Například pokud používáte jiného XMPP klienta nebo jste dříve používali Speke, Conversations nebo Snikket. Pokud ne, můžete si nové XMPP ID vytvořit právě teď.</string>
     <string name="server_select_text">XMPP je síť pro zasílání rychlých zpráv nezávislá na poskytovateli a poháněná protokolem XMPP. Tuto aplikaci můžete použít s libovolnou službou XMPP dle svého výběru.</string>
     <string name="magic_create_text_on_x">Byli jste pozváni do %1$s. Provedeme vás procesem vytvoření účtu.\nPokud si vyberete %1$s za svého poskytovatele, budete moci komunikovat s uživateli u jiných poskytovatelů, pokud jim dáte své úplné XMPP ID.</string>
     <string name="magic_create_text_fixed">Byli jste pozváni do %1$s. Vaše uživatelské jméno již bylo vybráno. Provedeme vás procesem vytvoření účtu.\nBudete moci komunikovat s uživateli u jiných poskytovatelů pokud jim dáte své úplné XMPP ID.</string>

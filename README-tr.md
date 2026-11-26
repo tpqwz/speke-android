@@ -1,8 +1,8 @@
-# <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/src/monocleschat/ic_launcher-playstore.png" width="30"> LaNoxe
+# <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/src/monocleschat/ic_launcher-playstore.png" width="30"> Speke
 
 🇬🇧 [English](README.md) / 🇩🇪 [Deutsch](README-de.md) / 🇫🇷 [Français](README-fr.md) / 🇮🇹 [Italiano](README-it.md) / 🇵🇱 [Polski](README-pl.md)
 
-LaNoxe, Android için modern ve güvenli bir XMPP istemcisidir. [Conversations](https://codeberg.org/iNPUTmice/Conversations) tabanlıdır, [blabber.im](https://codeberg.org/kriztan/blabber.im) ve [Cheogram](https://git.sr.ht/~singpolyma/cheogram-android) uygulamalarından özellikler içerir ve kullanılabilirliği ve güvenliği artırmak için birçok kendi değişikliğini ve özelliğini ekler.
+Speke, Android için modern ve güvenli bir XMPP istemcisidir. [Conversations](https://codeberg.org/iNPUTmice/Conversations) tabanlıdır, [blabber.im](https://codeberg.org/kriztan/blabber.im) ve [Cheogram](https://git.sr.ht/~singpolyma/cheogram-android) uygulamalarından özellikler içerir ve kullanılabilirliği ve güvenliği artırmak için birçok kendi değişikliğini ve özelliğini ekler.
 
 <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/00.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/01.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/02.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/03.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/04.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/05.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/06.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/07.png" width="200" />
 
@@ -35,7 +35,7 @@ Ekranlar Pigeonalley tarafından tasarlanmıştır (https://pigeonalley.com)
 
 Gecelik (nightly) ve beta APK'ları Codeberg'de [Releases](https://codeberg.org/monocles/monocles_chat/releases) bölümünde bulabilirsiniz.
 
-LaNoxe, Android 7.0 veya üstünü gerektirir.
+Speke, Android 7.0 veya üstünü gerektirir.
 
 ## Kaynak koddan derleme
 
@@ -102,7 +102,7 @@ Sorununuzu orada çözemezsek bir [sorun kaydı](https://codeberg.org/monocles/m
 
 3. Windows talimatlarındaki [6] ile [10] arasındaki adımları izleyin.
 
-4. Kaydı bilgisayarınızdaki bir dosyaya yazmaya başlayın. Biz `logcat.txt` kullanıyoruz. LaNoxe çalışıyor olmalıdır. Şunu girin:
+4. Kaydı bilgisayarınızdaki bir dosyaya yazmaya başlayın. Biz `logcat.txt` kullanıyoruz. Speke çalışıyor olmalıdır. Şunu girin:
     ```
     $ adb -d logcat -v time --pid=$(adb -d shell pidof -s de.monocles.chat) > logcat.txt
     ```
@@ -151,10 +151,10 @@ Sorununuzu orada çözemezsek bir [sorun kaydı](https://codeberg.org/monocles/m
 
 ## Lisans
 
-LaNoxe özgür bir yazılımdır: Free Software Foundation tarafından yayımlanan [GNU Affero Genel Kamu Lisansı](LICENSE)'nın yalnızca 3. sürümü (AGPL-3.0-only) koşulları altında yeniden dağıtabilir ve/veya değiştirebilirsiniz.
+Speke özgür bir yazılımdır: Free Software Foundation tarafından yayımlanan [GNU Affero Genel Kamu Lisansı](LICENSE)'nın yalnızca 3. sürümü (AGPL-3.0-only) koşulları altında yeniden dağıtabilir ve/veya değiştirebilirsiniz.
 
 Uygulama, yalnızca GNU AGPL'nin 3. sürümüyle lisanslanan [libsignal](https://github.com/signalapp/libsignal) (Telif hakkı © Signal Messenger, LLC) kütüphanesini içerir. Bu nedenle uygulama bir bütün olarak yalnızca AGPLv3'ün 3. sürümü koşulları altında dağıtılır. Buna, ilgili kaynak kodun tamamını kullanıcılarına sunma yükümlülüğü de dahildir. Conversations, blabber.im ve Cheogram'dan alınan kod, eski OMEMO için paketlenen [libsignal-protocol-java](https://github.com/signalapp/libsignal-protocol-java) kütüphanesi ile bu depo GPLv3 altındayken yapılan katkılar GNU GPLv3 ile lisanslanmıştır; GPLv3'ün 13. bölümü bu kodun AGPLv3 koduyla birleştirilmesine izin verir.
 
-LaNoxe yararlı olması umuduyla dağıtılmaktadır, ancak HİÇBİR GARANTİSİ YOKTUR; SATILABİLİRLİK veya BELİRLİ BİR AMACA UYGUNLUK zımni garantisi bile yoktur. Ayrıntılar için [LICENSE](LICENSE) dosyasına bakın.
+Speke yararlı olması umuduyla dağıtılmaktadır, ancak HİÇBİR GARANTİSİ YOKTUR; SATILABİLİRLİK veya BELİRLİ BİR AMACA UYGUNLUK zımni garantisi bile yoktur. Ayrıntılar için [LICENSE](LICENSE) dosyasına bakın.
 
 Telif hakkı © 2020-2026 Arne-Brün Vogelsang ve katkıda bulunanlar

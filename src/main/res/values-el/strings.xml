@@ -795,7 +795,7 @@
     <string name="conversations_backup">Αντίγραφο ασφαλείας Conversations</string>
     <string name="event">Γεγονός</string>
     <string name="open_backup">Άνοιγμα αντιγράφου ασφαλείας</string>
-    <string name="not_a_backup_file">Το αρχείο που επιλέξατε δεν είναι αντίγραφο ασφαλείας του LaNoxe</string>
+    <string name="not_a_backup_file">Το αρχείο που επιλέξατε δεν είναι αντίγραφο ασφαλείας του Speke</string>
     <string name="account_already_setup">Αυτός ο λογαριασμός έχει προστεθεί ήδη</string>
     <string name="please_enter_password">Παρακαλώ εισάγετε τον κωδικό για αυτό το λογαριασμό</string>
     <string name="unable_to_perform_this_action">Αδυναμία εκτέλεσης αυτής της λειτουργίας</string>
@@ -868,7 +868,7 @@
     <string name="failed_deliveries">Αποτυχημένες παραδόσεις</string>
     <string name="more_options">Περισσότερες επιλογές</string>
     <string name="no_application_found">Δεν βρέθηκε εφαρμογή</string>
-    <string name="invite_to_app">Πρόσκληση στο LaNoxe</string>
+    <string name="invite_to_app">Πρόσκληση στο Speke</string>
     <string name="unable_to_parse_invite">Αδυναμία ανάγνωσης πρόσκλησης</string>
     <string name="server_does_not_support_easy_onboarding_invites">Ο διακομιστής δεν υποστηρίζει την δημιουργία προσκλήσεων</string>
     <string name="no_active_accounts_support_this">Κανένας από τους ενεργούς λογαριασμούς δεν υποστηρίζει αυτό το χαρακτηριστικό</string>

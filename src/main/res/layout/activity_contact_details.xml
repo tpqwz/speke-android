@@ -134,7 +134,7 @@
                                 android:layout_marginTop="8dp"
                                 android:layout_marginBottom="8dp"
                                 android:textAppearance="?textAppearanceBodyMedium"
-                                tools:text="Hey there! I’m using LaNoxe" />
+                                tools:text="Hey there! I’m using Speke" />
 
                             <TextView
                                 android:id="@+id/clients"

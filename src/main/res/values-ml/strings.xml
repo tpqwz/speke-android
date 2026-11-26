@@ -293,7 +293,7 @@
     <string name="search_this_conversation">ഈ സംഭാഷണം</string>
     <string name="your_avatar">നിങ്ങളുടെ അവതാർ</string>
     <string name="more_options">കൂടുതൽ ഓപ്ഷനുകൾ</string>
-    <string name="invite_to_app">LaNoxe-ലേക്ക് ക്ഷണിക്കുക</string>
+    <string name="invite_to_app">Speke-ലേക്ക് ക്ഷണിക്കുക</string>
     <string name="backup_started_message">ബാക്കപ്പ് ആരംഭിച്ചു. അത് പൂർത്തിയായിക്കഴിഞ്ഞാൽ നിങ്ങൾക്ക് ഒരു അറിയിപ്പ് ലഭിക്കും.</string>
     <string name="pref_dns_server_dot_title">DNS-over-TLS സെർവർ</string>
     <string name="pref_dns_server_dot_summary">dns.quad9.net പോലുള്ള ഹോസ്റ്റ്നെയിം. എല്ലാ DNS ലുക്കപ്പുകളും എൻക്രിപ്റ്റ് ചെയ്യുകയും താഴെയുള്ള DNS സെർവറുകളേക്കാൾ മുൻഗണന നേടുകയും ചെയ്യുന്നു. സെർവറിൽ എത്താൻ കഴിയുന്നില്ലെങ്കിൽ അക്കൗണ്ടുകൾ കണക്റ്റ് ചെയ്യില്ല. Android-ന്റെ സ്വകാര്യ DNS ഉപയോഗിക്കാൻ ശൂന്യമായി വിടുക (ഹോസ്റ്റ്നെയിം സജ്ജമാക്കിയിട്ടുണ്ടെങ്കിൽ)</string>

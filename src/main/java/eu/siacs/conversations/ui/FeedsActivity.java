@@ -479,7 +479,7 @@ public class FeedsActivity extends XmppActivity {
         Request request =
                 new Request.Builder()
                         .url(httpUrl)
-                        .header("User-Agent", "LaNoxe")
+                        .header("User-Agent", "Speke")
                         .header(
                                 "Accept",
                                 "application/rss+xml, application/atom+xml, application/xml, text/xml")

@@ -1,8 +1,8 @@
-# <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/src/monocleschat/ic_launcher-playstore.png" width="30"> LaNoxe
+# <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/src/monocleschat/ic_launcher-playstore.png" width="30"> Speke
 
 🇬🇧 [English](README.md) / 🇩🇪 [Deutsch](README-de.md) / 🇫🇷 [Français](README-fr.md) / 🇵🇱 [Polski](README-pl.md) / 🇹🇷 [Türkçe](README-tr.md)
 
-LaNoxe è un client XMPP moderno e sicuro per Android. È basato su [Conversations](https://codeberg.org/iNPUTmice/Conversations), include funzionalità di [blabber.im](https://codeberg.org/kriztan/blabber.im) e [Cheogram](https://git.sr.ht/~singpolyma/cheogram-android) e aggiunge molte modifiche e funzionalità proprie per migliorare usabilità e sicurezza.
+Speke è un client XMPP moderno e sicuro per Android. È basato su [Conversations](https://codeberg.org/iNPUTmice/Conversations), include funzionalità di [blabber.im](https://codeberg.org/kriztan/blabber.im) e [Cheogram](https://git.sr.ht/~singpolyma/cheogram-android) e aggiunge molte modifiche e funzionalità proprie per migliorare usabilità e sicurezza.
 
 <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/00.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/01.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/02.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/03.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/04.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/05.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/06.png" width="200" /> <img src="https://codeberg.org/monocles/monocles_chat/raw/branch/master/fastlane/metadata/android/en-US/phoneScreenshots/07.png" width="200" />
 
@@ -35,7 +35,7 @@ Schermate progettate da Pigeonalley (https://pigeonalley.com)
 
 Gli APK nightly e beta sono disponibili su Codeberg nella sezione [Releases](https://codeberg.org/monocles/monocles_chat/releases).
 
-LaNoxe richiede Android 7.0 o superiore.
+Speke richiede Android 7.0 o superiore.
 
 ## Compilare dal codice sorgente
 
@@ -102,7 +102,7 @@ Se non riusciamo a risolvere il problema lì, puoi aprire una [segnalazione](htt
 
 3. Segui i passaggi da [6] a [10] delle istruzioni per Windows.
 
-4. Avvia la scrittura del log in un file sul tuo computer. Usiamo `logcat.txt`. LaNoxe deve essere in esecuzione. Inserisci:
+4. Avvia la scrittura del log in un file sul tuo computer. Usiamo `logcat.txt`. Speke deve essere in esecuzione. Inserisci:
     ```
     $ adb -d logcat -v time --pid=$(adb -d shell pidof -s de.monocles.chat) > logcat.txt
     ```
@@ -151,10 +151,10 @@ Se non riusciamo a risolvere il problema lì, puoi aprire una [segnalazione](htt
 
 ## Licenza
 
-LaNoxe è software libero: puoi ridistribuirlo e/o modificarlo secondo i termini della [GNU Affero General Public License](LICENSE) pubblicata dalla Free Software Foundation, esclusivamente nella versione 3 (AGPL-3.0-only).
+Speke è software libero: puoi ridistribuirlo e/o modificarlo secondo i termini della [GNU Affero General Public License](LICENSE) pubblicata dalla Free Software Foundation, esclusivamente nella versione 3 (AGPL-3.0-only).
 
 L'app include [libsignal](https://github.com/signalapp/libsignal) (Copyright © Signal Messenger, LLC), rilasciata esclusivamente sotto la versione 3 della GNU AGPL. L'app nel suo complesso è quindi distribuita secondo i termini dell'AGPLv3, esclusivamente versione 3. Ciò include l'obbligo di rendere disponibile ai suoi utenti il codice sorgente corrispondente completo. Il codice proveniente da Conversations, blabber.im e Cheogram, la libreria [libsignal-protocol-java](https://github.com/signalapp/libsignal-protocol-java) inclusa per l'OMEMO legacy, così come i contributi fatti quando questo repository era sotto GPLv3, è rilasciato sotto la GNU GPLv3; la sezione 13 della GPLv3 consente di combinarlo con codice AGPLv3.
 
-LaNoxe è distribuito nella speranza che sia utile, ma SENZA ALCUNA GARANZIA; senza neppure la garanzia implicita di COMMERCIABILITÀ o di IDONEITÀ PER UN PARTICOLARE SCOPO. Per i dettagli consulta il file [LICENSE](LICENSE).
+Speke è distribuito nella speranza che sia utile, ma SENZA ALCUNA GARANZIA; senza neppure la garanzia implicita di COMMERCIABILITÀ o di IDONEITÀ PER UN PARTICOLARE SCOPO. Per i dettagli consulta il file [LICENSE](LICENSE).
 
 Copyright © 2020-2026 Arne-Brün Vogelsang e collaboratori

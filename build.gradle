@@ -173,7 +173,7 @@ android {
         versionCode 211
         versionName "1.0.1-beta"
         applicationId "de.monocles.chat"
-        def appName = "LaNoxe"
+        def appName = "Speke"
         resValue "string", "app_name", appName
         buildConfigField "String", "APP_NAME", "\"$appName\""
         buildConfigField "String", "PRIVACY_POLICY", "\"https://monocles.eu/legal-privacy/#policies-section\""
@@ -191,8 +191,8 @@ android {
         abi {
             enable true
             reset()
-            // LANOXE_CI_ABIS=arm64-v8a limits a GitHub build to the phone APK.
-            def ciAbis = System.getenv('LANOXE_CI_ABIS')
+            // SPEKE_CI_ABIS=arm64-v8a limits a GitHub build to the phone APK.
+            def ciAbis = System.getenv('SPEKE_CI_ABIS')
             if (ciAbis) {
                 universalApk false
                 include ciAbis.split(',')
@@ -224,7 +224,7 @@ android {
             applicationId = "de.monocles.chat"
             versionCode 211
             versionName "1.0.1-beta"
-            def appName = "LaNoxe"
+            def appName = "Speke"
             resValue "string", "app_name", appName
             buildConfigField "String", "APP_NAME", "\"$appName\""
             buildConfigField "String", "PRIVACY_POLICY", "\"https://monocles.eu/legal-privacy/#policies-section\""

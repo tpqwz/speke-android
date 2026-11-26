@@ -1,6 +1,6 @@
 # Migrating to a new device
 
-This tutorial explains how you can transfer your LaNoxe data from an old to a new device. It assumes that you do not have LaNoxe installed on your new device yet. It basically consists of three steps:
+This tutorial explains how you can transfer your Speke data from an old to a new device. It assumes that you do not have Speke installed on your new device yet. It basically consists of three steps:
 
 1. Make a backup (old device)
 2. Move that backup to your new device
@@ -18,13 +18,13 @@ This tutorial explains how you can transfer your LaNoxe data from an old to a ne
 Optionally, tap *Export settings* on the same screen if you want to take your app settings with you as well. The *…_settings.json* file is saved next to your backup files; copy it along with them. It only contains general settings, so you will need to set your security and privacy settings again on the new device.
 
 ## 2. Move that backup to your new device
-1. Locate the backup. By default you will find it in your Files in *Documents/LaNoxe/Backup* (or in the folder you chose as *Backup location*). The file is named after your account and the date (*e.g. kim@example.org.2026-11-19-14-30.ceb*). If you have multiple accounts, you will find one file for each.
+1. Locate the backup. By default you will find it in your Files in *Documents/Speke/Backup* (or in the folder you chose as *Backup location*). The file is named after your account and the date (*e.g. kim@example.org.2026-11-19-14-30.ceb*). If you have multiple accounts, you will find one file for each.
 2. Use your USB cable or bluetooth, your Nextcloud or other cloud storage or pretty much anything you want to copy the backup from the old device to the new device.
 3. Remember the location you saved your backup to. For instance, you might want to save it to the *Download* folder.
 
 ## 3. Restore the backup (new device)
-1. Install LaNoxe on your new device.
-2. Open LaNoxe for the first time.
+1. Install Speke on your new device.
+2. Open Speke for the first time.
 3. On the welcome screen, tap on *Restore backup*.
 4. If your backup files are not listed, tap on the cloud symbol (*Open backup*) in the upper right corner to choose the file from where you saved it.
 5. Enter your account password (or your recovery key, if the backup was made with one), leave *Restore OMEMO keys* switched on and tap *Restore*.
@@ -35,9 +35,9 @@ If you have more than one account, restore the remaining backups via *Manage acc
 
 Once you have confirmed that the new device is running fine, you can uninstall the app from the old device.
 
-Note: The backup contains your accounts, chats, the required encryption keys and, by default, your attachments (pictures, videos, voice messages and other files). This only applies to files stored in the app's hidden internal storage, which is the default (*Settings* → *Attachments* → *Store media in internal hidden storage*). If you turned that option off, your files are stored in the external (public) storage and are not part of the backup. They are kept in *Documents/LaNoxe* (subfolders *pictures*, *videos*, *audios* and *documents*). Copy these folders to the same location on the new device, or download the files again. Files of disappearing messages are never included. Your contact list and avatars are not part of the backup; they are loaded from your server again once your account is connected.
+Note: The backup contains your accounts, chats, the required encryption keys and, by default, your attachments (pictures, videos, voice messages and other files). This only applies to files stored in the app's hidden internal storage, which is the default (*Settings* → *Attachments* → *Store media in internal hidden storage*). If you turned that option off, your files are stored in the external (public) storage and are not part of the backup. They are kept in *Documents/Speke* (subfolders *pictures*, *videos*, *audios* and *documents*). Copy these folders to the same location on the new device, or download the files again. Files of disappearing messages are never included. Your contact list and avatars are not part of the backup; they are loaded from your server again once your account is connected.
 
-Tip: Backups created by Conversations can be restored in LaNoxe the same way. Enter the account password as used there. Such backups do not contain attachments, so those need to be downloaded again.
+Tip: Backups created by Conversations can be restored in Speke the same way. Enter the account password as used there. Such backups do not contain attachments, so those need to be downloaded again.
 
 Done!
 

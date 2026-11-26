@@ -1430,27 +1430,27 @@ public class FileBackend {
         if (Strings.isNullOrEmpty(mime)) {
             parentDirectory =
                     Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS + "/LaNoxe");
+                            Environment.DIRECTORY_DOCUMENTS + "/Speke");
         } else if (mime.startsWith("image/")) {
             parentDirectory =
                     Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/pictures");
+                            Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/pictures");
         } else if (mime.startsWith("video/")) {
             parentDirectory =
                     Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/videos");
+                            Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/videos");
         } else if (mime.startsWith("audio/")) {
             parentDirectory =
                     Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/audios");
+                            Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/audios");
         } else if (MediaAdapter.DOCUMENT_MIMES.contains(mime)) {
             parentDirectory =
                     Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/documents");
+                            Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/documents");
         } else {
             parentDirectory =
                     Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS + "/LaNoxe");
+                            Environment.DIRECTORY_DOCUMENTS + "/Speke");
         }
         final File appDirectory = new File(String.valueOf(parentDirectory));
         if (message == null
@@ -1468,15 +1468,15 @@ public class FileBackend {
     public void setupNomedia(final boolean nomedia) {
         final var pictures =
                 Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/pictures");
+                        Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/pictures");
         final var picturesNomedia = new File(new File(String.valueOf(pictures)), ".nomedia");
         final var movies =
                 Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/videos");
+                        Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/videos");
         final var moviesNomedia = new File(new File(String.valueOf(movies)), ".nomedia");
         final var audios =
                 Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/audios");
+                        Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/audios");
         final var audiosNomedia = new File(new File(String.valueOf(audios)), ".nomedia");
 
         var rescan = false;
@@ -2015,7 +2015,7 @@ public class FileBackend {
         } else {
             directory =
                     Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/pictures");
+                            Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/pictures");
         }
         final File file = new File(directory, filename);
         file.getParentFile().mkdirs();
@@ -2799,7 +2799,7 @@ public class FileBackend {
         } else {
             directory =
                     Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS + "/LaNoxe" + "/videos");
+                            Environment.DIRECTORY_DOCUMENTS + "/Speke" + "/videos");
         }
         final File file = new File(directory, filename);
         file.getParentFile().mkdirs();

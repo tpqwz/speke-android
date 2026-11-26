@@ -806,7 +806,7 @@
     <string name="conversations_backup">Copia de apoio Conversations</string>
     <string name="event">Evento</string>
     <string name="open_backup">Abrir copia de apoio</string>
-    <string name="not_a_backup_file">O ficheiro seleccionado non é un ficheiro de apoio LaNoxe</string>
+    <string name="not_a_backup_file">O ficheiro seleccionado non é un ficheiro de apoio Speke</string>
     <string name="account_already_setup">Esta conta xa foi configurada</string>
     <string name="please_enter_password">Introduza o contrasinal de esta conta</string>
     <string name="unable_to_perform_this_action">Non se puido completar a acción</string>
@@ -893,7 +893,7 @@
     <string name="failed_deliveries">Entregas fallidas</string>
     <string name="more_options">Máis opcións</string>
     <string name="no_application_found">Non se atopa unha aplicación</string>
-    <string name="invite_to_app">Convida a LaNoxe</string>
+    <string name="invite_to_app">Convida a Speke</string>
     <string name="unable_to_parse_invite">Non se puido enviar o convite</string>
     <string name="server_does_not_support_easy_onboarding_invites">O servidor non soporta a creación de convites</string>
     <string name="no_active_accounts_support_this">Ningunha conta activa soporta esta función</string>
@@ -1033,7 +1033,7 @@
     <string name="flip_camera">Cambiar de cámara</string>
     <string name="video_is_enabled_tap_to_disable">Video activado. Toca para desactivalo.</string>
     <string name="video_is_disabled_tap_to_enable">Vídeo desactivado. Toca para activalo.</string>
-    <string name="welcome_to_monocles_chat">Ben vida a LaNoxe</string>
+    <string name="welcome_to_monocles_chat">Ben vida a Speke</string>
     <string name="how_the_xmpp_network_works">Como funciona a rede XMPP</string>
     <string name="do_you_really_want_to_retract_this_message">Tes certeza de querer eliminar esta mensaxe?</string>
     <string name="show_avatar">Mostrar avatar</string>
@@ -1052,7 +1052,7 @@
     <string name="this_account_is_offline">A conta non está conectada, as mensaxes vanse enviar cando volva a conectar</string>
     <string name="options">Opcións</string>
     <string name="change_notification_settings">Cambiar axustes das notificacións</string>
-    <string name="monocles_chat_intro_description">LaNoxe é unha aplicación que te conecta á rede mundial chamada XMPP. Esta rede inclúe servizos, chamados pasarelas, para parolar con outras redes como SMS, IRC, Matrix e outras.</string>
+    <string name="monocles_chat_intro_description">Speke é unha aplicación que te conecta á rede mundial chamada XMPP. Esta rede inclúe servizos, chamados pasarelas, para parolar con outras redes como SMS, IRC, Matrix e outras.</string>
     <string name="show_link_previews_summary">Mostra unha descrición da ligazón cando a remitente a inclúa</string>
     <string name="call_is_using_speaker_tap_to_switch_to_earpiece">A chamada usa o altofalante. Toca para cambiar a auriculares.</string>
     <string name="pref_show_own_accounts_summary">Mostra a conta usada na vista xeral das mensaxes e nos detalles</string>
@@ -1066,7 +1066,7 @@
     <string name="pref_jump_to_commands_tab">Ir ás ordes</string>
     <string name="pref_send_link_previews_summary">Anexar metadatos sobre as ligazóns ao enviar unha mensaxe</string>
     <string name="server_info_login_mechanism">Modo de acceso</string>
-    <string name="internal_meda_viewer_summary">Usar o visualizador propio de LaNoxe para ver imaxes ou vídeos incluídos</string>
+    <string name="internal_meda_viewer_summary">Usar o visualizador propio de Speke para ver imaxes ou vídeos incluídos</string>
     <string name="internal_meda_viewer_title">Visualizador interno multimedia</string>
     <string name="schedule_message">Enviar mais tarde</string>
     <string name="no_lan_permission">Dalle acceso á rede local (dispositivos próximos) a %1$s.</string>

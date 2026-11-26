@@ -1,4 +1,4 @@
-LaNoxe est un client de discussion XMPP moderne et sécurisé pour Android. Il est basé sur Conversations, intègre des fonctionnalités de blabber.im et Cheogram et apporte de nombreux changements et fonctionnalités supplémentaires pour améliorer l’ergonomie et la sécurité.
+Speke est un client de discussion XMPP moderne et sécurisé pour Android. Il est basé sur Conversations, intègre des fonctionnalités de blabber.im et Cheogram et apporte de nombreux changements et fonctionnalités supplémentaires pour améliorer l’ergonomie et la sécurité.
 
 La sécurité des connexions et la protection des données personnelles sont primordiales pour nous. Nous imposons des connexions chiffrées entre l’application et le serveur, ce qui rend quasiment impossible l’interception et la lecture de vos messages par des inconnus. Nous avons donc supprimé les suites de chiffrement obsolètes. Celles qui restent sont optimisées pour le serveur monocles chat, tout en restant compatibles avec les autres serveurs XMPP qui respectent les standards actuels.
 

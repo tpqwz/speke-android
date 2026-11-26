@@ -16,7 +16,7 @@
 * Add option to restrict avatar access model to contacts
 * Fix appearing emoji popup when clicked on link
 * Correct muc participants string
-* Change files and backup folder to Documents/LaNoxe/
+* Change files and backup folder to Documents/Speke/
 * Basic support for adding by jid on group chat create
 * Adjust call integration sounds
 * Show list of used clients in contact details

@@ -1,3 +1,3 @@
 * fixed compatibility to android versions below 10
-* removed unused updates for LaNoxe 2
+* removed unused updates for Speke 2
 * split apks for different platforms

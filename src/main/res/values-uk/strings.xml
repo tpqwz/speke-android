@@ -759,7 +759,7 @@
     <string name="ebook">Електронна книга</string>
     <string name="video_original">Оригінал (нестиснений)</string>
     <string name="open_with">Відкрити…</string>
-    <string name="set_profile_picture">Зображення для облікового запису LaNoxe</string>
+    <string name="set_profile_picture">Зображення для облікового запису Speke</string>
     <string name="choose_account">Виберіть обліковий запис</string>
     <string name="restore_backup">Відновити з резервної копії</string>
     <string name="restore">Відновити</string>
@@ -807,10 +807,10 @@
     <string name="add_anway">Продовжити</string>
     <string name="this_looks_like_channel">Це схоже на адресу каналу</string>
     <string name="share_backup_files">Поділитися резервними копіями</string>
-    <string name="conversations_backup">Резервна копія LaNoxe</string>
+    <string name="conversations_backup">Резервна копія Speke</string>
     <string name="event">Подія</string>
     <string name="open_backup">Відкрити резервну копію</string>
-    <string name="not_a_backup_file">Вибраний файл не є резервною копією LaNoxe</string>
+    <string name="not_a_backup_file">Вибраний файл не є резервною копією Speke</string>
     <string name="account_already_setup">Цей обліковий запис уже налаштовано</string>
     <string name="please_enter_password">Будь ласка, введіть пароль для цього облікового запису</string>
     <string name="unable_to_perform_this_action">Неможливо виконати цю дію</string>
@@ -953,7 +953,7 @@
     <string name="encrypted_with_openpgp">Зашифровано за допомогою OpenPGP</string>
     <string name="not_encrypted">Не зашифровано</string>
     <string name="exit">Вийти</string>
-    <string name="invite_to_app">Запросити до LaNoxe</string>
+    <string name="invite_to_app">Запросити до Speke</string>
     <string name="plain_text_document">Текстовий документ</string>
     <string name="no_xmpp_adddress_found">Не знайдено адреси XMPP</string>
     <string name="no_account_deactivated">Немає (вимкнено)</string>
@@ -1132,7 +1132,7 @@
     <string name="retract_message">Видалити повідомлення</string>
     <string name="this_account_is_connecting">Цей обліковий запис підключається…</string>
     <string name="this_account_is_offline">Цей обліковий запис поза мережею, повідомлення будуть надіслані, як тільки відновиться з’єднання</string>
-    <string name="welcome_to_monocles_chat">Вітаємо в LaNoxe</string>
+    <string name="welcome_to_monocles_chat">Вітаємо в Speke</string>
     <string name="edit_name_and_topic">Редагувати назву і тему</string>
     <string name="edit_configuration">Змінити налаштування</string>
     <string name="change_notification_settings">Змінити налаштування сповіщень</string>
@@ -1149,7 +1149,7 @@
     <string name="pref_show_show_nav_drawer">Навігаційна панель</string>
     <string name="show_link_previews">Попередній перегляд посилань</string>
     <string name="show_link_previews_summary">Показувати опис посилання, якщо відправник його додав</string>
-    <string name="monocles_chat_intro_description">LaNoxe — це застосунок, який підключає вас до глобальної мережі під назвою XMPP. Ця мережа включає в себе сервіси, які називаються шлюзами, для спілкування з іншими мережами, такими як SMS, IRC, Matrix тощо.</string>
+    <string name="monocles_chat_intro_description">Speke — це застосунок, який підключає вас до глобальної мережі під назвою XMPP. Ця мережа включає в себе сервіси, які називаються шлюзами, для спілкування з іншими мережами, такими як SMS, IRC, Matrix тощо.</string>
     <string name="call_is_using_speaker_tap_to_switch_to_earpiece">Виклик здійснюється через динамік. Торкніться, щоб переключитися на навушник.</string>
     <string name="video_is_enabled_tap_to_disable">Відео ввімкнено. Торкніться, щоб вимкнути.</string>
     <string name="microphone_permission_for_call">Для здійснення викликів потрібен дозвіл на використання мікрофона</string>
@@ -1186,7 +1186,7 @@
     <string name="flip_horizontally">Перевернути горизонтально</string>
     <string name="pick_a_server">Виберіть постачальника XMPP</string>
     <string name="create_new_account">Створити новий обліковий запис</string>
-    <string name="do_you_have_an_account">Уже маєте обліковий запис XMPP? Можливо, користуєтеся іншою програмою XMPP або користувалися LaNoxe, Conversations чи Snikket раніше. Якщо ні, можете створити новий обліковий запис XMPP просто зараз.</string>
+    <string name="do_you_have_an_account">Уже маєте обліковий запис XMPP? Можливо, користуєтеся іншою програмою XMPP або користувалися Speke, Conversations чи Snikket раніше. Якщо ні, можете створити новий обліковий запис XMPP просто зараз.</string>
     <string name="your_server_invitation">Ваше запрошення до сервера</string>
     <string name="improperly_formatted_provisioning">Неправильно відформатований код забезпечення</string>
     <string name="tap_share_button_send_invite">Натисніть «Поділитися», щоб надіслати Вашому контакту запрошення до %1$s.</string>
@@ -1297,7 +1297,7 @@
     <string name="pref_export_settings">Експортувати налаштування</string>
     <string name="pref_import_settings_summary">Імпорт settings.dat із теки резервних копій</string>
     <string name="success_import_settings">Налаштування успішно імпортовано</string>
-    <string name="pref_export_settings_summary">Експорт налаштувань LaNoxe у теку резервних копій</string>
+    <string name="pref_export_settings_summary">Експорт налаштувань Speke у теку резервних копій</string>
     <string name="error_import_settings">Помилка під час імпорту налаштувань</string>
     <string name="could_not_modify_call">Не вдалося змінити виклик</string>
     <string name="voice_message_codec">Кодек голосових повідомлень</string>

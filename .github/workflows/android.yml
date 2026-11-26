@@ -23,7 +23,7 @@ jobs:
       # Phone APK plus the x86_64 emulator image. The included libsignal build
       # reads this as its androidArchs property.
       ORG_GRADLE_PROJECT_androidArchs: aarch64,x86_64
-      LANOXE_CI_ABIS: arm64-v8a,x86_64
+      SPEKE_CI_ABIS: arm64-v8a,x86_64
 
     steps:
     - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: lanoxe-debug-apk
+        name: speke-debug-apk
         if-no-files-found: error
         path: build/outputs/apk/monocleschatFree/debug/*.apk
 
@@ -84,13 +84,13 @@ jobs:
           base=$(basename "$apk")
           abi=${base#monocleschat-free-}
           abi=${abi%-debug.apk}
-          cp "$apk" "$stage/LaNoxe-${version}-${abi}-debug.apk"
+          cp "$apk" "$stage/Speke-${version}-${abi}-debug.apk"
         done
         notes=$(printf '%s\n' \
           "Debug APKs built from ${GITHUB_SHA}." \
           "" \
-          "LaNoxe-${version}-arm64-v8a-debug.apk is the phone build." \
-          "LaNoxe-${version}-x86_64-debug.apk is the emulator build." \
+          "Speke-${version}-arm64-v8a-debug.apk is the phone build." \
+          "Speke-${version}-x86_64-debug.apk is the emulator build." \
           "" \
           "These builds are debug-signed.")
         if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then

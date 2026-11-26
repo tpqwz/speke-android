@@ -1,8 +1,8 @@
-# LaNoxe
+# Speke
 
 This tree is the Android app. It is a fork of [monocles chat](https://codeberg.org/monocles/monocles_chat) at `63de111ebd70585763d9df63cfc01db5dd4c110e` on `master`. The license stays AGPL-3.0-only. See `LICENSE`.
 
-The app stays this Java codebase. Codename One, Kotlin Multiplatform, and Flutter would replace the XMPP stack this fork exists to keep. Linux, Windows, macOS, and the browser are separate apps. The portable desk is the `lanoxe` command in the LaNoxe repository.
+The app stays this Java codebase. Codename One, Kotlin Multiplatform, and Flutter would replace the XMPP stack this fork exists to keep. Linux, Windows, macOS, and the browser are separate apps. The portable desk is a separate project and is not this app.
 
 ## Desk
 

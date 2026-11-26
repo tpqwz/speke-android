@@ -1080,7 +1080,7 @@ public class IqGenerator extends AbstractGenerator {
         entry.addChild("generator")
                 .setAttribute("uri", "https://monocles.chat")
                 .setAttribute("version", eu.siacs.conversations.BuildConfig.VERSION_NAME)
-                .setContent("LaNoxe");
+                .setContent("Speke");
 
         return publish(Namespace.MICROBLOG, item, null);
     }

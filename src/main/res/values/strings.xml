@@ -936,7 +936,7 @@
     <string name="conversations_backup">Conversations backup</string>
     <string name="event">Event</string>
     <string name="open_backup">Open backup</string>
-    <string name="not_a_backup_file">The file you selected is not a LaNoxe backup file</string>
+    <string name="not_a_backup_file">The file you selected is not a Speke backup file</string>
     <string name="outdated_backup_file_format">You are trying to import an outdated backup file format</string>
     <string name="non_quicksy_backup">Quicksy can only restore backups for quicksy.im accounts</string>
     <string name="account_already_setup">This account has already been setup</string>
@@ -1132,8 +1132,8 @@
     <string name="video_is_enabled_tap_to_disable">Video is enabled. Tap to disable.</string>
     <string name="video_is_disabled_tap_to_enable">Video is disabled. Tap to enable.</string>
     <string name="server_info_login_mechanism">Login mechanism</string>
-    <string name="welcome_to_monocles_chat">Welcome to LaNoxe</string>
-    <string name="monocles_chat_intro_description">LaNoxe is an app that connects you to a global network called XMPP. This network includes services, called gateways, for chatting with other networks such as SMS, IRC, Matrix, and more.</string>
+    <string name="welcome_to_monocles_chat">Welcome to Speke</string>
+    <string name="monocles_chat_intro_description">Speke is an app that connects you to a global network called XMPP. This network includes services, called gateways, for chatting with other networks such as SMS, IRC, Matrix, and more.</string>
     <string name="how_the_xmpp_network_works">How the XMPP network works</string>
     <string name="do_you_really_want_to_retract_this_message">Are you sure you want to retract this message? A retraction request will be sent, but it may not be accepted by the recipient\'s client.</string>
     <string name="show_avatar">Show avatar</string>
@@ -1220,7 +1220,7 @@
     <string name="create_new_account">I need to sign up</string>
     <string name="i_already_have_an_account">I already have a XMPP address</string>
     <string name="i_am_snikket_user">I am a Snikket user</string>
-    <string name="do_you_have_an_account">Do you already have a XMPP address? This might be the case if you are already using a different XMPP client or have used LaNoxe, Conversations, or Snikket before. If not you can create a new XMPP address right now.</string>
+    <string name="do_you_have_an_account">Do you already have a XMPP address? This might be the case if you are already using a different XMPP client or have used Speke, Conversations, or Snikket before. If not you can create a new XMPP address right now.</string>
     <string name="server_select_text">XMPP is a provider independent instant messaging network, powered by the XMPP protocol. You can use this client with whatever XMPP service you choose.</string>
     <string name="magic_create_text">We\'ll guide you through creating an account with a random password, which you can change on the next page. \nAfter that, you can communicate with users from this and other providers by sharing your full XMPP address.</string>
     <string name="magic_create_text_on_x">You have been invited to %1$s. We will guide you through the process of creating an account.\nWhen picking %1$s as a provider you will be able to communicate with users of other providers by giving them your full XMPP address.</string>
@@ -1238,7 +1238,7 @@
     <string name="action_close">Close</string>
     <string name="action_execute">Go</string>
     <string name="pref_theme_custom">Custom</string>
-    <string name="invite_to_app">Invite to LaNoxe</string>
+    <string name="invite_to_app">Invite to Speke</string>
     <string name="only_this_thread">Show only this thread</string>
     <string name="pref_dialler_integration_incoming">Use Phone Accounts for Incoming Calls</string>
     <string name="pref_dialler_integration_incoming_summary">Calls from phone numbers may ring via the system dialler</string>
@@ -1364,7 +1364,7 @@
     <string name="pref_import_settings">Import settings</string>
     <string name="pref_import_settings_summary">Import the settings.dat from the backup folder</string>
     <string name="pref_export_settings">Export settings</string>
-    <string name="pref_export_settings_summary">Export the LaNoxe app settings to the backup folder</string>
+    <string name="pref_export_settings_summary">Export the Speke app settings to the backup folder</string>
     <string name="success_import_settings">Settings successfully imported</string>
     <string name="error_import_settings">Error while importing the settings</string>
     <string name="could_not_modify_call">Could not modify call</string>

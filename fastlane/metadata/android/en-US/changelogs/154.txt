@@ -2,5 +2,5 @@
 * Security: Introduce backup file format v2
 * Update translations
 * Remove redundant message deletion menu 
-* Fix import LaNoxe backups
+* Fix import Speke backups
 * Fix crash when a user has SVG Avatar

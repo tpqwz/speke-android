@@ -828,7 +828,7 @@
     <string name="conversations_backup">Sicherung für Conversations</string>
     <string name="event">Ereignis</string>
     <string name="open_backup">Sicherung öffnen</string>
-    <string name="not_a_backup_file">Die von dir ausgewählte Datei ist keine Sicherungsdatei von LaNoxe</string>
+    <string name="not_a_backup_file">Die von dir ausgewählte Datei ist keine Sicherungsdatei von Speke</string>
     <string name="account_already_setup">Dieses Konto wurde bereits eingerichtet</string>
     <string name="please_enter_password">Bitte gib das Passwort für dieses Konto ein</string>
     <string name="unable_to_perform_this_action">Diese Aktion konnte nicht durchgeführt werden</string>
@@ -915,7 +915,7 @@
     <string name="failed_deliveries">Fehlgeschlagene Zustellungen</string>
     <string name="more_options">Weitere Optionen</string>
     <string name="no_application_found">Keine Anwendung gefunden</string>
-    <string name="invite_to_app">Einladung zu LaNoxe</string>
+    <string name="invite_to_app">Einladung zu Speke</string>
     <string name="unable_to_parse_invite">Einladung kann nicht verarbeitet werden</string>
     <string name="server_does_not_support_easy_onboarding_invites">Server unterstützt keine Generierung von Einladungen</string>
     <string name="no_active_accounts_support_this">Keine aktiven Konten unterstützen diese Funktion</string>
@@ -1048,7 +1048,7 @@
     <string name="change_notification_settings">Benachrichtigungseinstellungen ändern</string>
     <string name="flip_camera">Kamera wechseln</string>
     <string name="video_is_enabled_tap_to_disable">Video ist aktiviert. Antippen zum Deaktivieren.</string>
-    <string name="welcome_to_monocles_chat">Willkommen bei LaNoxe</string>
+    <string name="welcome_to_monocles_chat">Willkommen bei Speke</string>
     <string name="how_the_xmpp_network_works">Wie das XMPP Netzwerk funktioniert</string>
     <string name="do_you_really_want_to_retract_this_message">Möchtest du diese Nachricht wirklich zurückziehen? Eine Löschanfrage wird gesendet, welche jedoch beim Empfänger nicht akzeptiert werden könnte.</string>
     <string name="show_avatar">Zeige Profilbild</string>
@@ -1096,7 +1096,7 @@
     <string name="add_subject">Betreff hinzufügen</string>
     <string name="schedule_message">Später senden</string>
     <string name="options">Optionen</string>
-    <string name="monocles_chat_intro_description">LaNoxe ist eine App, die es dir ermöglicht sich mit einem globalen Netzwerk namens XMPP zu verbinden. Das Netzwerk beinhaltet Dienste, sogenannte Gateways, um mit anderen Netzwerken wie SMS, IRC, Matrix und weiteren zu chatten.</string>
+    <string name="monocles_chat_intro_description">Speke ist eine App, die es dir ermöglicht sich mit einem globalen Netzwerk namens XMPP zu verbinden. Das Netzwerk beinhaltet Dienste, sogenannte Gateways, um mit anderen Netzwerken wie SMS, IRC, Matrix und weiteren zu chatten.</string>
     <string name="edit_name_and_topic">Name und Thema bearbeiten</string>
     <string name="video_is_disabled_tap_to_enable">Video ist deaktiviert. Antippen zum Aktivieren.</string>
     <string name="verified">Verifiziert!</string>
@@ -1201,11 +1201,11 @@
     <string name="custom_background_set">Eigener Hintergrund gesetzt</string>
     <string name="custom">Eigener</string>
     <string name="pick_a_server">Wähle deinen XMPP Service</string>
-    <string name="do_you_have_an_account">Hast du bereits eine XMPP-Adresse? Das kann der Fall sein, wenn du bereits vorher eine XMPP App wie zum Beispiel LaNoxe, Conversations oder Snikket verwendet hast. Falls das nicht der Fall ist, kannst du jetzt eine XMPP-Adresse anlegen.</string>
+    <string name="do_you_have_an_account">Hast du bereits eine XMPP-Adresse? Das kann der Fall sein, wenn du bereits vorher eine XMPP App wie zum Beispiel Speke, Conversations oder Snikket verwendet hast. Falls das nicht der Fall ist, kannst du jetzt eine XMPP-Adresse anlegen.</string>
     <string name="pref_theme_custom">Benutzerdefiniert</string>
     <string name="invalid_image_path">Ungültiger Pfad zum Bild</string>
     <string name="save_to_downloads_success">Datei wurde erfolgreich im Download-Ordner gespeichert</string>
-    <string name="magic_create_text_on_x">Du wurdest zu %1$s eingeladen. LaNoxe wird dich durch den Registrierungsprozess leiten. \nDurch die Registrierung bei %1$s kannst du auch mit Menschen bei anderen Anbietern kommunizieren, indem du ihnen deine XMPP-Adresse mitteilst.</string>
+    <string name="magic_create_text_on_x">Du wurdest zu %1$s eingeladen. Speke wird dich durch den Registrierungsprozess leiten. \nDurch die Registrierung bei %1$s kannst du auch mit Menschen bei anderen Anbietern kommunizieren, indem du ihnen deine XMPP-Adresse mitteilst.</string>
     <string name="share_invite_with">Teile Einladung mit …</string>
     <string name="other_aspect_ratio">Andere</string>
     <string name="magic_create_text_fixed">Du wurdest zu %1$s eingeladen. Es wurde bereits ein Benutzername für dich ausgewählt. monoces chat führt dich durch den Registrierungsprozess. \nDu wirst auch mit Menschen bei anderen Anbietern kommunizieren können, indem du ihnen deine XMPP-Adresse mitteilst.</string>
@@ -1228,7 +1228,7 @@
     <string name="pref_theme_title">Thema</string>
     <string name="mute_locally">Stummschalten (lokal)</string>
     <string name="unmute_locally">Stummschaltung aufheben (lokal)</string>
-    <string name="xmpp_network_description">Das XMPP Netzwerk ist ein dezentrales Netzwerk, welches auf dem Protokoll XMPP basiert. Das bedeutet: Keine einzelne Organisation oder Person bestimmt darüber. Es ist ein föderiertes Netzwerk. Jede Person kann einen eigenen XMPP Dienst betreiben. Nachrichten an andere Menschen, sind bei LaNoxe in den Grundeinstellungen Ende-zu-Ende verschlüsselt.\n\nZur Identifikation werden XMPP Adressen verwendet. Dieses sehen genauso aus wie E-Mail Adressen:</string>
+    <string name="xmpp_network_description">Das XMPP Netzwerk ist ein dezentrales Netzwerk, welches auf dem Protokoll XMPP basiert. Das bedeutet: Keine einzelne Organisation oder Person bestimmt darüber. Es ist ein föderiertes Netzwerk. Jede Person kann einen eigenen XMPP Dienst betreiben. Nachrichten an andere Menschen, sind bei Speke in den Grundeinstellungen Ende-zu-Ende verschlüsselt.\n\nZur Identifikation werden XMPP Adressen verwendet. Dieses sehen genauso aus wie E-Mail Adressen:</string>
     <string name="invite_to_start_chat">Einladen, um zu Chatten</string>
     <string name="compose_using_rich_text">Beim Verfassen Rich Text anwenden</string>
     <string name="compose_using_rich_text_summary">Die Formatierung wird beim Tippen angezeigt</string>
@@ -1263,7 +1263,7 @@
     <string name="pref_category_settings">Einstellungen</string>
     <string name="pref_import_settings">Importiere Einstellungen</string>
     <string name="pref_export_settings">Exportiere Einstellungen</string>
-    <string name="pref_export_settings_summary">Exportiere die LaNoxe App Einstellungen in den Backup Ordner</string>
+    <string name="pref_export_settings_summary">Exportiere die Speke App Einstellungen in den Backup Ordner</string>
     <string name="success_import_settings">Einstellungen erfolgreich importiert</string>
     <string name="error_import_settings">Fehler beim Importieren der Einstellungen</string>
     <string name="could_not_modify_call">Konnte Anruf nicht bearbeiten</string>
@@ -1663,7 +1663,7 @@
     <string name="encrypted_with_omemo2">PQ OMEMO2-verschlüsselt</string>
     <string name="encrypted_with_omemo_legacy">Verschlüsselt mit OMEMO (Legacy)</string>
     <string name="send_without_this_participant">Trotzdem verschlüsselt senden - diese Person wird deine Nachrichten nicht lesen können, bis verwendbare Verschlüsselungsschlüssel veröffentlicht werden</string>
-    <string name="no_pq_omemo2_keys_for_contact">Dieser Kontakt hat noch keine verwendbaren PQ OMEMO2-Schlüssel - er könnte noch eine ältere Version von LaNoxe verwenden. Bitte ihn, LaNoxe zu aktualisieren. Deine Nachricht wurde nicht gesendet.</string>
+    <string name="no_pq_omemo2_keys_for_contact">Dieser Kontakt hat noch keine verwendbaren PQ OMEMO2-Schlüssel - er könnte noch eine ältere Version von Speke verwenden. Bitte ihn, Speke zu aktualisieren. Deine Nachricht wurde nicht gesendet.</string>
     <string name="no_omemo_keys_for_contact">Verschlüsselungsschlüssel konnten für diesen Kontakt nicht abgerufen werden. Deine Nachricht wurde nicht gesendet.</string>
     <string name="pq_omemo2_notice_title">Post-Quantum-Verschlüsselung (PQ OMEMO2)</string>
     <string name="pq_omemo2_notice_message">%1$s kann Chats mit zwei verschiedenen OMEMO-Versionen verschlüsseln.\n\nLegacy-OMEMO ist die geprüfte, weit verbreitete Version, die jede OMEMO-App unterstützt. Sie ist die empfohlene Standardeinstellung.\n\nPQ OMEMO2 bietet zusätzlich Post-Quanten-Schutz und verschlüsselte Metadaten, ist aber noch experimentell: Das Protokoll wird aktiv weiterentwickelt und nur wenige Apps unterstützen es, daher können Kontakte mit anderen oder älteren Apps diese Nachrichten nicht lesen.\n\nWelche Version sollen Chats standardmäßig verwenden?\n\nDu kannst das jederzeit unter Einstellungen → Sicherheit ändern und einzelne Chats über das Schloss-Symbol umstellen.</string>

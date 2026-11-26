@@ -765,7 +765,7 @@
     <string name="ebook">e-book</string>
     <string name="video_original">Originale (non compresso)</string>
     <string name="open_with">Apri con…</string>
-    <string name="set_profile_picture">Immagine profilo di LaNoxe</string>
+    <string name="set_profile_picture">Immagine profilo di Speke</string>
     <string name="choose_account">Scegli un profilo</string>
     <string name="restore_backup">Ripristina backup</string>
     <string name="restore">Ripristina</string>
@@ -811,10 +811,10 @@
     <string name="add_anway">Aggiungi comunque</string>
     <string name="this_looks_like_channel">Questo sembra un indirizzo di canale</string>
     <string name="share_backup_files">Condividi file di backup</string>
-    <string name="conversations_backup">Backup di LaNoxe</string>
+    <string name="conversations_backup">Backup di Speke</string>
     <string name="event">Evento</string>
     <string name="open_backup">Apri backup</string>
-    <string name="not_a_backup_file">Il file selezionato non è un file di backup di LaNoxe</string>
+    <string name="not_a_backup_file">Il file selezionato non è un file di backup di Speke</string>
     <string name="account_already_setup">Questo profilo è già stato configurato</string>
     <string name="please_enter_password">Inserisci la password per questo profilo</string>
     <string name="unable_to_perform_this_action">Impossibile eseguire questa azione</string>
@@ -906,7 +906,7 @@
     <string name="failed_deliveries">Recapiti falliti</string>
     <string name="more_options">Altre opzioni</string>
     <string name="no_application_found">Nessuna applicazione trovata</string>
-    <string name="invite_to_app">Invita su LaNoxe</string>
+    <string name="invite_to_app">Invita su Speke</string>
     <string name="unable_to_parse_invite">Impossibile analizzare l\'invito</string>
     <string name="server_does_not_support_easy_onboarding_invites">Il server non supporta la generazione di inviti</string>
     <string name="no_active_accounts_support_this">Nessun profilo attivo supporta questa funzione</string>
@@ -956,7 +956,7 @@
     <string name="title_activity_new_chat">Nuova chat</string>
     <string name="archive_this_chat">Archivia questa chat</string>
     <string name="title_undo_swipe_out_chat">Chat archiviata</string>
-    <string name="welcome_header">Benvenuto in LaNoxe</string>
+    <string name="welcome_header">Benvenuto in Speke</string>
     <string name="pref_use_colorful_bubbles">Messaggi di chat colorati</string>
     <string name="pref_use_colorful_bubbles_summary">Colori di sfondo distinti per messaggi inviati e ricevuti</string>
     <string name="switch_to_chat">Passa alla chat</string>

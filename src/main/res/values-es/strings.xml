@@ -822,7 +822,7 @@
     <string name="conversations_backup">Respaldo de Conversations</string>
     <string name="event">Evento</string>
     <string name="open_backup">Abrir respaldo</string>
-    <string name="not_a_backup_file">El archivo seleccionado no es un archivo de respaldo de LaNoxe</string>
+    <string name="not_a_backup_file">El archivo seleccionado no es un archivo de respaldo de Speke</string>
     <string name="account_already_setup">Esta cuenta ya fue configurada</string>
     <string name="please_enter_password">Por favor ingrese la contraseña para esta cuenta</string>
     <string name="unable_to_perform_this_action">No se pudo realizar esta acción</string>
@@ -914,7 +914,7 @@
     <string name="failed_deliveries">Envíos fallidos</string>
     <string name="more_options">Más opciones</string>
     <string name="no_application_found">No se ha encontrado aplicación</string>
-    <string name="invite_to_app">Invitar a LaNoxe</string>
+    <string name="invite_to_app">Invitar a Speke</string>
     <string name="unable_to_parse_invite">No se pudo leer la invitación</string>
     <string name="server_does_not_support_easy_onboarding_invites">El servidor no soporta la creación de invitaciones</string>
     <string name="no_active_accounts_support_this">Ninguna cuenta activa soporta esta característica</string>
@@ -1061,7 +1061,7 @@
     <string name="edit_nick">Editar alias</string>
     <string name="delete_pgp_key">Borrar clave OpenPGP</string>
     <string name="edit_name_and_topic">Editar nombre y tema</string>
-    <string name="welcome_to_monocles_chat">Bienvenido a LaNoxe</string>
+    <string name="welcome_to_monocles_chat">Bienvenido a Speke</string>
     <string name="do_you_really_want_to_retract_this_message">¿Estás seguro de que quieres retirar este mensaje? Se enviará una solicitud de retiro, pero es posible que el cliente del destinatario no la acepte.</string>
     <string name="cant_open_file">No se puede abrir el archivo</string>
     <string name="encryption">Cifrado</string>
@@ -1080,7 +1080,7 @@
     <string name="pref_showtextformatting">Barra de herramientas de formateo de texto</string>
     <string name="moderate_recent">¿Moderar mensajes?</string>
     <string name="enter_a_new_password_txt">Entrar nueva contraseña</string>
-    <string name="monocles_chat_intro_description">LaNoxe es una app que te conecta a la red global llamada XMPP. Esta red incluye servicios, llamados pasarelas, para chatear con otras redes como SMS, IRC, Matrix, y más.</string>
+    <string name="monocles_chat_intro_description">Speke es una app que te conecta a la red global llamada XMPP. Esta red incluye servicios, llamados pasarelas, para chatear con otras redes como SMS, IRC, Matrix, y más.</string>
     <string name="editor">Editor</string>
     <string name="change_notification_settings">Cambiar ajustes de notificaciones</string>
     <string name="otr_blind_trust">Confianza ciega</string>
@@ -1175,7 +1175,7 @@
     <string name="update_default_stickers">Actualizar pegatinas por omisión</string>
     <string name="create_new_account">Necesito registrarme</string>
     <string name="server_select_text">XMPP es una red de mensajería instantánea independiente del proveedor, que funciona con el protocolo XMPP. Puedes utilizar este cliente con cualquier servicio XMPP que elijas.</string>
-    <string name="do_you_have_an_account">¿Ya tienes un ID XMPP? Podría ser el caso si ya estás usando un cliente XMPP diferente o si ya has usado LaNoxe, Conversations o Snikket antes. Si no es así, puedes crear un nuevo ID XMPP ahora mismo.</string>
+    <string name="do_you_have_an_account">¿Ya tienes un ID XMPP? Podría ser el caso si ya estás usando un cliente XMPP diferente o si ya has usado Speke, Conversations o Snikket antes. Si no es así, puedes crear un nuevo ID XMPP ahora mismo.</string>
     <string name="could_not_add_reaction">No se pudo añadir reacción</string>
     <string name="respond">Responder</string>
     <string name="remote_fingerprint">Huella dactilar remota</string>
@@ -1184,7 +1184,7 @@
     <string name="pref_use_unicolored_chatbg">Fondo unicolor</string>
     <string name="gifs">GIFs</string>
     <string name="copy_GIFs_to_GIFs_folder">Copiar GIFs a la carpeta de GIFs</string>
-    <string name="internal_meda_viewer_summary">Usar visualizador interno para abrir imágenes o vídeos dentro de LaNoxe</string>
+    <string name="internal_meda_viewer_summary">Usar visualizador interno para abrir imágenes o vídeos dentro de Speke</string>
     <string name="add_to_home_screen">Agregar a la pantalla de inicio</string>
     <string name="stickers">Pegatinas</string>
     <string name="smp_explain_question">Si tú y tu contacto tenéis un secreto en común que nadie más conoce (como una broma interna o simplemente lo que almorzasteis la última vez que os visteis), podéis usar ese secreto para verificar las huellas digitales de cada uno.\n\nProporciona una pista o una pregunta a tu contacto, quien responderá con una respuesta que distinga entre mayúsculas y minúsculas.</string>
@@ -1263,7 +1263,7 @@
     <string name="pref_reset_dns_server_title">Restablecer DNS</string>
     <string name="pref_reset_dns_server_summary">Restablecer los servidores DNS predeterminados al proveedor de DNS centrado en la privacidad Mullvad</string>
     <string name="pref_import_settings_summary">Importar settings.dat de la carpeta de backup</string>
-    <string name="pref_export_settings_summary">Exportar los ajustes de LaNoxe a la carpeta de backup</string>
+    <string name="pref_export_settings_summary">Exportar los ajustes de Speke a la carpeta de backup</string>
     <string name="success_import_settings">Ajustes importados con éxito</string>
     <string name="pref_theme_custom">Personalizado</string>
     <string name="custom_background_color">Color de fondo personalizado</string>
