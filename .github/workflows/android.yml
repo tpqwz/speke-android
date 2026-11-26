@@ -13,6 +13,10 @@ jobs:
     timeout-minutes: 240
 
     env:
+      # The GitHub Ubuntu image already has the SDK. setup-android@v3 fails
+      # because it still asks sdkmanager for the removed "tools" package.
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
       # Phone APK plus the x86_64 emulator image. The included libsignal build
       # reads this as its androidArchs property.
       ORG_GRADLE_PROJECT_androidArchs: aarch64,x86_64
@@ -29,12 +33,12 @@ jobs:
         java-version: '21'
         cache: gradle
 
-    - uses: android-actions/setup-android@v3
-
     - name: Install SDK and NDK
       run: |
+        export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/16.0/bin:$PATH"
         yes | sdkmanager --licenses >/dev/null || true
-        sdkmanager "platforms;android-37" "ndk;28.2.13676358"
+        sdkmanager --install "ndk;28.2.13676358"
+        sdkmanager --install "platforms;android-37.0" || sdkmanager --install "platforms;android-37"
 
     - name: Install native build tools
       run: |
