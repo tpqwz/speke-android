@@ -41,6 +41,7 @@ import eu.siacs.conversations.ui.util.QuoteHelper;
 import eu.siacs.conversations.utils.CryptoHelper;
 import eu.siacs.conversations.utils.Emoticons;
 import eu.siacs.conversations.utils.GeoHelper;
+import eu.siacs.conversations.utils.LinkPreviewParser;
 import eu.siacs.conversations.utils.MessageUtils;
 import eu.siacs.conversations.utils.MimeUtils;
 import eu.siacs.conversations.utils.Patterns;
@@ -1703,19 +1704,42 @@ public class Message extends AbstractEntity implements AvatarService.Avatarable 
     public synchronized List<Element> getLinkDescriptions() {
         final ArrayList<Element> result = new ArrayList<>();
         if (this.payloads == null) return result;
-
+        final Set<String> seen = new HashSet<>();
         for (Element el : this.payloads) {
-            if (el.getName().equals("Description")
-                    && "http://www.w3.org/1999/02/22-rdf-syntax-ns#".equals(el.getNamespace())) {
-                result.add(el);
-            }
+            if (!isLinkDescription(el)) continue;
+            final String url = el.findChildContent("url", LinkPreviewParser.OGP_NS);
+            // The send path and the local backfill can both store the same page.
+            if (url != null && !url.isEmpty() && !seen.add(url)) continue;
+            result.add(el);
         }
-
         return result;
     }
 
+    /** Keeps the first card for this page. A second store of the same address is dropped. */
+    public synchronized boolean addLinkDescription(Element el) {
+        if (!isLinkDescription(el)) return false;
+        final String url = el.findChildContent("url", LinkPreviewParser.OGP_NS);
+        if (url != null && !url.isEmpty()) {
+            for (Element have : this.payloads) {
+                if (!isLinkDescription(have)) continue;
+                if (url.equals(have.findChildContent("url", LinkPreviewParser.OGP_NS))) {
+                    return false;
+                }
+            }
+        }
+        this.payloads.add(el);
+        return true;
+    }
+
     public synchronized void clearLinkDescriptions() {
-        this.payloads.removeAll(getLinkDescriptions());
+        if (this.payloads == null) return;
+        this.payloads.removeIf(Message::isLinkDescription);
+    }
+
+    private static boolean isLinkDescription(Element el) {
+        return el != null
+                && el.getName().equals("Description")
+                && LinkPreviewParser.RDF_NS.equals(el.getNamespace());
     }
 
     public String getMimeType() {

@@ -12,7 +12,7 @@ Threads and Chat are one room. A thread is a post with at least one reply. A pos
 
 The same messages are a directory. A thread's files include the files on its replies. Name order is natural, so `shot2` comes before `shot10`. Grouping adds one level of folders: type, month, sender, extension, or thread. Opening a file opens that message in Chat, and back returns to the directory. Back from a folder returns to the folder list.
 
-The conversation screen reads the open room through `Desk`. Threads, Files, and Chat are the shelf. Chat on that shelf is the conversation transcript. The shelf has three themes. Night is the dark page. Original keeps the floating bar, the wallpaper, and the app's own colors. Plain is that same bar on a solid page.
+The conversation screen reads the open room through `Desk`. Opening a conversation shows Chat, the transcript. Threads, Files, Chat, Night, Original, and Plain are on a floating button. Night is the dark page. Original keeps the floating bar, the wallpaper, and the app's own colors. Plain is that same bar on a solid page.
 
 The bottom bar is Chats, Calls, RSS, and Podcasts. RSS and Podcasts share one list of feed addresses kept on the phone. RSS shows each item's link. Podcasts shows items that include audio. The same feed can appear in both. Sharing sends the link, or the episode's audio address, into a chat you pick. An episode plays in the in-app player under the toolbar. That player can pause and skip 15 seconds, and the episode name is its title.
 

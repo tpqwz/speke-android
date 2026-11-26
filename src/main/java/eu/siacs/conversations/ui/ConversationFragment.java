@@ -346,8 +346,8 @@ public class ConversationFragment extends XmppFragment
     protected MessageAdapter messageListAdapter;
     private Desk.Session deskSession;
     private DeskAdapter deskAdapter;
-    /** Chat on the shelf is the transcript. The other readings are the desk. */
-    private boolean deskChat;
+    /** Chat on the shelf is the transcript. A conversation opens here. */
+    private boolean deskChat = true;
     /** Chat opened from a post with no replies. Back returns to the thread list. */
     private boolean deskChatFromList;
     private boolean deskReveal;
@@ -2564,14 +2564,7 @@ public class ConversationFragment extends XmppFragment
 
         binding.messagesView.setAdapter(messageListAdapter);
         attachSwipeToReply();
-        binding.deskThreads.setOnClickListener(
-                v -> {
-                    deskChat = false;
-                    deskChatFromList = false;
-                    ensureDesk();
-                    deskSession.showList();
-                    showReading();
-                });
+        binding.deskMenu.setOnClickListener(v -> showDeskMenu());
         binding.deskQuery.addTextChangedListener(
                 new TextWatcher() {
                     @Override
@@ -2600,21 +2593,6 @@ public class ConversationFragment extends XmppFragment
                             .edit()
                             .putString(DESK_DENSITY, deskCards() ? "compact" : "card")
                             .apply();
-                    showReading();
-                });
-        binding.deskTheme.setOnClickListener(v -> showDeskTheme());
-        binding.deskFiles.setOnClickListener(
-                v -> {
-                    deskChat = false;
-                    deskChatFromList = false;
-                    ensureDesk();
-                    deskSession.openFiles();
-                    showReading();
-                });
-        binding.deskChat.setOnClickListener(
-                v -> {
-                    deskChatFromList = false;
-                    deskChat = true;
                     showReading();
                 });
         binding.deskGroup.setOnClickListener(v -> showGroup());
@@ -6074,7 +6052,8 @@ public class ConversationFragment extends XmppFragment
         this.conversation = conversation;
         if (originalConversation != conversation) {
             deskSession = null;
-            deskChat = false;
+            deskChat = true;
+            deskChatFromList = false;
         }
         // a chat opens at its newest message unless something below moves the list off it
         this.holdAtBottom = true;
@@ -6868,19 +6847,14 @@ public class ConversationFragment extends XmppFragment
         applyReadingChrome(look);
         paintShelf(look);
         paintSnackbar(look);
+        binding.deskReadings.setVisibility(GONE);
+        binding.deskTheme.setVisibility(GONE);
         if (deskChat) {
+            binding.deskShelf.setVisibility(GONE);
             messagesLayoutManager.setStackFromEnd(true);
             if (binding.messagesView.getAdapter() != messageListAdapter) {
                 binding.messagesView.setAdapter(messageListAdapter);
             }
-            binding.deskTools.setVisibility(VISIBLE);
-            binding.deskQuery.setVisibility(GONE);
-            binding.deskShelfSort.setVisibility(GONE);
-            binding.deskDensity.setVisibility(GONE);
-            binding.deskGroup.setVisibility(GONE);
-            binding.deskSort.setVisibility(GONE);
-            binding.deskHint.setVisibility(GONE);
-            pinTheme(true);
             binding.messagesView.setBackground(null);
             settleList(look);
             deskReveal = false;
@@ -6949,6 +6923,7 @@ public class ConversationFragment extends XmppFragment
             binding.messagesView.setBackground(null);
         }
         settleList(look);
+        binding.deskShelf.setVisibility(VISIBLE);
         binding.deskTools.setVisibility(VISIBLE);
         pinTheme(false);
         boolean files = deskSession.filesOpen();
@@ -7300,23 +7275,68 @@ public class ConversationFragment extends XmppFragment
                 activity.getPreferences().getString(DESK_THEME, DeskLook.Theme.NIGHT.key));
     }
 
-    private void showDeskTheme() {
-        if (activity == null) {
+    private void openDeskThreads() {
+        deskChat = false;
+        deskChatFromList = false;
+        ensureDesk();
+        deskSession.showList();
+        showReading();
+    }
+
+    private void openDeskFiles() {
+        deskChat = false;
+        deskChatFromList = false;
+        ensureDesk();
+        deskSession.openFiles();
+        showReading();
+    }
+
+    private void openDeskChat() {
+        deskChatFromList = false;
+        deskChat = true;
+        showReading();
+    }
+
+    /** Threads, Files, Chat, and the three themes. The chips no longer take a row. */
+    private void showDeskMenu() {
+        if (activity == null || binding == null) {
             return;
         }
-        PopupMenu menu = new PopupMenu(activity, binding.deskTheme);
+        PopupMenu menu = new PopupMenu(activity, binding.deskMenu);
+        boolean files = !deskChat && deskSession != null && deskSession.filesOpen();
+        menu.getMenu().add(0, 1, 0, R.string.desk_threads);
+        menu.getMenu().add(0, 2, 1, R.string.desk_files);
+        menu.getMenu().add(0, 3, 2, R.string.desk_chat);
+        menu.getMenu().setGroupCheckable(0, true, true);
+        menu.getMenu().findItem(1).setChecked(!deskChat && !files);
+        menu.getMenu().findItem(2).setChecked(files);
+        menu.getMenu().findItem(3).setChecked(deskChat);
         DeskLook.Theme[] themes = DeskLook.Theme.values();
+        DeskLook.Theme current = deskTheme();
         for (int i = 0; i < themes.length; i++) {
-            menu.getMenu().add(0, i, i, themeLabel(themes[i]));
+            menu.getMenu().add(1, 10 + i, 3 + i, themeLabel(themes[i]));
+        }
+        menu.getMenu().setGroupCheckable(1, true, true);
+        menu.getMenu().findItem(10 + current.ordinal()).setChecked(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            menu.getMenu().setGroupDividerEnabled(true);
         }
         menu.setOnMenuItemClickListener(
                 item -> {
-                    int which = item.getItemId();
-                    if (which < 0 || which >= themes.length) {
-                        return true;
+                    int id = item.getItemId();
+                    if (id == 1) {
+                        openDeskThreads();
+                    } else if (id == 2) {
+                        openDeskFiles();
+                    } else if (id == 3) {
+                        openDeskChat();
+                    } else if (id >= 10 && id < 10 + themes.length) {
+                        activity.getPreferences()
+                                .edit()
+                                .putString(DESK_THEME, themes[id - 10].key)
+                                .apply();
+                        showReading();
                     }
-                    activity.getPreferences().edit().putString(DESK_THEME, themes[which].key).apply();
-                    showReading();
                     return true;
                 });
         menu.show();
@@ -7368,6 +7388,8 @@ public class ConversationFragment extends XmppFragment
         binding.deskQuery.setHintTextColor(look.muted);
         binding.deskHint.setTextColor(look.muted);
         binding.deskTheme.setText(themeLabel(look.theme));
+        binding.deskMenu.setBackgroundTintList(ColorStateList.valueOf(look.control));
+        binding.deskMenu.setImageTintList(ColorStateList.valueOf(look.text));
         paintChip(binding.deskShelfSort, false, look);
         paintChip(binding.deskDensity, false, look);
         paintChip(binding.deskGroup, false, look);
@@ -7375,7 +7397,7 @@ public class ConversationFragment extends XmppFragment
         paintChip(binding.deskTheme, false, look);
     }
 
-    /** Chat keeps only the theme chip, held at the end. Readings use the full tools row. */
+    /** Search and the sort chips use the full tools row. The view button floats over them. */
     private void pinTheme(boolean alone) {
         if (!(binding.deskTools.getLayoutParams() instanceof LinearLayout.LayoutParams params)) {
             return;

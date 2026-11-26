@@ -4077,7 +4077,7 @@ public class XmppConnectionService extends Service {
                                         // Fetch the page with the same OkHttp client as the HEAD so
                                         // it follows the Tor/I2P routing policy (incl. redirects).
                                         final Element rdf = fetchLinkDescription(http, url, link);
-                                        if (rdf != null) message.addPayload(rdf);
+                                        if (rdf != null) message.addLinkDescription(rdf);
                                     }
                                 } catch (final IOException | RuntimeException e) {
                                     Log.d(Config.LOGTAG, "unable to build link preview", e);
@@ -8664,6 +8664,8 @@ public class XmppConnectionService extends Service {
                 if (fetched >= 4) return;
                 if (!hasPreviewableLink(message)) continue;
                 if (!linkPreviewTried.add(message.getUuid())) continue;
+                // The send path may have stored this card while the fetch was waiting.
+                if (!message.getLinkDescriptions().isEmpty()) continue;
                 try {
                     if (storeHtmlPreview(account, message)) {
                         fetched++;
@@ -8738,8 +8740,7 @@ public class XmppConnectionService extends Service {
                     if (!html) continue;
                 }
                 final Element rdf = fetchLinkDescription(http, url, link);
-                if (rdf != null) {
-                    message.addPayload(rdf);
+                if (rdf != null && message.addLinkDescription(rdf)) {
                     return true;
                 }
             } catch (final IOException | RuntimeException e) {
