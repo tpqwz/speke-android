@@ -90,7 +90,7 @@ public class BackupFile implements Comparable<BackupFile> {
                         "Conversations",
                         "Quicksy",
                         "monocles chat",
-                        "LaNoxe",
+                        "Speke",
                         context.getString(R.string.app_name));
 
         final var uriPermissions = context.getContentResolver().getPersistedUriPermissions();
@@ -146,8 +146,8 @@ public class BackupFile implements Comparable<BackupFile> {
                     Config.LOGTAG,
                     "including default directory since no uri permissions have been granted");
             directories.add(FileBackend.getBackupDirectory(context));
-            // Backups written before this app was named Speke.
-            for (final String earlier : new String[] {"monocles chat", "LaNoxe"}) {
+            // Current folder, and backups written by monocles chat.
+            for (final String earlier : new String[] {"monocles chat", "Speke"}) {
                 directories.add(
                         new File(
                                 new File(
